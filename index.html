@@ -1,0 +1,464 @@
+<html>
+    <head>
+        <script src="./js/jquery.js"></script>
+        <script src="./js/highstock.js"></script>
+        <script src="./js/Visualization.js"></script>
+        <script src="./js/Workboard.js"></script>
+        <script src="./js/Kettle.js"></script>
+    </head>
+    <body>
+		<div id="container" style="width: 550px; height: 400px; margin: 0 auto">
+		    <form>
+				<div class="ui-field-contain">
+					<label for="select-native-4">Optgroup (if supported):</label>
+					<select name="select-native-4" id="select-native-4">
+						<option>Choose...</option>
+						<optgroup label="Group 1" id="addb">
+
+						</optgroup>
+						<optgroup label="Group 2">
+							<option value="5">The 5th Option</option>
+							<option value="6">The 6th Option</option>
+							<option value="7">The 7th Option</option>
+						</optgroup>
+					</select>
+				</div>
+			</form>
+		</div>
+        <script language="JavaScript">
+            var //workboardData = [],
+                //visualData = [],
+                //kettleData = [],
+                visualization,
+                workboardDataConfiguration = [],
+                decryptedData = [],
+                kettleResultset = [],
+                visualisationConfiguration = [],
+                chartObj,
+                dataId,
+                option = [];
+			$(document).ready(function() {
+                console.log("1");
+                createDashboard1();
+			})//document.ready end
+            
+            function createDashboard1(){
+                console.log("2");
+                var self=this;
+                $.each(workboardData.data,function(index,value)
+                {
+                    console.log("2.1");
+                    configuration=workboardData.data;
+                    dataId = index;
+                    //console.log(dataId);
+                    draw(index);
+                })
+            }
+            function resize(){
+                console.log("6");
+                if(typeof this.chartObj !== 'undefined' && Object.keys(this.chartObj).length){
+                    var chart= $(this.$.container);
+                    this.chartObj.setSize(chart.width()-50,chart.height()-50);
+                    this.chartObj.reflow();
+                }
+            }
+            
+            function draw(index){
+                console.log("3");
+                var self=this;
+                //this.loadingStart();
+                //console.log(index);
+                //if (workboardData.data[index].hasOwnProperty("configuration") && typeof workboardData.data[index].configuration.data === 'object' && workboardData.data[index].configuration.data.length){
+                if(workboardData.data[index].hasOwnProperty("configuration")){
+                    if(workboardData.data[index].configuration.type === 'chart-type-1' || workboardData.data[index].configuration.type === 'multi-chart-element' || workboardData.data[index].configuration.type === 'chart'){
+                        try{
+                            var configuration = workboardData.data[index].configuration,
+                                name = workboardData.data[index].configuration.name,
+                                visualization=visualData.data[index],
+                                data=kettleData.data[index];    
+                            
+                            if (typeof configuration === 'object'){
+                                var normalized = normalize(visualization.configuration.result,name,index);
+                            partedData=makeColumns(data.resultSet);
+                            var options = processor(configuration.configuration, partedData, normalized);
+                            }
+
+                            //console.log(option);
+                            //console.log("option");
+                            if (typeof chartObject !== 'undefined' && Object.keys(chartObject).length) {
+                               // chartObject.destroy();
+                            }
+                            //console.log(options)
+                            chartObject = new Highcharts[visualization.configuration.chartType](options);
+
+                        }
+
+                        catch(e){
+                            console.error(e)
+                        }
+                    }
+                }
+            }
+            
+            function makeColumns(data) {
+				var partedData={};
+				for (var i = 0, j = data[0].length; i < j; i++) {
+					var column = [];
+					for (var k = 0, l = data.length; k < l; k++) {
+						column.push(data[k][i]);
+					}
+					partedData[i] = column;
+				}
+				return partedData;
+			}
+            function processor(configuration, data, visualization) {
+				console.log("4");
+				var self = this,
+				isTooltip = false;
+                visualization.series = [];
+                for (var i = 0, j = configuration.length; i < j; i++) {
+					var config = configuration[i];
+					if (config.hasOwnProperty("categories") && typeof config.categories === 'object') {
+						var categories = config.categories;
+						(visualization.hasOwnProperty("xAxis") ? ("") : (visualization.xAxis = {}));
+						if (categories.hasOwnProperty("data") && typeof categories.data === 'object' && categories.data.length) {
+							visualization.xAxis.categories = categories.data;
+						} else if (categories.hasOwnProperty("columnMapping") && !isNaN(categories.columnMapping)) {
+							visualization.xAxis.categories = data[Number(categories.columnMapping)];
+						} else {
+							visualization.xAxis.categories = data[i];
+						}
+					} else {
+						if (config.hasOwnProperty("series") && typeof config.series === 'object') {
+							var seriesConfig = config.series,
+								tooltipData = {},
+								seriesData = [],
+								series = {
+									data: []
+								},
+                                
+								drilldown = false,
+								tooltipTemplate = "";
+                                series.allowPointSelect = true;
+                                series.point = {
+								    events: {
+									//click: self.clickPoint.bind(self)
+								}
+							};
+							if (seriesConfig.hasOwnProperty("color") && (temp = String(seriesConfig.color).trim()).length) {
+								series["color"] = temp;
+							}
+							if (seriesConfig.hasOwnProperty("type") && (temp = String(seriesConfig.type).trim()).length) {
+								series["type"] = temp;
+							}
+							if (seriesConfig.hasOwnProperty("name") && (temp = String(seriesConfig.name).trim()).length) {
+								series["name"] = temp;
+							}
+							if (seriesConfig.hasOwnProperty("connectEnds") && typeof seriesConfig.connectEnds === 'boolean') {
+								series.connectEnds = seriesConfig.connectEnds;
+							}
+							if (seriesConfig.hasOwnProperty("connectNulls") && typeof seriesConfig.connectNulls === 'boolean') {
+								series.connectNulls = seriesConfig.connectNulls;
+							}
+							if (seriesConfig.hasOwnProperty("enableMouseTracking") && typeof seriesConfig.enableMouseTracking === 'boolean') {
+								series.enableMouseTracking = seriesConfig.enableMouseTracking;
+							}
+							if (seriesConfig.hasOwnProperty("showInLegend") && typeof seriesConfig.showInLegend === 'boolean') {
+								series.showInLegend = seriesConfig.showInLegend;
+							}
+							if (seriesConfig.hasOwnProperty("cropThreshold") && !isNaN(seriesConfig.cropThreshold)) {
+								series.cropThreshold = Number(seriesConfig.cropThreshold);
+							}
+							if (seriesConfig.hasOwnProperty("lineWidth") && !isNaN(seriesConfig.lineWidth)) {
+								series.lineWidth = Number(seriesConfig.lineWidth);
+							}
+							if (seriesConfig.hasOwnProperty("cursor") && (temp = String(seriesConfig.cursor).trim()).length) {
+								series.cursor = temp;
+							}
+							if (seriesConfig.hasOwnProperty("dashStyle") && (temp = String(seriesConfig.dashStyle).trim()).length) {
+								series.dashStyle = temp;
+							}
+							if (seriesConfig.hasOwnProperty("id") && (temp = String(seriesConfig.id).trim()).length) {
+								series.id = temp;
+							}
+							if (seriesConfig.hasOwnProperty("linecap") && (temp = String(seriesConfig.linecap).trim()).length) {
+								series.linecap = temp;
+							}
+							if (seriesConfig.hasOwnProperty("linkedTo") && (temp = String(seriesConfig.linkedTo).trim()).length) {
+								series.linkedTo = temp;
+							}
+							if (seriesConfig.hasOwnProperty("stack") && (temp = String(seriesConfig.stack).trim()).length) {
+								series.stack = temp;
+							}
+							if (seriesConfig.hasOwnProperty("negativeColor") && (temp = String(seriesConfig.negativeColor).trim()).length) {
+								series.negativeColor = temp;
+							}
+							if (seriesConfig.hasOwnProperty("negativeFillColor") && (temp = String(seriesConfig.negativeFillColor).trim()).length) {
+								series.negativeFillColor = temp;
+							}
+							if (seriesConfig.hasOwnProperty("pointIntervalUnit") && (temp = String(seriesConfig.pointIntervalUnit).trim()).length) {
+								series.pointIntervalUnit = temp;
+							}
+							if (seriesConfig.hasOwnProperty("fillOpacity") && !isNaN(seriesConfig.fillOpacity)) {
+								series.fillOpacity = seriesConfig.fillOpacity;
+							}
+							if (seriesConfig.hasOwnProperty("pointInterval") && !isNaN(seriesConfig.pointInterval)) {
+								series.pointInterval = seriesConfig.pointInterval;
+							}
+							if (seriesConfig.hasOwnProperty("zIndex") && !isNaN(seriesConfig.zIndex)) {
+								series.zIndex = seriesConfig.zIndex;
+							}
+							if (seriesConfig.hasOwnProperty("lineColor") && (temp = String(seriesConfig.lineColor).trim()).length) {
+								series.lineColor = seriesConfig.lineColor;
+							}
+							if (seriesConfig.hasOwnProperty("innerSize") && (temp = String(seriesConfig.innerSize).trim()).length) {
+								series.innerSize = seriesConfig.innerSize;
+							}
+							if (seriesConfig.hasOwnProperty("fillColor") && (typeof seriesConfig.fillColor === 'object' || typeof seriesConfig.fillColor === 'string')) {
+								series.fillColor = seriesConfig.fillColor;
+							}
+							if (seriesConfig.hasOwnProperty("marker") && typeof seriesConfig.marker === 'object') {
+								series.marker = seriesConfig.marker;
+							}
+							if (seriesConfig.hasOwnProperty("yAxis") && (!isNaN(seriesConfig.yAxis) || typeof seriesConfig.yAxis === 'string')) {
+								series.yAxis = seriesConfig.yAxis;
+							}
+							if (seriesConfig.hasOwnProperty("xAxis") && (!isNaN(seriesConfig.xAxis) || typeof seriesConfig.xAxis === 'string')) {
+								series.xAxis = seriesConfig.xAxis;
+							}
+							if (seriesConfig.hasOwnProperty("data") && typeof seriesConfig.data === 'object' && seriesConfig.data.length) {
+								seriesData = seriesConfig.data;
+							} else if (seriesConfig.hasOwnProperty("columnMapping") && !isNaN(seriesConfig.columnMapping)) {
+								seriesData = data[Number(seriesConfig.columnMapping)];
+							} else {
+								seriesData = data[i];
+							}
+							if (config.hasOwnProperty("zones") && typeof config.zones === 'object') {
+								var zones = config.zones;
+								series["zoneAxis"] = zones.zoneAxis;
+								if (zones.hasOwnProperty("data") && typeof zones.data === 'object') {
+									series["zones"] = zones.data;
+								} else if (zones.hasOwnProperty("columnMapping") && !isNaN(zones.columnMapping)) {
+									series["zones"] = data[Number(categories.columnMapping)];
+								}
+							}
+							if (config.hasOwnProperty("drilldown") && config.drilldown.hasOwnProperty('enabled') && config.drilldown.enabled === true) {
+								drilldown = true;
+								series.drilldownParams = {
+									params: []
+								}
+								if (config.drilldown.hasOwnProperty("params")) {
+									series.drilldownParams.params = config.drilldown.params;
+								}
+								if (config.drilldown.hasOwnProperty("reference") && !isNaN(config.drilldown.reference)) {
+									series.drilldownReference = Number(config.drilldown.reference);
+								}
+								if (config.drilldown.hasOwnProperty("assosciative") && typeof config.drilldown.assosciative === 'object' && config.drilldown.assosciative.length > 0) {
+									series.drilldownAssosciative = config.drilldown.assosciative;
+								}
+							} else {
+								drilldown = false;
+							}
+							if (config.hasOwnProperty("tooltip") && typeof config.tooltip === 'object') {
+								isTooltip = true, series.tooltip = {};
+								var tooltip = config.tooltip,
+									isFormatter = (tooltip.hasOwnProperty("formatter") ? true : false);
+								if (tooltip.hasOwnProperty("template") && typeof tooltip.template === "object" && tooltip.template.length) {
+									if (tooltip.template[0].hasOwnProperty("pointFormat")) {
+										series.tooltip["pointFormat"] = tooltip.template[0].pointFormat;
+									}
+									if (tooltip.template[0].hasOwnProperty("headerFormat")) {
+										series.tooltip["headerFormat"] = tooltip.template[0].headerFormat;
+									}
+									if (tooltip.template[0].hasOwnProperty("footerFormat")) {
+										series.tooltip["footerFormat"] = tooltip.template[0].footerFormat;
+									}
+								}
+								if (tooltip.hasOwnProperty("data") && typeof tooltip.data === 'object' && tooltip.data.length) {
+									if (tooltip.hasOwnProperty("formatter") && typeof tooltip.formatter === 'object') {
+										tooltipData[0] = this.formatter(JSON.stringify(tooltip.data), tooltip.formatter);
+									} else {
+										tooltipData[0] = tooltip.data;
+									}
+								} else if (tooltip.hasOwnProperty("columnMapping") && ((typeof tooltip.columnMapping === 'object' && tooltip.columnMapping.length) || !isNaN(tooltip.columnMapping))) {
+									for (var k = 0, l = tooltip.columnMapping.length; k < l; k++) {
+										if (tooltip.columnMapping[k].hasOwnProperty("formatter") && typeof tooltip.columnMapping[k].formatter === 'object') {
+											tooltipData[k] = this.formatter(JSON.stringify(data[Number(tooltip.columnMapping[k].column)]), tooltip.columnMapping[k].formatter);
+										} else {
+											tooltipData[k] = data[Number(tooltip.columnMapping[k].column)];
+										}
+									}
+								}
+							}
+							if (config.hasOwnProperty("assosciativity") && typeof config.assosciativity === 'object' && config.assosciativity.hasOwnProperty("enabled") && config.assosciativity.enabled === true) {
+								series.assosciativity = {
+									params: []
+								}
+								if (config.assosciativity.hasOwnProperty("params")) {
+									series.assosciativity.params = config.assosciativity.params;
+								}
+							}
+							if (config.hasOwnProperty("export") && typeof config.assosciativity === 'object' && config.export.hasOwnProperty("enabled") && config.export.enabled === true) {
+								if (config.assosciativity.hasOwnProperty("params")) {
+									series.assosciativity.params = config.assosciativity.params;
+								}
+							}
+							if (seriesData.length) {
+								var namesExist = false,
+									colorExist = false,
+									colorData = [];
+								if (seriesConfig.hasOwnProperty("names") && typeof seriesConfig.names === 'object' && seriesConfig.names.length) {
+									namesExist = true;
+								}
+								if (seriesConfig.hasOwnProperty("pointsColor") && typeof seriesConfig.pointsColor === 'object') {
+									if (seriesConfig.pointsColor.hasOwnProperty("columnMapping")) {
+										colorExist = true;
+										colorData = data[Number(seriesConfig.pointsColor.columnMapping)];
+									} else if (seriesConfig.pointsColor.hasOwnProperty("data")) {
+										colorExist = true;
+										colorData = seriesConfig.pointsColor.data;
+									}
+								}
+								for (var k = 0, l = seriesData.length; k < l; k++) {
+									series.data[k] = {};
+									if (namesExist) {
+										series.data[k]["name"] = seriesConfig.names[k];
+									}
+									if (colorExist) {
+										series.data[k]["color"] = colorData[k]
+									}
+									if (isTooltip) {
+										for (var t in tooltipData) {
+											series.data[k]['tooltip-' + t] = tooltipData[t][k];
+										}
+									}
+									series.data[k]["y"] = Number(seriesData[k]);
+									series.data[k]["drilldown"] = drilldown;
+								}
+							}
+						}
+                        //console.log("series");
+                        //console.log(series);
+						visualization["series"].push(series);
+					}
+				}
+				return visualization;
+			}
+            
+        function normalize(visualization,name,dataId){
+            console.log("5");
+				var c = JSON.parse(JSON.stringify(visualization)),
+                    self = this;
+            
+                var div=document.createElement('div');
+                var id ="id"+dataId;
+                div.setAttribute("id",id);
+			     var title = document.createElement("h3");
+              //  window.alert(id);
+                title.innerHTML=name;
+            
+			     div.appendChild(title);
+                var container=document.getElementById("container");
+			     container.appendChild(div);
+            
+				c.hasOwnProperty("chart") ? ("") : (c.chart = {});
+				c.chart.animation = true;
+				c.chart.selectionMarkerFill = 'rgba(69,114,167,0.25)';
+				c.chart.backgroundColor = 'transparent';
+				c.chart.borderColor = 'transparent';
+				c.chart.borderRadius = 0;
+				c.chart.borderWidth = 0;
+				c.chart.ignoreHiddenSeries = true;
+				c.chart.zoomType = 'xy';
+				c.chart.panning = true;
+				c.chart.panKey = 'shift';
+				c.chart.plotBackgroundColor = 'transparent';
+				c.chart.plotBackgroundImage = '';
+				c.chart.plotBorderColor = 'transparent';
+				c.chart.plotBorderWidth = 0;
+				c.chart.plotShadow = false;
+				c.chart.reflow = true;
+				c.chart.shadow = false;
+				c.chart.showAxes = true;
+				c.chart.renderTo = id;
+				c.chart.events = {};
+				c.exporting = {
+					enabled: false
+				};
+				//.chart.events["drilldown"] = self.drilldown.bind(self);
+				//c.chart.events["drillup"] = self.drillup.bind(self);
+				//c.lang = {
+						//drillUpText: '<< Back to {series.name}'
+					//},
+					//c.chart.events["click"] = self.clickEvent.bind(self);
+				c.title = "";
+				(c.hasOwnProperty('tooltip') ? (c.tooltip.useHTML = true) : (c.tooltip = {
+					useHTML: true
+				}));
+            /*
+				(c.tooltip.hasOwnProperty('formatter') ? (delete(c.tooltip.formatter)) : (""));
+				(this.tooltip.hasOwnProperty('pointFormat') ? (c.tooltip.pointFormat = this.tooltip.pointFormat) : (""));
+				(this.tooltip.hasOwnProperty('headerFormat') ? (c.tooltip.headerFormat = this.tooltip.headerFormat) : (""));
+				(this.tooltip.hasOwnProperty('footerFormat') ? (c.tooltip.footerFormat = this.tooltip.footerFormat) : (""));
+            */
+				c.series = [];
+				c.credits = {
+					href: "https://netlink.com",
+					text: "Netlink Business Analytics"
+				};/*
+				var chart = $(this);
+				c.chart.width = (chart.width() - 5);
+				c.chart.height = (chart.height() - 5);*/
+            //console.log(c);
+				return c;
+            /*
+			console.log("5");
+			var result=visualization.configuration.result;
+			result['title']={text:""};
+			var div=document.createElement('div');
+            var id ="id"+dataId;
+            div.setAttribute("id",id);
+			var title = document.createElement("h3");
+			div.appendChild(title);
+			var container=document.getElementById("container");
+			container.appendChild(div);
+			if(result.hasOwnProperty('chart')){
+			  delete result.chart['renderTo'];
+					result.chart.renderTo=id;
+					
+				}else{
+				 result.chart={
+				  renderTo: id,
+				}
+			  }
+				result['credits']={"enabled": false};
+				result["exporting"]={enabled:false};
+            
+				result['series']=data.series;
+				if(data.hasOwnProperty('xAxisCategories') && data['xAxisCategories'].length){
+					if(result.hasOwnProperty('xAxis')){
+						result['xAxis'].categories=data['xAxisCategories'];
+					}else{
+						result['xAxis']={categories:data['xAxisCategories']};
+					}
+				}
+				
+				if(data.hasOwnProperty('subtitleText') && data['subtitleText'].length){
+					if(result.hasOwnProperty('subtitle')){
+						result['subtitle'].text=data['subtitleText'];
+					}else{
+						result['subtitle']={text:data['subtitleText']};
+					}
+				}
+					//result.chart.height=400;
+					//result.chart.width=350;
+            	return result;
+                */
+		}
+            
+            
+                
+            
+        </script>
+    </body>
+</html>
