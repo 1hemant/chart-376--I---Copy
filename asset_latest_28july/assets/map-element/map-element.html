@@ -1,0 +1,305 @@
+<link href="../bower_components/polymer/polymer.html" rel="import" />
+<dom-module id="map-element">
+    <template>
+		<style>	
+			div#container{
+				height:inherit;
+				width:inherit;
+			}
+		</style>
+	<div id="parentContainer" class="grid-stack-item-content" >
+
+		<div id="container"></div>
+	</div>
+    </template>
+    <script>
+        Polymer({
+            is: "map-element",
+			properties:{
+				currentData:{
+					type:Array,
+					value:function(){
+						return []
+					},
+					readonly:true
+				},
+				sharing:{
+					type:Boolean,
+					value:false,
+				},
+				baseUtil:{
+					type:Object,
+					value:function(){
+						return document.createElement('base-util');
+					},
+					readonly:true
+				},
+				currentVisualization:{
+					type:Object,
+					value:function(){
+						return {}
+					},
+					readonly:true
+				},
+				data:{
+					type:Object,
+					value:function(){
+						return {};
+					},
+					notify:true,
+					observer:'__dataChanged'
+				},
+				configuration:{
+					type:Object,
+					value:function(){
+						return {};
+					},
+					notify:true,
+					observer:'__configurationChanged'
+				},
+				visualization:{
+					type:Object,
+					value:function(){
+						return {};
+					},
+					notify:true,
+					observer:'__visualizationChanged'
+				},
+				filter:{
+					type:Object,
+					value:function(){
+						return {};
+					},
+					notify:true,
+					observer:'__filterChanged'
+				},
+				typeList: {
+					type: Array,
+					value: function() {
+						return ["heatmap","map","mapbubble","mapline","mappoint"];
+					},
+					readonly: true
+				},
+				exportList: { //Allowed List
+					type: Object,
+					value: function() {
+						return {
+							"png": "image/png",
+							"svg": "image/svg+xml",
+							"pdf": "application/pdf",
+							"jpeg": "image/jpeg",
+							"csv": "text/csv",
+							"xls": "application/vnd.ms-excel",
+						};
+					},
+					readonly: true
+				},
+				Object:{
+					type:Object,
+					value:function(){
+						return {};
+					},
+					readonly:true
+				},
+				type:{
+					type:String,
+					value:"bar",
+					observer:"__typeChanged",
+					notify:true,
+					reflectToAttribute:true
+				}
+			},
+			export: function(value) {
+				if (typeof this.Object !== 'undefined' && Object.keys(this.Object).length && this.exportList.hasOwnProperty(value)) {
+					this.Object.exportChartLocal({
+						type: this.exportList[value],
+						filename: "Download"
+					}, {
+						subtitle: {
+							text: 'Download'
+						}
+					})
+				}
+			},
+			attached:function(){
+				var self = this;
+				$(window).resize(self.resize.bind(self));
+			},
+			__typeChanged:function(value){
+				if (typeof this.Object !== 'undefined' && Object.keys(this.Object).length) {
+					if (this.typeList.indexOf(value.toLowerCase()) != -1) {
+						this.Object.series.forEach(function(e) {
+							e.update({
+								type: value
+							});
+						});
+					}
+				}
+			},
+			resize:function(){
+				if (typeof this.Object !== 'undefined' && Object.keys(this.Object).length) {
+					var chart = $(this.$.parentContainer);
+					this.Object.setSize(chart.width(), chart.height());
+					this.Object.reflow();
+				}
+			},
+			__dataChanged:function(e){
+				if (typeof e !== 'undefined' && Object.keys(e).length && typeof this.visualization !== 'undefined' && Object.keys(this.visualization).length && typeof this.configuration !== 'undefined' && Object.keys(this.configuration).length) {
+					this.draw();
+				}
+			},
+			__filterChanged:function(e){
+				if(Object.keys(e).length){
+					
+				}
+			},
+			__visualizationChanged:function(e){
+				if ( typeof e !== 'undefined' && Object.keys(e).length && typeof this.configuration !== 'undefined' && Object.keys(this.configuration).length && typeof this.data !== 'undefined' && Object.keys(this.data).length) {
+					this.draw();
+				}
+			},
+			__configurationChanged:function(e){
+				if ( typeof e !== 'undefined' && Object.keys(e).length && typeof this.visualization !== 'undefined' && Object.keys(this.visualization).length && typeof this.data !== 'undefined' && Object.keys(this.data).length) {
+					this.draw();
+				}
+			},
+			draw:function(){
+				if(this.data.hasOwnProperty(this.id) && this.visualization.hasOwnProperty(this.id)){
+					if(!this.baseUtil){
+                                        this.baseUtil=document.createElement('base-util');
+                                }
+
+					this.currentData=this.data[this.id].resultSet;
+					this.currentVisualization=this.visualization[this.id];
+					var normzalize=this.normalize(),data=this.baseUtil.makeColumns(this.currentData)
+					if (typeof this.Object !== 'undefined' && Object.keys(this.Object).length) {
+						this.Object.destroy();
+					}
+					var options = this.processor(this.configuration,data,normzalize);
+					this.Object = new Highcharts.Map(options);
+				}
+			},
+			processor:function(config,data,visualization){
+				var self=this;
+				config=JSON.parse(JSON.stringify(config));
+				try{
+					if(config.hasOwnProperty('series')){
+						$.each(config.series,function(i,j){
+							var series = {data: []};
+							$.each(j,function(k,l){
+								if(k.toLowerCase() === 'data'){
+									$.each(l,function(m,n){
+										var seriesData=[];
+										if(n.hasOwnProperty("data")){
+											if(n.hasOwnProperty("formatter")){
+												seriesData=self.baseUtil.formatter(n.data,n.formatter);
+											}else{
+												seriesData=n.data;
+											}
+										}else if(n.hasOwnProperty('columnMapping')){ 
+											if(n.hasOwnProperty("formatter")){
+												seriesData=self.baseUtil.formatter(data[Number(n.columnMapping)],n.formatter);
+											}else{
+												seriesData=data[Number(n.columnMapping)];
+											}
+										}else{
+											throw "Unkown Option"
+										}
+										if(seriesData.length){
+											for(var o=0,p=seriesData.length;o<p;o++){
+												if(typeof series.data[o] !== 'object'){
+													series.data[o]={};
+												}
+												series.data[o][m]=seriesData[o];
+											}
+										}
+									});
+								}else{
+									series[k]=l;
+								}
+							});
+							if(j.hasOwnProperty('mapData')){
+								if(typeof Highcharts.maps[j.mapData.key]!== 'undefined'){
+									series.mapData=Highcharts.maps[j.mapData.key];
+								}else{
+									$.getJSON('/v2/assets/geoJSON/'+j.mapData.location+'.geo.json',{},function(e){
+										Highcharts.maps[j.mapData.key]=e;
+										series.mapData = Highcharts.maps[j.mapData.key];
+									})
+								}
+							}
+							visualization.series.push(series);
+						});
+						return visualization;
+					}else{
+						throw "No Series"
+					}
+				}
+				catch(e){
+					console.error(e)
+				}
+			},
+			normalize:function(){
+				var visualization = JSON.parse(JSON.stringify(this.currentVisualization)),self=this,config=this.configuration;
+				(visualization.hasOwnProperty("chart") ? ("") : (visualization.chart = {}));
+					$.each(config,function(i,j){
+						if(i.toLowerCase().indexOf('series') === -1){
+							visualization[i]=j;
+						}
+					});
+					visualization.chart.animation = true;
+					visualization.chart.selectionMarkerFill = 'rgba(69,114,167,0.25)';
+					visualization.chart.backgroundColor = 'transparent';
+					visualization.chart.borderColor = 'transparent';
+					visualization.chart.borderRadius = 0;
+					visualization.chart.borderWidth = 0;
+					visualization.chart.ignoreHiddenSeries = true;
+					visualization.chart.zoomType = 'xy';
+					visualization.chart.panning = true;
+					visualization.chart.panKey = 'shift';
+					visualization.chart.plotBackgroundColor = 'transparent';
+					visualization.chart.plotBackgroundImage = '';
+					visualization.chart.plotBorderColor = 'transparent';
+					visualization.chart.plotBorderWidth = 0;
+					visualization.chart.plotShadow = false;
+					visualization.chart.reflow = true;
+					visualization.chart.shadow = false;
+					visualization.chart.showAxes = true;
+					visualization.chart.renderTo = this.$.container;
+					visualization.chart.events = {};
+					visualization.exporting = {enabled: false};
+					(visualization.hasOwnProperty('tooltip') ? (visualization.tooltip.useHTML = true) : (visualization.tooltip = {
+						useHTML: true
+					}));
+					visualization.tooltip.borderWidth=0;
+					visualization.tooltip.shadow=false;
+					visualization.tooltip.style={padding:0,margin:0};
+					visualization.tooltip.hideDelay=1000;
+					visualization.tooltip.followPointer=false;
+					visualization.tooltip.followTouchMove=false;
+					visualization.tooltip.backgroundColor="rgba(255,255,255,1)";
+					visualization.tooltip.borderColor="rgba(0,0,0,0.3)";
+					visualization.tooltip.borderRadius=10;
+					visualization.tooltip.headerFormat='<div class="tool--box tool--pop-width pop-top" id="share_pop"><div class="tool--body">';
+					if(this.sharing){
+                                        visualization.tooltip.footerFormat='</div><div class="tool--footer"><div class="tool--list-horizontal"><ul><li><a href=""><span>Share tooltip</span></a></li></ul></div></div></div>';
+                                        }
+                                        visualization.tooltip.footerFormat='</div>';
+					
+visualization.title = "";
+					visualization.series = [];
+					if(!visualization.hasOwnProperty('credits')){
+						visualization.credits = {
+							href: "https://netlink.com",
+							text: "Netlink Business Analytics"
+						};
+					}
+					var chart = $(this.$.parentContainer);
+					visualization.chart.width = (chart.width());
+					visualization.chart.height = (chart.height());
+					return visualization;
+			}
+});
+        
+    </script>
+</dom-module>

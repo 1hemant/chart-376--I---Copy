@@ -1,0 +1,497 @@
+var visualData = {
+  "version": {
+    "pointer": "10.0.1",
+    "name": "vanilla"
+  },
+  "status": {
+    "code": "200",
+    "value": "success"
+  },
+  "data": {
+    "69": {
+      "configuration": {
+        "chartType": "Chart",
+        "result": {
+          "title": {
+            "text": ""
+          },
+          "plotOptions": {
+            "pie": {
+              "allowPointSelect": true,
+              "cursor": "pointer",
+              "dataLabels": {
+                "enabled": false,
+                "format": "<b>{point.name}</b>: {point.percentage:.0f} %"
+              },
+              "showInLegend": true
+            }
+          },
+          "tooltip": {
+            "backgroundColor": "rgba(255, 255, 255, .4)"
+          }
+        }
+      }
+    },
+    "76": {
+      "configuration": {
+        "chartType": "Chart",
+        "result": {
+          "chart": {
+            "alignTicks": false,
+            "type": "pie",
+            "animation": true
+          },
+          "yAxis": {
+            "title": {
+              "text": ""
+            }
+          },
+          "legend": {
+            "layout": "horizontal",
+            "verticalAlign": "bottom",
+            "maxHeight": 45,
+            "y": 0,
+            "itemWidth": 120,
+            "padding": 0,
+            "itemStyle": {
+              "fontSize": "10px"
+            },
+            "symbolWidth": 12,
+            "symbolRadius": 1
+          },
+          "plotOptions": {
+            "pie": {
+              "dataLabels": {
+                "enabled": true,
+                "format": "${y}",
+                "style": {
+                  "fontSize": "9px"
+                }
+              },
+              "center": [
+                "50%",
+                "50%"
+              ],
+              "showInLegend": true,
+              "cursor": "pointer"
+            }
+          }
+        }
+      }
+    },
+    "82": {
+      "configuration": {
+        "chart": {
+          "alignTicks": false,
+          "type": "column"
+        },
+        "xAxis": {
+          "crosshair": true,
+          "labels": {
+            "style": {
+              "fontSize": "10px"
+            }
+          },
+          "min": 3
+        },
+        "yAxis": [
+          {
+            "min": 0,
+            "gridLineWidth": 0,
+            "stackLabels": {
+              "enabled": true,
+              "y": -5
+            },
+            "title": {
+              "text": "Spend Amount (USD)",
+              "labels": {
+                "enabled": true
+              }
+            }
+          }
+        ],
+        "scrollbar": {
+          "enabled": true
+        },
+        "legend": {
+          "symbolWidth": 12,
+          "symbolRadius": 1,
+          "itemStyle": {
+            "fontSize": "10px"
+          }
+        },
+        "title": {
+          "text": ""
+        },
+        "credits": {
+          "enabled": false
+        },
+        "plotOptions": {
+          "column": {
+            "stacking": "normal",
+            "dataLabels": {
+              "enabled": false
+            }
+          }
+        }
+      }
+    },
+    "83": {
+      "configuration": {
+        "chart": {
+          "alignTicks": false,
+          "type": "column"
+        },
+        "xAxis": {
+          "crosshair": true,
+          "labels": {
+            "style": {
+              "fontSize": "10px"
+            }
+          },
+          "min": 3
+        },
+        "yAxis": [
+          {
+            "min": 0,
+            "gridLineWidth": 0,
+            "stackLabels": {
+              "enabled": true,
+              "y": -5
+            },
+            "title": {
+              "text": "Spend Amount (USD)",
+              "labels": {
+                "enabled": true
+              }
+            }
+          }
+        ],
+        "scrollbar": {
+          "enabled": true
+        },
+        "legend": {
+          "symbolWidth": 12,
+          "symbolRadius": 1,
+          "itemStyle": {
+            "fontSize": "10px"
+          }
+        },
+        "title": {
+          "text": ""
+        },
+        "credits": {
+          "enabled": false
+        },
+        "plotOptions": {
+          "column": {
+            "stacking": "normal",
+            "dataLabels": {
+              "enabled": false
+            }
+          }
+        }
+      }
+    },
+    "84": {
+      "configuration": {
+        "chartType": "Chart",
+        "result": {
+          "chart": {
+            "alignTicks": false,
+            "type": "pie",
+            "animation": true
+          },
+          "yAxis": {
+            "title": {
+              "text": ""
+            }
+          },
+          "legend": {
+            "layout": "horizontal",
+            "verticalAlign": "bottom",
+            "maxHeight": 45,
+            "y": 0,
+            "itemWidth": 120,
+            "padding": 0,
+            "itemStyle": {
+              "fontSize": "10px"
+            },
+            "symbolWidth": 12,
+            "symbolRadius": 1
+          },
+          "plotOptions": {
+            "pie": {
+              "dataLabels": {
+                "enabled": true,
+                "format": "${y}",
+                "style": {
+                  "fontSize": "9px"
+                }
+              },
+              "center": [
+                "50%",
+                "50%"
+              ],
+              "showInLegend": true,
+              "cursor": "pointer"
+            }
+          }
+        }
+      }
+    },
+    "85": {
+      "configuration": {
+        "chartType": "Chart",
+        "result": {
+          "chart": {
+            "alignTicks": false,
+            "type": "pie",
+            "animation": true
+          },
+          "yAxis": {
+            "title": {
+              "text": ""
+            }
+          },
+          "legend": {
+            "layout": "horizontal",
+            "verticalAlign": "bottom",
+            "maxHeight": 45,
+            "y": 0,
+            "itemWidth": 120,
+            "padding": 0,
+            "itemStyle": {
+              "fontSize": "10px"
+            },
+            "symbolWidth": 12,
+            "symbolRadius": 1
+          },
+          "plotOptions": {
+            "pie": {
+              "dataLabels": {
+                "enabled": true,
+                "format": "${y}",
+                "style": {
+                  "fontSize": "9px"
+                }
+              },
+              "center": [
+                "50%",
+                "50%"
+              ],
+              "showInLegend": true,
+              "cursor": "pointer"
+            }
+          }
+        }
+      }
+    },
+    "98": {
+      "configuration": {
+        "chartType": "Chart",
+        "result": {
+          "title": {
+            "text": ""
+          },
+          "plotOptions": {
+            "pie": {
+              "allowPointSelect": true,
+              "cursor": "pointer",
+              "dataLabels": {
+                "enabled": false,
+                "format": "<b>{point.name}</b>: {point.percentage:.0f} %"
+              },
+              "showInLegend": true
+            }
+          },
+          "tooltip": {
+            "backgroundColor": "rgba(255, 255, 255, .4)"
+          }
+        }
+      }
+    },
+    "116": {
+      "configuration": {
+        "chartType": "Chart",
+        "result": {
+          "subtitle": {
+            "text": "Suppliers",
+            "x": -35,
+            "y": 20,
+            "style": {
+              "fontSize": "11px",
+              "fontWeight": "normal",
+              "color": "rgba(2, 9, 29, 0.76)",
+              "textAlign": "left"
+            }
+          },
+          "legend": {
+            "enabled": false
+          },
+          "xAxis": [
+            {
+              "labels": {
+                "enabled": false
+              }
+            }
+          ],
+          "yAxis": {
+            "title": {
+              "text": null
+            },
+            "gridLineWidth": 0,
+            "labels": {
+              "enabled": false
+            }
+          },
+          "plotOptions": {
+            "series": {
+              "stacking": "percent",
+              "pointWidth": 10,
+              "dataLabels": {
+                "enabled": true,
+                "color": "#000",
+                "x": 20,
+                "y": -12,
+                "formatter": "function (){return this.y<1e3?this.y:(this.y/1e3).toFixed(0)+\"K\"}",
+                "style": {
+                  "fontSize": "12px",
+                  "fontFamily": "Tahoma sans-serif",
+                  "fontWeight": "normal"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "118": {
+      "configuration": {
+        "chartType": "Chart",
+        "result": {
+          "title": {
+            "text": ""
+          },
+          "plotOptions": {
+            "pie": {
+              "allowPointSelect": true,
+              "cursor": "pointer",
+              "dataLabels": {
+                "enabled": false,
+                "format": "<b>{point.name}</b>: {point.percentage:.0f} %"
+              },
+              "showInLegend": true
+            }
+          },
+          "tooltip": {
+            "backgroundColor": "rgba(255, 255, 255, .4)"
+          }
+        }
+      }
+    },
+    "122": {
+      "configuration": {
+        "chartType": "Chart",
+        "result": {
+          "title": {
+            "text": ""
+          },
+          "plotOptions": {
+            "pie": {
+              "allowPointSelect": true,
+              "cursor": "pointer",
+              "dataLabels": {
+                "enabled": false,
+                "format": "<b>{point.name}</b>: {point.percentage:.0f} %"
+              },
+              "showInLegend": true
+            }
+          },
+          "tooltip": {
+            "backgroundColor": "rgba(255, 255, 255, .4)"
+          }
+        }
+      }
+    },
+    "124": {
+      "configuration": {
+        "chartType": "Chart",
+        "result": {
+          "title": {
+            "text": ""
+          },
+          "plotOptions": {
+            "pie": {
+              "allowPointSelect": true,
+              "cursor": "pointer",
+              "dataLabels": {
+                "enabled": false,
+                "format": "<b>{point.name}</b>: {point.percentage:.0f} %"
+              },
+              "showInLegend": true
+            }
+          },
+          "tooltip": {
+            "backgroundColor": "rgba(255, 255, 255, .4)"
+          }
+        }
+      }
+    },
+    "126": {
+      "configuration": {
+        "chartType": "Chart",
+        "result": {
+          "title": {
+            "text": ""
+          },
+          "plotOptions": {
+            "pie": {
+              "allowPointSelect": true,
+              "cursor": "pointer",
+              "dataLabels": {
+                "enabled": false,
+                "format": "<b>{point.name}</b>: {point.percentage:.0f} %"
+              },
+              "showInLegend": true
+            }
+          },
+          "tooltip": {
+            "backgroundColor": "rgba(255, 255, 255, .4)"
+          }
+        }
+      }
+    },
+    "131": {
+      "configuration": {
+        "chartType": "Chart",
+        "result": {
+          "chart": {
+            "type": "line"
+          },
+          "title": {
+            "text": ""
+          },
+          "yAxis": {
+            "title": {
+              "text": ""
+            },
+            "labels": {},
+            "gridLineWidth": 0,
+            "min": 0
+          },
+          "plotOptions": {
+            "line": {
+              "pointPadding": 0.5,
+              "borderWidth": 0
+            },
+            "series": {
+              "pointWidth": 20
+            }
+          }
+        }
+      }
+    }
+  },
+  "error": false
+};

@@ -1,0 +1,155 @@
+<link href="../bower_components/polymer/polymer.html" rel="import" />
+<dom-module id="data-element">
+    <script>
+        Polymer({
+            is: "data-element",
+            properties: {
+                data: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    },
+                    notify: true
+                },
+                baseUtil: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    },
+                    notify: true
+                },
+                serviceUrl: {
+                    type: String,
+                    value: "single/get-kettle",
+                    readonly: true
+                },
+                workboardId: {
+                    type: String,
+                    value: ""
+                },
+                businessobject:{
+                  type: Array,
+                    value: function() {
+                        return []
+                    },
+                    notify: true
+               
+                
+                },
+                filter: {
+                    type: Array,
+                    value: function() {
+                        return []
+                    },
+                    notify: true
+                },
+                filter1: {
+                    type: Array,
+                    value: function() {
+                        return []
+                    },
+                    observer: '__Changed',
+                    notify: true
+                },
+                result: {
+                    type: Object,
+                    value: function() {
+                        return {}
+                    },
+                    computed: '__filterComputed(filter)',
+                    observer: '__filterChanged'
+                }
+            },
+            __filterChanged: function(e) {
+
+                if (Object.keys(e).length) {
+                    this.__run(e);
+                }
+            },
+            __Changed: function(e) {
+                if (e.length != 0) {
+                    this.filter = JSON.parse(e);
+                }
+            },
+            __filterComputed: function(e) {
+               var root=this; 
+                var r = {};
+                if (e.length) {
+                    for (var i = 0, j = e.length; i < j; i++) {
+                        var element = e[i];
+               if(element.hasOwnProperty('businessobject')){
+                root.businessobject=element.businessobject;
+                   }   
+                     if (element.value.length) {
+                            r[element.key] = element.value;
+                        }
+                    }
+                }
+                return r;
+            },
+            __run: function(e) {
+                this.base = document.createElement('base-util');
+                this.base.blockUI();
+				var self = this;
+                if (!Object.keys(this.baseUtil).length) {
+                    this.baseUtil = document.createElement('base-util');
+                }
+
+                if (e == undefined) {
+                    this.baseUtil.sendRequest(this.serviceUrl, {
+                        data: {
+                            workboard_id: self.workboardId,
+                            params: self.result
+                        }
+                    }, function(e) {
+                        if (e.status.code == 200) {
+							              self.data=e.data;
+                        } else {
+                            console.error(e.status.value);
+                        }
+						
+                    }, {});
+                } else {
+                    if(self.businessobject.length>0){
+                       this.baseUtil.sendRequest(this.serviceUrl, {
+                        data: {
+                            workboard_id: self.workboardId,
+                            params: e ,
+                            businessobject_id:self.businessobject
+                        }
+                    }, function(e) {
+                        if (e.status.code == 200) {
+                            self.data = e.data;
+                        } else {
+                            console.error(e.status.value);
+                        }
+                    }, {});
+                    }else{
+                    
+                    this.baseUtil.sendRequest(this.serviceUrl, {
+                        data: {
+                            workboard_id: self.workboardId,
+                            params: e
+                        }
+                    }, function(e) {
+                        if (e.status.code == 200) {
+                            self.data = e.data;
+                        } else {
+                            console.error(e.status.value);
+                        }
+                    }, {});}
+                }
+                self.base.unblockUI();
+
+            },
+            attached: function() {
+                this.async(function() {
+                    var e;
+                    Polymer.dom.flush();
+                    this.baseUtil = document.createElement('base-util');
+                    this.__run(e);
+                });
+            }
+        });
+    </script>
+</dom-module>

@@ -1,0 +1,735 @@
+<link href="../bower_components/polymer/polymer.html" rel="import" />
+<dom-module id="chart-element">
+    <template>
+		<style>	
+			div#container{
+				height:inherit;
+				width:inherit;
+			}
+
+			.widget--box {
+			  border: 1px solid rgba(204, 204, 204, 1);
+			  position: relative;
+			  border-radius: 4px;
+			  font-size: 13px;
+			  -webkit-box-shadow: 0px 1px 8px rgba(0, 0, 0, .1);
+			  box-shadow: 0px 1px 8px rgba(0, 0, 0, .1);
+			}
+
+			.widget--body {
+			  margin: 0;
+			  padding: 10px 12px;
+			  display: block;
+			}
+
+			.widget--footer {
+			  border-top: 1px solid rgba(204, 204, 204, 1);
+			  background: rgb(245, 245, 245);
+			  overflow: hidden;
+			  border-radius: 0 0 4px 4px;
+			  display: block;
+			}
+
+			.widget--pop-width {
+			  width: 300px;
+			}
+
+			.widget--list-horizontal ul {
+			  position: relative;
+			  margin: 0;
+			  padding: 0;
+			}
+
+			.widget--list-horizontal ul li {
+			  display: inline-block;
+			  list-style: none;
+			  text-align: center;
+			  float: left;
+			  line-height: 36px;
+			  border-right: 1px solid rgba(204, 204, 204, .3);
+			}
+
+			.widget--list-horizontal ul li:first-child {
+			  width: 40px;
+			  padding: 0;
+			  line-height: 1
+			}
+
+			.widget--list-horizontal ul li:last-child {
+			  border-right: none;
+			}
+
+			.widget--list-horizontal ul li> i {
+			  line-height: 36px;
+			  color: #ff7e0c;
+			}
+
+			.widget--list-horizontal ul li > a {
+			  display: block;
+			  line-height: 26px;
+			  padding: 5px 10px;
+			}
+
+			.widget--body .table {
+			  margin-bottom: 0;
+			}
+
+			.widget--body .table > tbody > tr > td {
+			  border: 0;
+			  padding: 4px;
+			}
+
+			.font-heavy {
+			  font-weight: 600;
+			}
+		</style>
+		<div id="parentContainer" class$="{{__isGridStack(noGridStack)}}" ><g  id="drillupbutton" on-tap="drillup" class="highcharts-button" style="display:none;font-size: 12px;border:1px solid;position:absolute;top:0%;right:0%;background:#f5f5f5;z-index:1;" states="[object Object]" style="cursor:default;" transform="translate(405,10)"><rect x="0.5" y="0.5" width="140" height="28" fill="white" stroke="silver" stroke-width="1" rx="0" ry="0"></rect><text x="5" style="color:black;fill:black;" y="17"><tspan><< back to previous</tspan></text></g>
+			<div id="container"></div>
+		</div>
+    </template>
+    <script>
+        Polymer({
+            is: "chart-element",
+			properties:{
+				currentData:{
+					type:Array,
+					value:function(){
+						return []
+					},
+					readonly:true
+				},
+				sharing:{
+					type:Boolean,
+					value:false
+				},
+				currentVisualization:{
+					type:Object,
+					value:function(){
+						return {}
+					},
+					readonly:true
+				},
+				data:{
+					type:Object,
+					value:function(){
+						return {};
+					},
+					notify:true,
+					observer:'__dataChanged'
+				},
+				configuration:{
+					type:Object,
+					value:function(){
+						return {};
+					},
+					notify:true,
+					observer:'__configurationChanged'
+				},
+				visualization:{
+					type:Object,
+					value:function(){
+						return {};
+					},
+					notify:true,
+					observer:'__visualizationChanged'
+				},
+				filter:{
+					type:Array,
+					value:function(){
+						return [];
+					},
+					notify:true,
+				},
+				typeList: {
+					type: Array,
+					value: function() {
+						return ["pie", "line", "bar", "column", "areaspline", "scatter", "spline", "bubble", "funnel", "pyramid", "polygon", "waterfall", "polar", "spiderweb", "windrose", "area"];
+					},
+					readonly: true
+				},
+				exportList: { //Allowed List
+					type: Object,
+					value: function() {
+						return {
+							"png": "image/png",
+							"svg": "image/svg+xml",
+							"pdf": "application/pdf",
+							"jpeg": "image/jpeg",
+							"csv": "text/csv",
+							"xls": "application/vnd.ms-excel",
+						};
+					},
+					readonly: true
+				},
+				drilldownHierarchy:{
+					type:Array,
+					value:function(){
+						return []
+					}
+				},
+				Object:{
+					type:Object,
+					value:function(){
+						return {};
+					},
+					readonly:true
+				},
+				type:{
+					type:String,
+					value:"bar",
+					observer:"__typeChanged",
+					notify:true,
+					reflectToAttribute:true
+				},
+				baseUtil:{
+					type:Object,
+					value:function(){
+						return document.createElement('base-util');
+					},
+					readonly:true
+				},
+				noGridStack:{
+					type:Boolean,
+					value:false
+				}
+			},
+			__isGridStack:function(e){
+				return e?"":"grid-stack-item-content";
+			},
+			export: function(value) {
+				if (typeof this.Object !== 'undefined' && Object.keys(this.Object).length && this.exportList.hasOwnProperty(value)) {
+					this.Object.exportChartLocal({
+						type: this.exportList[value],
+						filename: "Download"
+					}, {
+						subtitle: {
+							text: 'Download'
+						}
+					})
+				}
+			},
+			attached:function(){
+				var self = this;
+				$(window).resize(self.resize.bind(self));
+			},
+			__typeChanged:function(value){
+				if (typeof this.Object !== 'undefined' && Object.keys(this.Object).length) {
+					if (this.typeList.indexOf(value.toLowerCase()) != -1) {
+						this.Object.series.forEach(function(e) {
+							e.update({
+								type: value
+							});
+						});
+					}
+				}
+			},
+			resize:function(){
+				if (typeof this.Object !== 'undefined' && Object.keys(this.Object).length) {
+					var chart = $(this.$.parentContainer);
+					this.Object.setSize(chart.width(), chart.height());
+					this.Object.reflow();
+				}
+			},
+			__dataChanged:function(e,j){
+			   if (typeof e !== 'undefined' && Object.keys(e).length && (JSON.stringify(e) !== JSON.stringify(j)) && typeof this.visualization !== 'undefined' && Object.keys(this.visualization).length && typeof this.configuration !== 'undefined' && Object.keys(this.configuration).length) {
+					this.draw();
+				}
+			},
+			__visualizationChanged:function(e){
+				if ( typeof e !== 'undefined' && Object.keys(e).length && typeof this.configuration !== 'undefined' && Object.keys(this.configuration).length && typeof this.data !== 'undefined' && Object.keys(this.data).length) {
+					this.draw();
+				}
+			},
+			__configurationChanged:function(e){
+				if ( typeof e !== 'undefined' && Object.keys(e).length && typeof this.visualization !== 'undefined' && Object.keys(this.visualization).length && typeof this.data !== 'undefined' && Object.keys(this.data).length) {
+					this.draw();
+				}
+			},
+			draw:function(){
+				if(this.data.hasOwnProperty(this.id) && this.visualization.hasOwnProperty(this.id)){
+					if(!this.baseUtil){
+        	                                this.baseUtil=document.createElement('base-util');
+	                                }
+					this.currentData=this.data[this.id].resultSet;
+					this.currentVisualization=this.visualization[this.id];
+					var normzalize=this.normalize(),data=this.baseUtil.makeColumns(this.currentData)
+					if (typeof this.Object !== 'undefined' && Object.keys(this.Object).length) {
+						this.Object.destroy();
+					}
+					var options = this.processor(this.configuration,data,normzalize);
+					this.Object = new Highcharts.Chart(options);
+				}
+				
+			},
+			drilldown:function(e){
+				var root=this;
+				if(e.point.series.options.hasOwnProperty('drilldown') && e.point.series.options.drilldown.enabled){
+					var params = e.point.series.options.drilldown.params,list={};
+					for (var i = 0, j = params.length; i < j; i++) {
+						if(params[i].hasOwnProperty('value')){
+							if (typeof params[i].key !== 'undefined' && typeof list[params[i].key] !== 'object') {
+								list[params[i].key] = [];
+							}
+						    if(params[i].value.toLowerCase() === 'series.name' && typeof e.point.series.name !== 'undefined'){
+		if(typeof params[i].columnMapping !== 'undefined'){
+							
+						list[params[i].key].push(root.data[root.id].resultSet[e.point.index][params[i].columnMapping]);
+								
+							}
+							else{							
+					
+							list[params[i].key].push(e.point.series.name);
+					}		}
+							else if(params[i].value.toLowerCase() === 'category' && typeof e.point.category  !== 'undefined'){
+								if(typeof params[i].columnMapping !== 'undefined'){
+							
+						list[params[i].key].push(root.data[root.id].resultSet[e.point.index][params[i].columnMapping]);
+								
+							}
+							else{							
+					
+						list[params[i].key].push(e.point.category);
+					}		}
+										else	
+							if(params[i].value!=='undefined'){
+							var ppt=params[i].value;
+							if(typeof params[i].columnMapping !== 'undefined'){
+							
+						list[params[i].key].push(root.data[root.id].resultSet[e.point.index][params[i].columnMapping]);
+								
+							}
+							else{							
+							if(typeof e.point[ppt]!=='undefined'){
+							
+							list[params[i].key].push(e.point[ppt]);
+							}
+								}
+							
+							}
+else{
+
+								list[params[i].key].push(params[i].value);
+							}
+	
+					/*		
+							else if(params[i].value.toLowerCase() === 'point.name' && typeof e.point.name !== 'undefined'){
+								list[params[i].key].push(e.point.name);
+							}
+							else if(params[i].value.toLowerCase() === 'y' && typeof e.point.y !== 'undefined'){
+								list[params[i].key].push(e.point.y);
+							}
+							else if(params[i].value.toLowerCase() === 'color' && typeof e.point.color !== 'undefined'){
+								list[params[i].key].push(e.point.color);
+							}
+							else if(params[i].value.toLowerCase() === 'x' && typeof e.point.x !== 'undefined'){
+								list[params[i].key].push(e.point.x);
+							}else{
+								list[params[i].key]=params[i].value;
+							}
+						*/
+						
+						}
+					}
+					var parent=$(root).parents('multi-grid-element').get(0);
+					var ft=parent.filter;				
+        			$.each(list,function(i,j){
+						$.each(ft,function(k,l){
+							if(l.key == i){
+								if(typeof j !='undefined')
+								{
+									l.value=[String(j)];
+									l.selected=[String(j)]
+            					}
+								}
+            					
+						});
+                   
+					});
+			 var bo=e.point.series.options.drilldown.BO;
+			 var dash=$(root).parents('dashboard-element');
+             var d=dash.find("data-element").get(0);
+             var requestData={data:{workboard_id:d.workboardId,params:d.__filterComputed(ft)}}
+             if(bo != null)
+             {
+             	requestData["businessobject_id"]=bo;
+             }
+            root.baseUtil.sendRequest(d.serviceUrl,requestData,function(ee){
+						if(ee.status.code == 200){
+							var heirarchy={};
+							heirarchy["id"]=root.id;
+							heirarchy["configuration"]=root.configuration;
+							heirarchy["data"]=root.data;
+							heirarchy["visualization"]=root.visualization;
+							root.drilldownHierarchy.push(heirarchy);
+							d.data=ee.data;
+							$.each(bo,function(a,b){
+								if(ee.data.hasOwnProperty(b))
+								{	
+									$.each(dash.get(0).objects,function(i,j){
+											if(j.id==bo)
+											{
+												root.configuration=j.configuration;
+											}
+									})
+
+									root.id=b;
+									root.draw();
+									$(root.$.drillupbutton).show()
+								}
+							})
+
+						}else{
+							console.error(ee.status.value);
+						}
+					},{});
+              	}
+
+			},
+			drillup:function(e){
+				if(this.drilldownHierarchy.length)
+				{
+				var heirarchy=this.drilldownHierarchy.slice(-1)[0];
+				this.id=heirarchy.id;
+				this.configuration=heirarchy.configuration;
+				this.visualization=heirarchy.visualization;
+				this.data=heirarchy.data;
+				this.drilldownHierarchy.pop();	
+				if(!this.drilldownHierarchy.length){
+					$(this.$.drillupbutton).hide()
+				}
+				}
+
+				
+
+			},
+			point:function(e){
+	
+              			var root=this;
+				if(e.point.series.options.hasOwnProperty('assosciativity') && e.point.series.options.assosciativity.enabled){
+					var params = e.point.series.options.assosciativity.params,list={};
+					for (var i = 0, j = params.length; i < j; i++) {
+						if(params[i].hasOwnProperty('value')){
+							if (typeof params[i].key !== 'undefined' && typeof list[params[i].key] !== 'object') {
+							list[params[i].key] = [];
+							}
+						    if(params[i].value.toLowerCase() === 'series.name' && typeof e.point.series.name !== 'undefined'){
+if(typeof params[i].columnMapping !== 'undefined'){
+							
+						list[params[i].key].push(root.data[root.id].resultSet[e.point.index][params[i].columnMapping]);
+								
+							}
+							else{							
+							list[params[i].key].push(e.point.series.name);
+							}}
+							else if(params[i].value.toLowerCase() === 'category' && typeof e.point.category  !== 'undefined'){
+if(typeof params[i].columnMapping !== 'undefined'){
+							
+						list[params[i].key].push(root.data[root.id].resultSet[e.point.index][params[i].columnMapping]);
+								
+							}else{
+							list[params[i].key].push(e.point.category);
+							}}
+				else	
+							if(params[i].value!=='undefined'){
+							var ppt=params[i].value;
+							if(typeof params[i].columnMapping !== 'undefined'){
+							
+						list[params[i].key].push(root.data[root.id].resultSet[e.point.index][params[i].columnMapping]);
+								
+							}
+							else{							
+							if(typeof e.point[ppt]!=='undefined'){
+							
+							list[params[i].key].push(e.point[ppt]);
+							}
+								}
+							
+							}
+else{
+								list[params[i].key].push(params[i].value);
+							}
+							
+					/*		
+							else if(params[i].value.toLowerCase() === 'point.name' && typeof e.point.name !== 'undefined'){
+								list[params[i].key].push(e.point.name);
+							}
+							else if(params[i].value.toLowerCase() === 'y' && typeof e.point.y !== 'undefined'){
+								list[params[i].key].push(e.point.y);
+							}
+							else if(params[i].value.toLowerCase() === 'color' && typeof e.point.color !== 'undefined'){
+								list[params[i].key].push(e.point.color);
+							}
+							else if(params[i].value.toLowerCase() === 'x' && typeof e.point.x !== 'undefined'){
+								list[params[i].key].push(e.point.x);
+							}else{
+								list[params[i].key]=params[i].value;
+							}
+						*/
+			
+
+			}
+					}
+					var parent=$(root).parents('multi-grid-element').get(0);
+					var ft=parent.filter;				
+        			$.each(list,function(i,j){
+						$.each(ft,function(k,l){
+							if(l.key == i){
+								if(typeof j !='undefined')
+								{
+									l.value=[String(j)];
+									l.selected=[String(j)];
+            					}
+								}
+            					
+						});
+                   
+					});
+           	  
+             var d=$(root).parents('dashboard-element').find("data-element").get(0)
+			var bo=e.point.series.options.assosciativity.BO;
+			             
+           var requestData={data:{workboard_id:d.workboardId,params:d.__filterComputed(ft)}}
+             if( bo != null)
+             {
+             	requestData["businessobject_id"]=bo;
+             }
+            root.baseUtil.sendRequest(d.serviceUrl,requestData,function(e){
+						if(e.status.code == 200){
+							d.data=e.data;
+						}else{
+							console.error(e.status.value);
+						}
+					},{})
+              	}
+
+			},
+			processor:function(config,data,visualization){
+				var self=this;
+				config=JSON.parse(JSON.stringify(config));
+				try{
+					if(config.hasOwnProperty('xAxis')){
+						if(config.xAxis.hasOwnProperty('categories')){
+							var d=[];
+							if(config.xAxis.categories.hasOwnProperty('columnMapping')){
+								if(config.xAxis.categories.hasOwnProperty("formatter")){
+									d=self.baseUtil.formatter(data[Number(config.xAxis.categories.columnMapping)],config.xAxis.categories.formatter);
+								}else{
+									d=data[Number(config.xAxis.categories.columnMapping)];
+								}
+							}else if(config.xAxis.categories.hasOwnProperty('data')){
+								if(config.xAxis.categories.hasOwnProperty("formatter")){
+									d=self.baseUtil.formatter(config.xAxis.categories.data,config.xAxis.categories.formatter);
+								}else{
+									d=config.xAxis.categories.data;
+								}
+							}
+							if(d.length>0){
+								if(visualization.hasOwnProperty('xAxis')){
+									visualization.xAxis.categories=d;
+								}else{
+									visualization.xAxis={categories:d}
+								}
+							}
+						}
+						if(config.xAxis.hasOwnProperty('plotLines')){
+							var plotLines=[]
+							$.each(config.xAxis.plotLines,function(i,j){
+								plotLines.push(j);
+								if(j.hasOwnProperty('value') && typeof j.value === 'object'){
+									var d=[];
+									if(j.value.hasOwnProperty('columnMapping')){
+										d=data[Number(j.value.columnMapping)];
+									}else if(j.value.hasOwnProperty('data')){
+										d=j.value.data;
+									}
+									if(d.length){
+										var value=0
+                                                                                if(j.value.hasOwnProperty("operation")){
+                                                                                        value=d[j.value.operation]();
+
+                                                                                }
+                                                                                if(j.hasOwnProperty("label") && j.label.hasOwnProperty('text')){
+                                                                                        var txtValue=value
+                                                                                        if(j.value.hasOwnProperty('formatter')){
+                                                                                                txtValue=self.baseUtil.formatter([value],j.value.formatter)[0];
+                                                                                        }
+                                                                                        j.label.text=j.label.text.replace(/{value}/gi, txtValue);
+                                                                                }
+                                                                                plotLines[i].value=value;
+
+									}
+								}
+							});
+							visualization.xAxis.plotLines=plotLines;
+						}
+					}
+					if(config.hasOwnProperty('yAxis')){
+						if(config.yAxis.hasOwnProperty('plotLines')){
+							var plotLines=[]
+							$.each(config.yAxis.plotLines,function(i,j){
+								plotLines.push(j);
+								if(j.hasOwnProperty('value') && typeof j.value === 'object'){
+									var d=[];
+									if(j.value.hasOwnProperty('columnMapping')){
+										d=data[Number(j.value.columnMapping)];
+									}else if(j.value.hasOwnProperty('data')){
+										d=j.value.data;
+									}
+									if(d.length){
+										var value=0
+										if(j.value.hasOwnProperty("operation")){
+											value=d[j.value.operation]();
+											
+										}
+										if(j.hasOwnProperty("label") && j.label.hasOwnProperty('text')){
+											var txtValue=value
+											if(j.value.hasOwnProperty('formatter')){
+                                                                                                txtValue=self.baseUtil.formatter([value],j.value.formatter)[0];
+                                                                                        }
+											j.label.text=j.label.text.replace(/{value}/gi, txtValue);
+										}
+										plotLines[i].value=value;
+									}
+								}
+							});
+							visualization.yAxis.plotLines=plotLines;
+						}
+					}
+					if(config.hasOwnProperty('series')){
+						$.each(config.series,function(i,j){
+							var series = {data: []};
+							$.each(j,function(k,l){
+								if(k.toLowerCase().indexOf('data') !== -1){
+									$.each(l,function(m,n){
+										var seriesData=[];
+										if(n.hasOwnProperty("data")){
+											if(n.hasOwnProperty("formatter")){
+												seriesData=self.baseUtil.formatter(n.data,n.formatter);
+											}else{
+												seriesData=n.data;
+											}
+										}else if(n.hasOwnProperty('columnMapping')){ 
+											if(n.hasOwnProperty("formatter")){
+												seriesData=self.baseUtil.formatter(data[Number(n.columnMapping)],n.formatter);
+											}else{
+												seriesData=data[Number(n.columnMapping)];
+											}
+										}
+										if(seriesData.length){
+											for(var o=0,p=seriesData.length;o<p;o++){
+												if(typeof series.data[o] !== 'object'){
+													series.data[o]={};
+												}
+												series.data[o][m]=seriesData[o];
+											}
+										}
+									});
+								}else if(k.toLowerCase().indexOf('assosciativity') !== -1){
+									series.events={};
+									if(l.enabled ){
+										series.events[l.eventType || 'click']=self.point.bind(self);
+										series.assosciativity=l;
+									}
+								}
+								else if(k.toLowerCase().indexOf('drilldown') !== -1){
+									series.events={};
+									if(l.enabled ){
+										series.events[l.eventType || 'click']=self.drilldown.bind(self);
+										series.drilldown=l;
+									}
+								}else if(k.toLowerCase() === 'threshold'){
+									var threshold=[]
+									if(l.hasOwnProperty('columnMapping')){
+										threshold=data[Number(l.columnMapping)];
+									}else if(l.hasOwnProperty('data')){
+										threshold=l.data;
+									}
+									if(threshold.length){
+										if(l.hasOwnProperty("operation")){
+											series.threshold=threshold[l.operation]();
+										}
+									}
+								}else{
+									series[k]=l;
+								}
+							});
+							visualization.series.push(series);
+						});
+						
+					}else{
+						throw "No Series"
+					}
+					return visualization;
+				}
+				catch(e){
+					console.error(e)
+				}
+			},
+			normalize:function(){
+				var visualization = JSON.parse(JSON.stringify(this.currentVisualization)),self=this,config=this.configuration;
+				(visualization.hasOwnProperty("chart") ? ("") : (visualization.chart = {}));
+					$.each(config,function(i,j){
+						if(i.toLowerCase().indexOf('series') === -1){
+							visualization[i]=j;
+						}
+					});
+					visualization.chart.animation = true;
+					visualization.chart.selectionMarkerFill = 'rgba(69,114,167,0.25)';
+					visualization.chart.backgroundColor = 'transparent';
+					visualization.chart.borderColor = 'transparent';
+					visualization.chart.borderRadius = 0;
+					visualization.chart.borderWidth = 0;
+					visualization.chart.ignoreHiddenSeries = true;
+					visualization.chart.zoomType = 'xy';
+					visualization.chart.panning = true;
+					visualization.chart.panKey = 'shift';
+					visualization.chart.plotBackgroundColor = 'transparent';
+					visualization.chart.plotBackgroundImage = '';
+					visualization.chart.plotBorderColor = 'transparent';
+					visualization.chart.plotBorderWidth = 0;
+					visualization.chart.plotShadow = false;
+					visualization.chart.reflow = true;
+					visualization.chart.shadow = false;
+					visualization.chart.showAxes = true;
+					visualization.chart.renderTo = this.$.container;
+					visualization.chart.events = {};
+					visualization.chart.events["drilldown"] = this.drilldown.bind(this);
+					visualization.chart.events["drillup"] = this.drillup.bind(this);
+					visualization.lang = {
+						drillUpText: '<< Back to {series.name}'
+					},
+					visualization.exporting = {enabled: false};
+					(visualization.hasOwnProperty('tooltip') ? (visualization.tooltip.useHTML = true) : (visualization.tooltip = {
+						useHTML: true
+					}));
+					visualization.tooltip.borderWidth=0;
+					visualization.tooltip.shadow=false;
+					visualization.tooltip.style={padding:0,margin:0};
+					visualization.tooltip.hideDelay=1000;
+					visualization.tooltip.followPointer=false;
+					visualization.tooltip.followTouchMove=false;
+					visualization.tooltip.backgroundColor="rgba(255,255,255,1)";
+					visualization.tooltip.borderColor="rgba(0,0,0,0.3)";
+					visualization.tooltip.borderRadius=10;
+					visualization.tooltip.headerFormat='<div class="tool--box tool--pop-width pop-top" id="share_pop"><div class="tool--body">';
+					if(this.sharing){
+					visualization.tooltip.footerFormat='</div><div class="tool--footer"><div class="tool--list-horizontal"><ul><li><a href=""><span>Share tooltip</span></a></li></ul></div></div></div>';
+					}
+					visualization.tooltip.footerFormat='</div>';
+						visualization.title = "";
+					visualization.series = [];
+					if(!visualization.hasOwnProperty('credits')){
+						visualization.credits = {
+							href: "https://netlink.com",
+							text: "Netlink Business Analytics"
+						};
+					}
+					var chart = $(this.$.parentContainer);
+					visualization.chart.width = (chart.width());
+					visualization.chart.height = (chart.height());
+					return visualization;
+			}
+});
+        
+    </script>
+</dom-module>

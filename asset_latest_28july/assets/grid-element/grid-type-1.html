@@ -1,0 +1,1223 @@
+<style>
+    .highcharts-tooltip>span {
+        background: white;
+        border: 1px solid silver;
+        border-radius: 3px;
+        box-shadow: 1px 1px 2px #888;
+        padding: 8px;
+    }
+</style>
+
+<dom-module id="grid-type-1">
+    <template>
+        <style include="shared-styles">
+            td{
+                border: 1px solid black;
+            }
+            .arrow-up{
+                color:green;
+            }
+            .arrow-down{
+                color:red;
+            }
+      table.bc-th-600 thead > tr > th{
+        font-weight:600
+      }
+          .dt-buttons{
+            float:none;
+          }
+          #grid_length{
+            position:absolute;
+          }
+        </style>
+        <div id="gridmodal" class="modal-dialog" style="display:none"><div class="modal-content"><div class="modal-body">Hello</div></div></div>
+        <div class$="[[dataClass]]"  >
+
+         <div  id="gridPanel" class="custom-tooltip" data-toggle="tooltip" title="">
+                    <button id="drillupbutton" style="display:none" on-tap="drillup"> drillup</button>
+                    <div class="panel-body">
+                      <table id="grid" width=""class="table  dataTable display responsive width-full bc-th-600">
+                        <thead>
+                          <tr>
+                            <template is="dom-repeat" items="[[tableHeader]]" >
+                                
+                                    <th colspan$="[[item.colspan]]" style="[[item.style]]" >[[item.value]]</th>
+
+                                
+                            </template>
+    </tr>
+    </thead>
+    <tbody>
+        <template is="dom-repeat" items="{{tr}}">
+                                <tr id="tablerow" on-tap="rowClicked">
+                                    <template is="dom-repeat" items="{{item}}" as="td">
+                                        <!--<td>[[!td.isSparkline]]- [[td.value]]</td>-->
+
+                                        <template is="dom-if" if="{{compare(td.type,'normal')}}">
+                                            <td colspan="[[td.colspan]]" style="color:[[td.textColor]]; background-color:[[td.backgroundColor]];[[td.style]]">
+                                            <template is="dom-if" if="{{compare(td.trend,'up')}}">
+                                            <i class="icon fa fa-arrow-up arrow-up" ></i>   
+                                            </template>
+        <template is="dom-if" if="{{compare(td.trend,'down')}}">
+                                            <i class="icon fa fa-arrow-down arrow-down"></i>    
+                                            </template> [[td.value]]
+        </td>
+        </template>
+        <template is="dom-if" if="{{compare(td.type,'chart')}}">
+                                            <td data-chart$="[[td.value]]" data-config$="[[td.configuration]]" colspan="[[td.colspan]]" style="[[td.style]]"></td>
+                                        </template>
+
+        <template is="dom-if" if="{{compare(td.type,'sparkline')}}">
+                                            <td data-sparkline$="[[td.value]]" colspan="[[td.colspan]]" style="[[td.style]]">[[td.value]]</td>
+                                        </template>
+
+        <template is="dom-if" if="{{compare(td.type,'sparkline-column')}}">
+                                            <td colspan$="[[td.colspan]]" data-sparkline$="[[td.value]] ; column" style="[[td.style]]">[[td.value]]</td>
+                                        </template>
+        <template is="dom-if" if="{{compare(td.type,'sparkline-bar')}}">
+                                            <td colspan$="[[td.colspan]]" data-sparkline$="[[td.value]] ; bar" style="[[td.style]]">[[td.value]]</td>
+                                        </template>
+        <template is="dom-if" if="{{compare(td.type,'sparkline-line')}}">
+                                                <td colspan$="[[td.colspan]]" data-sparkline$="[[td.value]] ; line" style="[[td.style]]">[[td.value]]</td>
+                                        </template>
+        <template is="dom-if" if="{{compare(td.type,'sparkline-area')}}">
+                                                <td colspan$="[[td.colspan]]" data-sparkline$="[[td.value]] ; area" style="[[td.style]]">[[td.value]]</td>
+                                        </template>
+
+        <template is="dom-if" if="{{compare(td.type,'audio')}}">
+                                            <td colspan$="[[td.colspan]]" style="color:[[td.textColor]]; background-color:[[td.backgroundColor]];[[td.style]]">
+                                                <audio controls>
+                                                    <!-- Audio Files -->
+                            <source type="audio/mp3" src$="[[td.value]]">
+                                                    <source type="audio/ogg" src$="[[td.value]]">
+                            <!-- Fallback For Browsers That Don'T Support The <Audio> Element -->
+                            <a href$="[[td.value]]">Download</a>
+                                                </audio>
+                                            </td>
+                                        </template>
+
+        <template is="dom-if" if="{{compare(td.type,'popup')}}">
+                                            <td colspan$="[[td.colspan]]" style="color:[[td.textColor]]; background-color:[[td.backgroundColor]];[[td.style]]" on-click="popup">
+                                                <img src="popup.png" alt$="[[td.value]]" height="20" width="20"></img>
+                                            </td>
+                                        </template>
+        <template is="dom-if" if="{{compare(td.type,'image-popup')}}">
+                                            <td colspan$="[[td.colspan]]" style="color:[[td.textColor]]; background-color:[[td.backgroundColor]];[[td.style]]" on-click="imagepopup">
+                                                <img src="popup.png" alt$="[[td.value]]" height="20" width="20"></img>
+                                            </td>
+                                        </template>
+        <template is="dom-if" if="{{compare(td.type,'grid-popup')}}">
+                                            <td colspan$="[[td.colspan]]" style="color:[[td.textColor]]; background-color:[[td.backgroundColor]];[[td.style]]" on-click="gridpopup">
+                                                <img src="popup.png" businesslogic$="[[td.businessLogic]]" alt$="[[td.configuration]]" height="20" width="20"></img>
+                                            </td>
+                                        </template>
+
+        <template is="dom-if" if="{{compare(td.type,'export')}}">
+                                            <td colspan$="[[td.colspan]]" style="color:[[td.textColor]]; background-color:[[td.backgroundColor]];[[td.style]]" on-click="popup">
+                                                <img on-click="export" src="popup.png" alt$="[[td.value]]" height="20" width="20"></img>
+                                                </td>
+                                            <!--
+                                            <td on-click="export">Export</td>
+                                            -->
+                                        </template>
+
+        <template is="dom-if" if="{{compare(td.type,'image')}}">
+                                            <td colspan$="[[td.colspan]]" style="color:[[td.textColor]]; background-color:[[td.backgroundColor]];[[td.style]]"><img src$="[[td.value]]"></img></td>
+                                        </template>
+
+        <template is="dom-if" if="{{compare(td.type,'icon')}}">
+                                            <td colspan$="[[td.colspan]]" style="color:[[td.textColor]]; background-color:[[td.backgroundColor]];[[td.style]]"><i class$="[[td.value]]"></i></td>
+                                        </template>
+
+        </template>
+        </tr>
+        </template>
+    </tbody>
+    </table>
+    </div>
+    <div class="panel-loading">
+        <div class="loader-wrapper active">
+            <div class="loader-layer loader-blue-only">
+                <div class="loader-circle-left">
+                    <div class="circle"></div>
+                </div>
+                <div class="loader-circle-gap"></div>
+                <div class="loader-circle-right">
+                    <div class="circle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    </template>
+    <script>
+        Polymer({
+            is: "grid-type-1",
+            properties: {
+                dataClass: {
+                    type: String,
+                    value: 'grid-stack-item-content',
+                    readonly: true
+                },
+                configuration: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    },
+                    observer: '__configurationChanged'
+                },
+                localdata: {
+                    type: Object,
+                    value: function() {
+                        return {}
+                    },
+                    observer: '__localdataChanged'
+                },
+                tr: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    },
+                },
+                tableHeader: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    }
+                },
+                baseUtil:{
+                    type:Object,
+                    value:function(){
+                        return document.createElement('base-util');
+                    },
+                    readonly:true
+                },
+                options: {
+                    type: Object,
+                    value: function() {
+                        return {
+                            destroy: true,
+                            language: {
+                                emptyTable: ""
+                            },
+                            responsive: true,
+                            select: true,
+                            "aaSorting": [],
+                            "ordering": true,
+                            "info": true,
+                            fixedHeader: {
+                                header: true,
+                            },
+                            "bPaginate": true,
+                            "dom": '<"top"Brlft<"clear">>rt<"bottom"ip<"clear">>',
+                            buttons: []
+                        }
+                    }
+                },
+                heading: {
+                    type: String,
+                    value: 'Panel Heading',
+                    readonly: true
+                },
+                subHeading: {
+                    type: String,
+                    value: 'Panel Sub Heading',
+                    readonly: true
+                },
+                dataId: {
+                    type: String,
+                    value: ''
+                },
+                pageLength: {
+                    type: Number
+                },
+                data: {
+                    type: Object,
+                    value: function() {
+                        return {}
+                    },
+                    observer: '__dataChanged'
+                },
+                filter: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+                isDrilled: {
+                    type: Boolean,
+                    value: false
+                },
+                visualization: {
+                    type: String,
+                    value: "",
+                    observer: '__visualizationChanged'
+                },
+                heading: {
+                    type: String,
+                    value: ""
+                },
+                gridObject: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+                flag: {
+                    type: Boolean,
+                    value: true
+                },
+                drilldownHierarchy:{
+                    type:Array,
+                    value:function(){
+                        return []
+                    }
+                }
+            },
+            ready: function() {
+
+
+            },
+            compare: function(a, b) {
+                return a == b
+            },
+            export: function(e) {
+               var e=document.createElement("export-element");
+               
+            },
+            popup: function(e) {
+                swal(e.srcElement.alt);
+            },
+            imagepopup: function(e) {
+                swal({
+                    title: "Image",
+                    imageUrl: e.srcElement.alt
+                });
+            },
+            gridpopup: function(e) {
+                var config = e.srcElement.alt;
+                var bl = e.srcElement.getAttribute("businesslogic");
+                var data = $(this).closest("multi-chart-element")[0].data[bl]
+                var g = document.createElement("grid-type-1");
+                g.setAttribute("configuration", config);
+                g.setAttribute("data", JSON.stringify(data))
+                swal({
+                    title: "Detail",
+                    html: true,
+                    text: g.outerHTML,
+                    showCancelButton: true
+
+                })
+
+
+            },
+            loadingStart: function() {
+                //$(this.$.gridPanel).addClass('is-loading');
+            },
+            loadingStop: function() {
+                //$(this.$.gridPanel).removeClass('is-loading');
+            },
+            __configurationChanged: function() {
+                if (this.localdata != null && this.configuration != null && this.flag) {
+                    //this.draw();
+                    //  this.flag = false;
+                }
+            },
+            __localdataChanged: function() {
+                if (this.localdata != null && this.configuration != null && this.flag) {
+          var root=this;      
+                this.async(function(){
+                    (function() {
+      setTimeout(function() {
+        root.draw();
+      }, 0)
+       })();
+           })
+                }
+            },
+            __dataChanged: function() {
+     
+                if (this.data.hasOwnProperty(this.id)) {
+                
+                if(JSON.stringify(this.localdata) !== JSON.stringify(this.data[this.id])){
+                var temp=this.data[this.id];
+            temp.resultSet.splice(10);
+            this.localdata=temp;
+                }
+     }
+            },
+            draw: function() {
+                var root = this;
+                   
+                var regex = /\{{2}((\d)+)\}{2}/g;
+                if (root.configuration != null) {
+                    if (root.configuration[0].hasOwnProperty("columnInfo")) {
+                        var metaData = root.localdata['metaData'];
+                        var resultSet = root.localdata['resultSet'];
+                        var td = [];
+                        root.tableHeader = [];
+                        root.tr=[];
+                        $.each(root.configuration[0].columnInfo, function(i, e) {
+                            if (typeof e.columnIndex == 'object' && e.columnIndex.length) {
+                                var val = '';
+                                $.each(e.columnIndex, function(t, y) {
+                                    val += ' ' + metaData[y].colName;
+                                })
+                                td.push({
+                                    "value": val
+                                })
+                            } else {
+                                td.push({
+                                    "value": metaData[e.columnIndex].colName
+                                });
+                            }
+                        })
+
+                        root.tableHeader = td;
+                        root.tr=[];
+                        var td = [];        
+                        $.each(resultSet, function(i, e) {
+                            td[i] = [];
+                            $.each(root.configuration[0].columnInfo, function(ii, ee) {
+                                td[i][ii] = {};
+                                if (typeof ee.columnIndex == 'object' && ee.columnIndex.length) {
+                                    td[i][ii].value = '';
+                                    $.each(ee.columnIndex, function(t, y) {
+                                        td[i][ii].value += ' ' + resultSet[i][y];
+                                    })
+                                } else {
+                                    td[i][ii].value = resultSet[i][ee.columnIndex];
+                                }
+                                td[i][ii].type = 'normal';
+
+                                td[i][ii].trend = '';
+                                var type = root.configuration[0]["columnInfo"][ii]["type"];
+                                var textColor = root.configuration[0]["columnInfo"][ii]["textColor"];
+                                var backgroundColor = root.configuration[0]["columnInfo"][ii]["backgroundColor"];
+                                var format = root.configuration[0]["columnInfo"][ii]["format"];
+                                var precision = root.configuration[0]["columnInfo"][ii]["precision"];
+                                var style = root.configuration[0]["columnInfo"][ii]["style"];
+                                var colspan = root.configuration[0]["columnInfo"][ii]["colspan"];
+
+                                if (format != null) {
+                                    td[i][ii].value = format.replace(regex, function(match, group) {
+                                        var pre = root.configuration[0]["columnInfo"][group]["precision"];
+                                        if (pre != null)
+                                            return e[group].toPrecision(pre) || match;
+                                        else
+                                            return e[group] || match;
+                                    });
+                                }
+
+                                if (format == null && precision != null) {
+                                    td[i][ii].value = resultSet[i][ee.columnIndex].toPrecision(precision);
+                                }
+
+                                if (style != null) {
+                                    td[i][ii].style = style;
+                                }
+                                if (colspan != null) {
+                                    td[i][ii].colspan = colspan;
+                                }
+
+                                if (textColor != null)
+                                    td[i][ii].textColor = textColor;
+
+                                if (backgroundColor != null) {
+
+                                    if (typeof(backgroundColor) == "object") {
+                                        var key = root.parse_ifelse(resultSet[i][ee.columnIndex], backgroundColor.condition);
+                                        if (backgroundColor.hasOwnProperty(key)) {
+                                            td[i][ii]["style"] = backgroundColor[key];
+
+                                        }
+
+
+                                    } else if (typeof(backgroundColor) == "string") {
+                                        td[i][ii].backgroundColor = backgroundColor;
+                                    }
+
+                                }
+
+
+                                if (type != null) {
+                                    if (type == "sparkline")
+                                        td[i][ii].type = 'sparkline';
+                                    else if (type == "sparkline-column")
+                                        td[i][ii].type = 'sparkline-column';
+                                    else if (type == "sparkline-bar")
+                                        td[i][ii].type = 'sparkline-bar';
+                                    else if (type == "sparkline-area")
+                                        td[i][ii].type = 'sparkline-area';
+                                    else if (type == "sparkline-line")
+                                        td[i][ii].type = 'sparkline-line';
+                                    else if (type == "audio")
+                                        td[i][ii].type = 'audio';
+                                    else if (type == "popup")
+                                        td[i][ii].type = 'popup';
+                                    else if (type == "image-popup")
+                                        td[i][ii].type = 'image-popup';
+                                    else if (type == "grid-popup") {
+                                        td[i][ii].type = 'grid-popup';
+                                        td[i][ii]["businessLogic"] = root.configuration[0]["columnInfo"][ii]["businessLogic"];
+                                        td[i][ii]["configuration"] = JSON.stringify(root.configuration[0]["columnInfo"][ii]["configuration"]);
+
+                                    } else if (type == "hidden")
+                                        td[i][ii].type = 'hidden';
+                                    else if (type == "export")
+                                        td[i][ii].type = 'export';
+                                    else if (type == "image")
+                                        td[i][ii].type = 'image';
+                                    else if (type == "icon")
+                                        td[i][ii].type = 'icon';
+                                    else if(type == "chart")
+                                    {
+                                        td[i][ii].type = 'chart';
+                                        td[i][ii]["configuration"]=JSON.stringify(root.configuration[0]["columnInfo"][ii]["configuration"]);
+                                    }
+                                }
+                                if (style != null) {
+
+                                    td[i][ii].style = style;
+                                }
+                                if (root.configuration[0]["columnInfo"][ii].hasOwnProperty("formatter")) {
+                                    var fd = root.formatter(JSON.stringify([resultSet[i][ee.columnIndex]]), root.configuration[0]["columnInfo"][ii].formatter)
+                                    td[i][ii].value = fd[0];
+
+                                }
+                                if (root.configuration[0]["columnInfo"][ii].hasOwnProperty("trend")) {
+                                    var trend = root.configuration[0]["columnInfo"][ii]["trend"];
+                                    var dir = root.parse_ifelse(resultSet[i][ee.columnIndex], trend);
+
+                                    td[i][ii].trend = dir;
+                                }
+
+
+                            })
+                        })
+                         Polymer.dom.flush();
+                        this.tr = td;
+
+                    }
+
+                    //var regex_ifelse =  = new RegExp("if\\s*\\s*?([A-z]*)\\s*([<>=]*)\\s*(\\d*|[A-z0-9']*)\\s*(([\\&|\\|])\\s*(\\d*|[A-z0-9']*)\\s*([<>=]*)\\s*(\\d*|[A-z0-9']*))*\\s*(then)\\s*([A-z']*)\\s*((else)\\s*([A-z']*?)\\s*(end))?") ;// /if\s*\s*?([A-z]*)\s*([<>=]*)\s*(\d*|[A-z0-9']*)\s*(([\&|\|])\s*(\d*|[A-z0-9']*)\s*([<>=]*)\s*(\d*|[A-z0-9']*))*\s*(then)\s*([A-z']*)\s*((else)\s*([A-z']*?)\s*)?(end)/g;
+
+                    if (root.configuration[0].hasOwnProperty("header")) {
+                        if (root.configuration[0].header.hasOwnProperty("style")) {
+                            var s = root.configuration[0].header.style;
+
+                        }
+
+
+                        if (root.configuration[0].header.hasOwnProperty("values")) {
+                            /*
+                            $.each(root.tableHeader,function(i,e){
+                                e.value=root.configuration[0].header.values[i]
+                            })*/
+                            root.tableHeader = root.configuration[0].header.values;
+                        }
+                        if (root.configuration[0].header.hasOwnProperty("columnInfo")) {
+                            $.each(root.configuration[0].header.columnInfo, function(i, e) {
+                                if (root.configuration[0].header.columnInfo[i].hasOwnProperty("columnIndex")) {
+                                    var ind = root.configuration[0].header.columnInfo[i].columnIndex;
+                                    if (root.configuration[0].header.columnInfo[i].hasOwnProperty("style")) {
+                                            
+                                    }
+
+                                }
+
+                            })
+                        }
+
+                    }
+
+
+
+                    if (this.configuration[0].hasOwnProperty("table")) {
+                        if (this.configuration[0].table.hasOwnProperty("lengthMenu")) {
+                            this.options["lengthMenu"] = this.configuration[0].table.lengthMenu;
+                        }
+                        if (this.configuration[0].table.hasOwnProperty("pageLength")) {
+                            this.options["pageLength"] = this.configuration[0].table.pageLength;
+                        }
+                        if (this.configuration[0].table.hasOwnProperty("export")) {
+
+                            this.options["buttons"] = [{
+                                extend: 'collection',
+                                text: 'Export',
+                                buttons: this.configuration[0].table.export
+                            }]
+                        } else {
+                            this.options["buttons"] = [];
+
+                        }
+                        if (this.configuration[0].table.hasOwnProperty("scrollY")) {
+                            this.options["scrollY"] = this.configuration[0].table.scrollY;
+                            this.options["scrollCollapse"] = true;
+                        }
+                        if (this.configuration[0].table.hasOwnProperty("searchField")) {
+                            if (this.configuration[0].table.searchField == "disabled") {
+                                this.options["bFilter"] = false;
+                            }
+                        }
+                        if (this.configuration[0].table.hasOwnProperty("paging")) {
+                            if (this.configuration[0].table.paging == "disabled") {
+                                this.options["paging"] = false;
+                            }
+                        }
+                        if (this.configuration[0].table.hasOwnProperty("ordering")) {
+                            if (this.configuration[0].table.ordering == "disabled") {
+                                this.options["ordering"] = false;
+                            }
+                        }
+                        if (this.configuration[0].table.hasOwnProperty("info")) {
+                            if (this.configuration[0].table.info == "disabled") {
+                                this.options["info"] = false;
+                            }
+                        }
+                        if (this.configuration[0].table.hasOwnProperty("order")) {
+
+                            this.options["order"] = this.configuration[0].table.order;
+
+                        }
+
+                    }
+
+                    if(root.configuration[0].hasOwnProperty("tooltip"))
+                    {           
+                            var ele=root.configuration[0].tooltip;
+                            var toolmainbox=$('<div/>').attr('id',"tipx");
+                                var conf={};
+                                if(ele.hasOwnProperty("configuration"))
+                                {
+                                    conf=ele.configuration;
+                                }
+                                $(root.$.gridPanel).tooltip({
+                                html: true,
+                                placement: conf.placement || "auto",
+                                title: conf.data,
+                                trigger:"hover",
+                                container: "body",
+                              }).on('shown.bs.tooltip', function() {
+                                var t = $('.tooltip').addClass('animated ' + conf.animation);
+                                t.find(".tooltip-inner").css($.extend({}, {
+                                  backgroundColor: conf.backgroundColor
+                                }, conf.style));
+                                t.find(".tooltip-arrow").css({
+                                  "border-bottom-color": conf.backgroundColor,
+                                  "border-top-color": conf.backgroundColor
+                                })
+                              });
+                                if(ele.hasOwnProperty("tooltips"))
+                                {
+
+                                    if(ele.tooltips.hasOwnProperty("text"))
+                                    {
+                                        $.each(ele.tooltips.text,function(i,ee){
+                                            var toolbox=$('<div/>').attr('id',"tooltipx");
+                                            $(toolbox).css(ee.css).text(ee.value);
+                                            $(toolmainbox).append(toolbox);
+                                        })
+                                    }
+                                     if(ele.tooltips.hasOwnProperty("data"))
+                                    {
+                                        $.each(ele.tooltips.data,function(i,ee){
+                                            var toolbox=$('<div/>').attr('id',"tooltipx");
+                                            if(typeof root.localData != 'undefined')
+                                            {
+                                            if(ee.hasOwnProperty("formatter"))
+                                            {
+                                                    $(toolbox).css(ee.css).text(root.formatter(JSON.stringify([root.localData.resultSet[ee.rowIndex][ee.columnIndex]]),ee.formatter));
+                                            
+                                            }
+                                            else{
+                                                    $(toolbox).css(ee.css).text(root.localData.resultSet[ee.rowIndex][ee.columnIndex]);
+                                            
+                                            }
+                                            }
+                                            $(toolmainbox).append(toolbox);
+                                        })
+                                    }
+                                    if(ele.hasOwnProperty("style"))
+                                    {   var st= $('<style> .custom-tooltip + .tooltip > .tooltip-inner {'+ele.style+'}</style>');
+                                        $(root).append(st);
+                                                }                               
+                                }
+                            $(root).find('[data-toggle="tooltip"]').attr('data-original-title',$(toolmainbox).html());
+                   
+
+                    }
+
+
+                    if (root.configuration[0].hasOwnProperty("rowInfo")) {
+
+                        $.each(root.configuration[0].rowInfo, function(i, ob) {
+
+
+                            if (ob.hasOwnProperty('regularFormat')) {
+
+                                if (ob.regularFormat.hasOwnProperty("odd")) {
+
+                                    var sty = '<style> .odd-row'+root.id+'{' + ob.regularFormat.odd + ' }</style>'
+                                    $(root).append(sty)
+                                }
+                                if (ob.regularFormat.hasOwnProperty("even")) {
+                                    var sty = '<style> .even-row'+root.id+' {' + ob.regularFormat.even + '}</style>'
+                                    $(root).append(sty)
+
+
+                                }
+                                root.options["stripeClasses"]=["odd-row"+root.id,"even-row"+root.id];
+
+                            } else {
+                                ind = ob.rowIndex;
+                                if (root.configuration[0].rowInfo[i].hasOwnProperty("style")) {
+
+                                    st = root.configuration[0].rowInfo[i].style;
+
+                                    root.styleRow(ind, st);
+                                }
+                                if (root.configuration[0].rowInfo[i].hasOwnProperty("backgroundColor")) {
+                                    if (root.configuration[0].rowInfo[i].hasOwnProperty('dataColumn')) {
+                                        var dataColumn = root.configuration[0].rowInfo[i].dataColumn;
+                                        var ee = root.tr[ind][dataColumn].value;
+                                        backgroundColor = root.parse_ifelse(ee, root.configuration[0].rowInfo[i].backgroundColor);
+                                        st = "background:" + backgroundColor;
+                                        root.styleRow(ind, st)
+                                    }
+                                }
+                            }
+
+                        })
+
+                    }
+
+                    if (this.configuration[0].hasOwnProperty("table")) {
+                        if (this.configuration[0].table.hasOwnProperty("dataTable")) {
+                            if (!this.configuration[0].table.dataTable) {
+      (function() {
+      setTimeout(function() {
+        root.createTable();
+
+      }, 0)
+       })();                              
+            
+                              }
+                        } else {
+                             (function() {
+      setTimeout(function() {
+        root.createTable();
+
+      }, 0)
+       })();  
+                        }
+                    } else {
+                         (function() {
+      setTimeout(function() {
+        root.createTable();
+
+      }, 0)
+       })();  
+                    }
+
+                 //   this.sparklineInitialize();
+                }
+
+            },
+           
+            rowClicked: function(e) {
+                var self = this;
+                    Polymer.dom.flush();
+                if (this.configuration[0].hasOwnProperty("table")) {
+                    if (this.configuration[0].table.hasOwnProperty("tr")) {
+                        if (this.configuration[0].table.tr.hasOwnProperty("onSelect")) {
+                            var opt = this.configuration[0].table.tr.onSelect;
+                            var highlightClass=$('<style>.highlighted'+self.id+'{'+opt+'}</style>');
+                            $(self).append(highlightClass);
+                            $(e.target.parentElement).addClass("highlighted"+self.id);
+                            $(e.target.parentElement).siblings().removeClass("highlighted"+self.id);
+                        }
+                        if (this.configuration[0].table.tr.hasOwnProperty("drilldown")) {
+                                                     var list={}
+                            if (this.configuration[0].table.tr.drilldown.hasOwnProperty("params")) {
+                               
+                                $.each(this.configuration[0].table.tr.drilldown.params, function(i, ob) {
+                                    if (ob.hasOwnProperty("key")) {
+                                        if (ob.hasOwnProperty("columnIndex")) {
+                                            list[ob.key] = $(e.target.parentElement).find("td:eq(" + ob.columnIndex + ")").text().trim()
+                                        } else if (ob.hasOwnProperty("value")) {
+                                          if(ob.value=="target")
+                                          {
+                                             list[ob.key] = $(e.target).text().trim();
+                                          }
+                                          else{list[ob.key] = ob.value;}
+                                            
+                                        } 
+                                    }
+
+                                })
+                              
+                            }
+
+                             var parent=$(self).parents('multi-grid-element').get(0);
+                    var ft=parent.filter;               
+                    $.each(list,function(i,j){
+                        $.each(ft,function(k,l){
+                            if(l.key == i){
+                                if(typeof j !='undefined')
+                                {
+                                    l.value=[String(j)];
+                                }
+                                }
+                                
+                        });
+                   
+                    });
+                    var bo=self.configuration[0].table.tr.drilldown.BO;
+             var dash=$(self).parents('dashboard-element');
+             var d=dash.find("data-element").get(0);
+             var requestData={data:{workboard_id:d.workboardId,params:d.__filterComputed(ft)}}
+             if(bo != null)
+             {
+                requestData.data["businessobject_id"]=bo;
+             }
+
+            self.baseUtil.sendRequest(d.serviceUrl,requestData,function(ee){
+                        if(ee.status.code == 200){
+                            var heirarchy={};
+                            heirarchy["id"]=self.id;
+                            heirarchy["configuration"]=self.configuration;
+                            heirarchy["data"]=self.data;
+                            heirarchy["visualization"]=self.visualization;
+                            self.drilldownHierarchy.push(heirarchy);
+                           
+                            $.each(bo,function(a,b){
+                                if(ee.data.hasOwnProperty(b))
+                                {   
+                                    $.each(dash.get(0).objects,function(i,j){
+                                            if(j.id==bo)
+                                            {
+                                                self.configuration=j.configuration;
+                                            }
+                                    })
+
+                                        self.id=b;
+                                        d.data=ee.data;
+                                        $(self.$.drillupbutton).show()
+                                            }
+                            })
+
+                        }else{
+                            console.error(ee.status.value);
+                        }
+                    },{});
+            
+                     }if (this.configuration[0].table.tr.hasOwnProperty("associativity")) {
+                                                     var list={}
+                            if (this.configuration[0].table.tr.associativity.hasOwnProperty("params")) {
+                               
+                                $.each(this.configuration[0].table.tr.associativity.params, function(i, ob) {
+                                    if (ob.hasOwnProperty("key")) {
+                                        if (ob.hasOwnProperty("columnIndex")) {
+                                            list[ob.key] = $(e.target.parentElement).find("td:eq(" + ob.columnIndex + ")").text().trim()
+                                        } else if (ob.hasOwnProperty("value")) {
+                                          if(ob.value=="target")
+                                          {
+                                             list[ob.key] = $(e.target).text().trim();
+                                          }
+                                          else{list[ob.key] = ob.value;}
+                                            
+                                        } 
+                                    }
+
+                                })
+                              
+                            }
+
+                             var parent=$(self).parents('multi-grid-element').get(0);
+                    var ft=parent.filter;               
+                    $.each(list,function(i,j){
+                        $.each(ft,function(k,l){
+                            if(l.key == i){
+                                if(typeof j !='undefined')
+                                {
+                                    l.value=[String(j)];
+                                }
+                                }
+                                
+                        });
+                   
+                    });
+                    var bo=self.configuration[0].table.tr.associativity.BO;
+             var dash=$(self).parents('dashboard-element');
+             var d=dash.find("data-element").get(0);
+             var requestData={data:{workboard_id:d.workboardId,params:d.__filterComputed(ft)}}
+             if(bo != null)
+             {
+                requestData.data["businessobject_id"]=bo;
+             }
+
+              self.baseUtil.sendRequest(d.serviceUrl,requestData,function(e){
+                        if(e.status.code == 200){
+                            d.data=e.data;
+                        }else{
+                            console.error(e.status.value);
+                        }
+                    },{})
+                     }
+                 }
+             }
+                      
+                    
+
+                }   ,
+
+                
+                drillup:function(e){
+                if(this.drilldownHierarchy.length)
+                {
+                var heirarchy=this.drilldownHierarchy.slice(-1)[0];
+                this.id=heirarchy.id;
+                this.configuration=heirarchy.configuration;
+                this.visualization=heirarchy.visualization;
+                this.data=heirarchy.data;
+                this.drilldownHierarchy.pop();  
+                if(!this.drilldownHierarchy.length){
+                    $(this.$.drillupbutton).hide()
+                }
+                }
+
+                
+
+            },
+
+            formatter: function(data, operation) {
+
+                var data = JSON.parse(data);
+                try {
+                    var abbr = {},
+                        decimalSep = -1,
+                        symbol = {},
+                        value = 0;
+                    if (operation.hasOwnProperty('abbreviation')) {
+                        abbr = ((operation.abbreviation === 'K') ? ({
+                            divide: 1000,
+                            symbol: 'K'
+                        }) : ((operation.abbreviation === 'B') ? ({
+                            divide: 1000,
+                            symbol: 'B'
+                        }) : ((operation.abbreviation === 'M') ? ({
+                            divide: 1000,
+                            symbol: 'M'
+                        }) : ((operation.abbreviation === 'T') ? ({
+                            divide: 1000,
+                            symbol: 'T'
+                        }) : (((operation.abbreviation === 'H') ? ({
+                            divide: 100,
+                            symbol: 'H'
+                        }) : ("")))))));
+                    }
+                    if (operation.hasOwnProperty('symbol')) {
+                        symbol = {
+                            symbol: operation.symbol,
+                            position: (operation.hasOwnProperty('symbolPosition') ? ((operation.symbolPosition.trim().toLocaleUpperCase() === 'LEFT') ? ('LEFT') : ('RIGHT')) : "RIGHT")
+                        }
+                    }
+                    if (operation.hasOwnProperty('decimalPoint') && !isNaN(operation.decimalPoint)) {
+                        decimalSep = Number(operation.decimalPoint);
+                    }
+                    for (var i = 0, j = data.length; i < j; i++) {
+                        abbr.performed = false;
+                        if (abbr.hasOwnProperty('divide') && (data[i] / abbr.divide) >= 1) {
+                            data[i] = (Number(data[i]) / abbr.divide);
+                            abbr.performed = true;
+                        }
+                        if (decimalSep >= 0) {
+                            data[i] = Number(data[i]).toFixed(decimalSep)
+                        }
+                        if (operation.hasOwnProperty('thousandSeperator') && typeof operation.thousandSeperator === 'boolean' && operation.thousandSeperator === true) {
+                            data[i] = data[i].toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+                        }
+                        if (abbr.hasOwnProperty('symbol') && abbr.performed === true) { //Make sure it is divided.
+                            data[i] += ' ' + abbr.symbol;
+                        }
+                        if (symbol.hasOwnProperty('symbol')) {
+                            if (symbol.hasOwnProperty('position') && symbol.position === 'RIGHT') {
+                                data[i] += ' ' + symbol.symbol;
+                            } else {
+                                data[i] = symbol.symbol + ' ' + data[i];
+                            }
+                        }
+                    }
+                    return data;
+                } catch (e) {
+
+                }
+            },
+            styleRow: function(ind, st) {
+                var root = this;
+                var t = root.tr[ind];
+                $.each(t, function(j, tt) {
+                    if (tt.hasOwnProperty("style")) {
+                        tt.style = tt.style + ";" + st
+                    } else {
+                        tt["style"] = st;
+                    }
+
+                })
+
+
+                //              $(root).find('tr:eq('+ind+')').css( st)
+            },
+            parse_ifelse: function(data, conditions) {
+
+                var regex_ifelse = "if\\s*\\s*?([A-z]*)\\s*([<>=%]*)\\s*(\\d*|[A-z0-9']*)\\s*(([\\&|\\|])\\s*(\\d*|[A-z0-9']*)\\s*([<>=]*)\\s*(\\d*|[A-z0-9']*))*\\s*(then)\\s*([A-z']*)\\s*((else)\\s*([A-z']*?)\\s*(end))?";
+                regex_ifelse = new RegExp(regex_ifelse);
+
+                for (i = 0; i < conditions.length; i++) {
+
+                    condition = conditions[i];
+
+                    if (regex_ifelse.test(condition)) {
+                        var temp = regex_ifelse.exec(condition);
+
+                        var total = "";
+                        var trueVal = "";
+                        var falseVal = "";
+                        while (temp.length > 0) {
+                            var val = temp.shift()
+                            if (val != null && val.indexOf(" ") == -1) {
+                                if (val == "&")
+                                    total += "&&";
+                                else if (val == "then")
+                                    trueVal = temp.shift();
+                                else if (val == "else")
+                                    falseVal = temp.shift();
+                                else if (val != "end")
+                                    total += val;
+                            }
+
+                        }
+
+                        if (total != null) {
+                            if (eval(total))
+                                return trueVal;
+                            else if (falseVal != "")
+                                return falseVal;
+                        }
+                    }
+                }
+            },
+
+            createTable: function() {
+
+                var root = this;
+
+                if (!$.fn.dataTable.isDataTable(this.$.grid)) {
+                    this.async(function() {
+                        Polymer.dom.flush();
+                            if (typeof root.gridObject !== 'undefined' && Object.keys(root.gridObject).length) {
+                        root.gridObject.destroy();
+                    }
+                        root.gridObject = $(this.$.grid).DataTable(this.options);
+
+                       // $(this.$$('#grid_length')).css('position', 'absolute');
+                        $(root.$$('.dt-buttons')).css('float', 'none');
+                        if (root.configuration[0].hasOwnProperty("table")) {
+                            if (root.configuration[0].table.hasOwnProperty("showTotalRecords") && root.configuration[0].table.showTotalRecords == "true") {
+                                $(root.$$("#grid_info")).html("<span style='color:#337ab7'>Total Records </span>: " + root.tr.length)
+                            }
+                        }
+                    })
+                }
+                this.sparklineInitialize();
+                this.drawCharts();
+
+
+            },
+            attached: function(e) {
+                var self = this;
+                this.loadingStart();
+                this.async(function() {
+
+                   // self.draw();
+                    //self.sparklineInitialize();
+                })
+                //self.sparklineInitialize();
+                setTimeout(function() {
+                   self.sparklineInitialize();}, 3000);
+            },
+            drawCharts:function(){
+                var root=this;
+                $tds=$(root).find('td[data-chart]')
+                $.each($tds,function(i,td){
+                var g_id='grid'+i;
+                var chart=document.createElement("chart-element");
+                var visual=root.visualization;
+                var rawdata=$(td).data("chart");
+                var chartdata={};
+                $(chart).width($(td).width()).height($(td).height())
+                chart.setAttribute("id",g_id);
+                chartdata[g_id]={"resultSet":JSON.parse(rawdata)};
+                chart.setAttribute('data',JSON.stringify(chartdata));
+                chart.setAttribute('configuration',JSON.stringify($(td).data("config")));
+                visual[g_id]={"configuration":{"chart":{}}};
+                chart.setAttribute('visualization',JSON.stringify(visual));
+                $(td).append(chart);
+                })
+                
+
+            },
+
+            sparklineInitialize: function() {
+
+                Highcharts.SparkLine = function(a, b, c) {
+                    var hasRenderToArg = typeof a === 'string' || a.nodeName,
+                        options = arguments[hasRenderToArg ? 1 : 0],
+                        defaultOptions = {
+                            chart: {
+                                renderTo: (options.chart && options.chart.renderTo) || this,
+                                backgroundColor: null,
+                                borderWidth: 0,
+                                type: 'area',
+                                margin: [2, 0, 2, 0],
+                                width: 120,
+                                height: 20,
+                                style: {
+                                    overflow: 'visible'
+                                },
+                                skipClone: true
+                            },
+                            title: {
+                                text: ''
+                            },
+                            credits: {
+                                enabled: false
+                            },
+                            xAxis: {
+                                labels: {
+                                    enabled: false
+                                },
+                                title: {
+                                    text: null
+                                },
+                                startOnTick: false,
+                                endOnTick: false,
+                                tickPositions: []
+                            },
+                            yAxis: {
+                                endOnTick: false,
+                                startOnTick: false,
+                                labels: {
+                                    enabled: false
+                                },
+                                title: {
+                                    text: null
+                                },
+                                tickPositions: [0]
+                            },
+                            legend: {
+                                enabled: false
+                            },
+                            tooltip: {
+                                backgroundColor: null,
+                                borderWidth: 0,
+                                shadow: false,
+                                useHTML: true,
+                                hideDelay: 0,
+                                shared: true,
+                                padding: 0,
+                                positioner: function(w, h, point) {
+                                    return {
+                                        x: point.plotX - w / 2,
+                                        y: point.plotY - h
+                                    };
+                                }
+                            },
+                            plotOptions: {
+                                series: {
+                                    animation: false,
+                                    lineWidth: 1,
+                                    shadow: false,
+                                    states: {
+                                        hover: {
+                                            lineWidth: 1
+                                        }
+                                    },
+                                    marker: {
+                                        radius: 1,
+                                        states: {
+                                            hover: {
+                                                radius: 2
+                                            }
+                                        }
+                                    },
+                                    fillOpacity: 0.25
+                                },
+                                column: {
+                                    negativeColor: '#910000',
+                                    borderColor: 'silver'
+                                }
+                            }
+                        };
+
+                    options = Highcharts.merge(defaultOptions, options);
+                    return hasRenderToArg ?
+                        new Highcharts.Chart(a, options, c) :
+                        new Highcharts.Chart(options, b);
+                };
+
+                var start = +new Date(),
+                    $tds = $('td[data-sparkline]'),
+                    fullLen = $tds.length,
+                    n = 0;
+                var time = +new Date(),
+                    i,
+                    len = $tds.length,
+                    $td,
+                    stringdata,
+                    arr,
+                    data,
+                    chart;
+
+                for (i = 0; i < len; i += 1) {
+                    $td = $($tds[i]);
+
+                    stringdata = $td.data('sparkline');
+
+                    arr = stringdata.split('; ');
+
+                    data = $.map(arr[0].split(','), parseFloat);
+                    chart = {};
+                    plotOptions = {}
+                    if (arr[2]) {
+                        chart.type = arr[2];
+                        plotOptions["column"] = {
+                            "stacking": "normal"
+                        }
+                    } else {
+                        chart.type = arr[1]
+                    }
+                    chart.renderTo = $td[0];
+                    new Highcharts.SparkLine({
+                        chart: chart,
+                        series: [{
+                            data: data
+                        }],
+                        exporting: {
+                            enabled: false
+                        },
+                        tooltip: {
+                            headerFormat: '<span style="font-size: 10px">' + '{point.x}:</span><br/>',
+                            pointFormat: '<b>{point.y}.000</b>'
+                        },
+                        plotOptions: plotOptions
+                    })
+                  
+                }
+
+            }
+        })
+    </script>
+</dom-module>

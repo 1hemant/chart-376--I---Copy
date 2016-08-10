@@ -1,0 +1,733 @@
+<style>
+    .highcharts-tooltip>span {
+        background: white;
+        border: 1px solid silver;
+        border-radius: 3px;
+        box-shadow: 1px 1px 2px #888;
+        padding: 8px;
+    }
+</style>
+
+<dom-module id="grid-element">
+    <template>
+        <style include="shared-styles">
+            td{
+                border: 1px solid black;
+            }
+            .arrow-up{
+                color:green;
+            }
+            .arrow-down{
+                color:red;
+            }
+      table.bc-th-600 thead > tr > th{
+        font-weight:600
+      }
+          .dt-buttons{
+            float:none;
+          }
+          #grid_length{
+            position:absolute;
+          }
+        </style>
+        <div id="gridmodal" class="modal-dialog" style="display:none"><div class="modal-content"><div class="modal-body">Hello</div></div></div>
+        <div class="grid-stack-item-content"  >
+
+         <div  id="gridPanel" class="custom-tooltip" data-toggle="tooltip" title="">
+                    <button id="drillupbutton" style="display:none" on-tap="drillup"> drillup</button>
+                    <div class="panel-body">
+                      <table id="grid" width=""class="table  dataTable display responsive width-full bc-th-600">
+                    <thead>
+                          <tr>
+<!--                             <template is="dom-repeat" items="[[tableHeader]]" >
+                                
+                                    <th   >[[item.value]]</th>
+
+                                
+                            </template>
+ -->                         </tr> 
+                            </thead>
+ 
+                      </table>
+                     </div>
+   
+    </div>
+    </div>
+    </template>
+    <script>
+        Polymer({
+            is: "grid-element",
+            properties: {
+                configuration: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    },
+                    observer: '__configurationChanged'
+                },
+                localdata: {
+                    type: Object,
+                    value: function() {
+                        return {}
+                    },
+                    observer: '__localdataChanged'
+                },
+                tableHeader: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    }
+                },
+                baseUtil:{
+                    type:Object,
+                    value:function(){
+                        return document.createElement('base-util');
+                    },
+                    readonly:true
+                },
+                options: {
+                    type: Object,
+                    value: function() {
+                        return {
+                            language: {
+                                emptyTable: ""
+                            },
+                            responsive: true,
+                            select: true,
+                            "aaSorting": [],
+                            "ordering": true,
+                            "info": true,
+                            fixedHeader: {
+                                header: true,
+                            },
+                            ordering: false,
+                              searching: true,
+                              deferRender: true,
+                              html: true,
+                              "bPaginate": true,
+                            "dom": '<"top"Brlft<"clear">>rt<"bottom"ip<"clear">>',
+                            buttons: []
+                        }
+                    }
+                },
+                chartconfig:{
+                    type:Object,
+                    value:function(){
+                        return {}
+                    }
+                },
+                chartdata:{
+                    type:Object,
+                    value:function(){
+                        return {}
+                    }
+                },
+                dataId: {
+                    type: String,
+                    value: ''
+                },
+                data: {
+                    type: Object,
+                    value: function() {
+                        return {}
+                    },
+                    observer: '__dataChanged'
+                },
+                filter: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+                isDrilled: {
+                    type: Boolean,
+                    value: false
+                },
+                visualization: {
+                    type: String,
+                    value: "",
+                    observer: '__visualizationChanged'
+                },
+                gridObject: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+                flag: {
+                    type: Boolean,
+                    value: true
+                },
+                drilldownHierarchy:{
+                    type:Array,
+                    value:function(){
+                        return []
+                    }
+                }
+            },
+            ready: function() {
+
+
+            },
+            compare: function(a, b) {
+                return a == b
+            },
+            export: function(e) {
+               var e=document.createElement("export-element");
+               
+            },
+            popup: function(e) {
+                swal(e.srcElement.alt);
+            },
+            imagepopup: function(e) {
+                swal({
+                    title: "Image",
+                    imageUrl: e.srcElement.alt
+                });
+            },
+            gridpopup: function(e) {
+                var config = e.srcElement.alt;
+                var bl = e.srcElement.getAttribute("businesslogic");
+                var data = $(this).closest("multi-chart-element")[0].data[bl]
+                var g = document.createElement("grid-type-1");
+                g.setAttribute("configuration", config);
+                g.setAttribute("data", JSON.stringify(data))
+                swal({
+                    title: "Detail",
+                    html: true,
+                    text: g.outerHTML,
+                    showCancelButton: true
+
+                })
+
+
+            },
+            __visualizationChanged:function(){
+
+            },
+            __configurationChanged: function() {
+                if (this.localdata != null && this.configuration != null && this.flag) {
+                    //this.draw();
+                    //  this.flag = false;
+                }
+            },
+            __localdataChanged: function() {
+                if (this.localdata != null && this.configuration != null && this.flag) {
+                var root=this;      
+                this.async(function(){
+                        (function() {
+                              setTimeout(function() {
+                                                    root.drawTable();
+                                                   }, 300)
+                                    })();
+                              })
+                }
+            },
+            __dataChanged: function() {
+     
+                if (this.data.hasOwnProperty(this.id)) {
+                
+                if(JSON.stringify(this.localdata) !== JSON.stringify(this.data[this.id])){
+                this.localdata=this.data[this.id];
+                }
+     }
+            },
+           drawTable:function(){
+
+               var root=this,bigData=this.localdata.resultSet,conf=this.configuration[0],largeData=[];
+                  if (typeof root.gridObject !== 'undefined' && Object.keys(root.gridObject).length) {
+                        root.gridObject.destroy();
+                    }
+                var $tablehead=$(root.$.grid).find("thead tr");
+                $tablehead.empty();
+                if(conf.hasOwnProperty("columnInfo")&&conf.columnInfo.length)
+                {
+                    $.each(conf.columnInfo,function(i,j){
+
+                    $tablehead.append('<th>'+root.localdata.metaData[j.columnIndex].colName+'</th>');
+                        });
+                    if(conf.hasOwnProperty("header"))
+                    {
+                        if(conf.header.hasOwnProperty("values"))
+                        { $tablehead.empty();
+               
+                           for(var a=0,b=conf.header.values.length;a<b;a++)
+                           {
+                            $tablehead.append('<th style="'+conf.header.values[a].style+'">'+conf.header.values[a].value+'</th>')
+                           } 
+                        }
+                        if(conf.header.hasOwnProperty("css"))
+                        {
+                            $tablehead.css(conf.header.css);
+                        }
+                    }
+                   for(var k=0,p=bigData.length;k<p;k++){
+                    var t=[];
+                    $.each(conf.columnInfo,function(i,j){
+                        t.push(bigData[k][j.columnIndex])
+
+                    })
+                    largeData.push(t)
+                   }
+                }
+                     
+                    var gridOptions={
+               
+                  serverSide: true,
+                  processing: true,
+                  ordering: true,
+                  searching: true,
+                  deferRender: true,
+                  html: true,
+                  aaSorting: [],
+                  ajax: function(data, callback, settings) {
+                    var out = [];
+                    var temp = largeData;
+                    if (data.hasOwnProperty('order') && data.order[0]) {
+
+                      temp.sort(function(a, b) {
+                        if (data.order[0].dir !== 'asc') {
+                          return a[data.order[0].column] - b[data.order[0].column];
+                        } else {
+                          return b[data.order[0].column] - a[data.order[0].column];
+                        }
+                      });
+                    }
+                    if (data.hasOwnProperty('search') && data.search.value.trim().length) {
+                      temp = $.grep(largeData, function(i) {
+                        return ((i.join().toLowerCase().indexOf(data.search.value.trim().toLowerCase()) !== -1) ? 1 : 0);
+                      });
+                    }
+                    for (var i = data.start, ien = data.start + data.length; i < ien; i++) {
+                      /*PRocess your data here*/
+                      if (temp.length && typeof temp[i] !== 'undefined') {
+                        var t = []
+
+                        for (var j = 0, l = temp[0].length; j < l; j++) {
+                          if (typeof temp[i][j] !== 'undefined') {
+                            var tmp=temp[i][j];
+                            if(conf.columnInfo[j].type=="chart")
+                            {   var c_id=root.baseUtil.uuid(), cvisual={},div=document.createElement('div'),ch=document.createElement("chart-element");
+                                root.chartdata={};
+                                root.chartconfig=conf.columnInfo[j].configuration;
+                                root.chartdata[c_id]={"resultSet":JSON.parse(tmp)};
+                                cvisual[c_id]={"configuration":{"chart":{}}};
+                                $(div).attr("style",conf.columnInfo[j].style);
+                                $(ch).attr({"id":c_id,"configuration":JSON.stringify(root.chartconfig),"visualization":JSON.stringify(cvisual),"style":conf.columnInfo[j].chartStyle});
+                                $
+                               $(div).append(ch);
+                               $(ch).attr({"data":JSON.stringify(root.chartdata)})
+                                tmp=div.outerHTML;
+                             }
+                            else if(conf.columnInfo[j].type=="image")
+                            {
+                                tmp='<a type="image"><img type="image" src="'+tmp+'"></a>';
+                            }
+                            else if(conf.columnInfo[j].type=="popup")
+                            {
+                                tmp='<a type="popup"><img src="popup.png"/></a>'
+                            }
+                            else{
+                                if(conf.columnInfo[j].hasOwnProperty("formatter"))
+                                {
+                                    tmp=root.baseUtil.formatter([tmp],conf.columnInfo[j].formatter)[0];
+                                }
+                                tmp='<div style="'+conf.columnInfo[j].style+'">'+tmp+'</div>';
+                                
+                            }
+
+                           
+                            
+                            t.push(tmp);
+                          } else {
+                            t.push("");
+                          }
+                        }
+                        out.push(t);
+                      }
+                      /*-------------------------------------------*/
+
+                    }
+                    /*DataSet Callback Return*/
+                    setTimeout(function() {
+                      callback({
+                        draw: data.draw,
+                        data: out,
+                        recordsTotal: largeData.length,
+                        recordsFiltered: largeData.length
+                      });
+                    }, 50);
+
+                  },
+                  language: {
+                    infoEmpty: "No records available - Got it?",
+                  },
+                  responsive:{
+                    details:false
+                  },
+                  scroller: {
+                    loadingIndicator: true
+                  }
+                };
+                    if (conf.hasOwnProperty("table")) {
+                        if (conf.table.hasOwnProperty("lengthMenu")) {
+                            gridOptions["lengthMenu"] = conf.table.lengthMenu;
+                        }
+                        if (conf.table.hasOwnProperty("pageLength")) {
+                            gridOptions["pageLength"] = conf.table.pageLength;
+                        }
+                        if (conf.table.hasOwnProperty("export")) {
+
+                            gridOptions["buttons"] = [{
+                                extend: 'collection',
+                                text: 'Export',
+                                buttons: conf.table.export
+                            }]
+                        } else {
+                            gridOptions["buttons"] = [];
+
+                        }
+                        if (conf.table.hasOwnProperty("scrollY")) {
+                            gridOptions["scrollY"] = conf.table.scrollY;
+                            gridOptions["scrollCollapse"] = true;
+                        }
+                        if (conf.table.hasOwnProperty("searchField")) {
+                            if (conf.table.searchField == "disabled") {
+                                gridOptions["bFilter"] = false;
+                            }
+                        }
+                        if (conf.table.hasOwnProperty("paging")) {
+                            if (conf.table.paging == "disabled") {
+                                gridOptions["paging"] = false;
+                            }
+                        }
+                        if (conf.table.hasOwnProperty("ordering")) {
+                            if (conf.table.ordering == "disabled") {
+                                gridOptions["ordering"] = false;
+                            }
+                        }
+                        if (conf.table.hasOwnProperty("info")) {
+                            if (conf.table.info == "disabled") {
+                                gridOptions["info"] = false;
+                            }
+                        }
+                        if (conf.table.hasOwnProperty("order")) {
+
+                            gridOptions["order"] = conf.table.order;
+
+                        }
+
+                    }
+
+                 if (conf.hasOwnProperty('regularFormat')) {
+
+                                if (conf.regularFormat.hasOwnProperty("odd")) {
+
+                                    var sty = '<style> .odd-row'+root.id+'{' + conf.regularFormat.odd + ' }</style>'
+                                    $(root).append(sty)
+                                }
+                                if (conf.regularFormat.hasOwnProperty("even")) {
+                                    var sty = '<style> .even-row'+root.id+' {' + conf.regularFormat.even + '}</style>'
+                                    $(root).append(sty)
+
+
+                                }
+                            gridOptions["stripeClasses"]=["odd-row"+root.id,"even-row"+root.id];
+
+                            } 
+
+              root.gridObject= $(this.$.grid).DataTable(gridOptions);
+                $(root.$.grid).unbind().on("click","tr",function(e){
+                       root.rowClicked(e);        
+                })
+                if(root.configuration[0].hasOwnProperty("tooltip"))
+                    {           
+                            var ele=root.configuration[0].tooltip;
+                            var toolmainbox=$('<div/>').attr('id',"tipx");
+                            var t_conf={};
+                            if(ele.hasOwnProperty("configuration"))
+                                {
+                                    t_conf=ele.configuration;
+                                }
+                               
+                                if(ele.hasOwnProperty("tooltips"))
+                                {
+
+                                    if(ele.tooltips.hasOwnProperty("text"))
+                                    {
+                                        $.each(ele.tooltips.text,function(i,ee){
+                                            var toolbox=$('<div/>').attr('id',"tooltipx");
+                                            $(toolbox).css(ee.css).text(ee.value);
+                                            $(toolmainbox).append(toolbox);
+                                        })
+                                    }
+                                     if(ele.tooltips.hasOwnProperty("data"))
+                                    {
+                                        $.each(ele.tooltips.data,function(i,ee){
+                                            var toolbox=$('<div/>').attr('id',"tooltipx");
+                                            if(typeof root.localData != 'undefined')
+                                            {
+                                            if(ee.hasOwnProperty("formatter"))
+                                            {
+                                                    $(toolbox).css(ee.css).text(root.baseUtil.formatter([root.localData.resultSet[ee.rowIndex][ee.columnIndex]]),ee.formatter);
+                                            
+                                            }
+                                            else{
+                                                    $(toolbox).css(ee.css).text(root.localData.resultSet[ee.rowIndex][ee.columnIndex]);
+                                            
+                                            }
+                                            }
+                                            $(toolmainbox).append(toolbox);
+                                        })
+                                    }
+                                    if(ele.hasOwnProperty("style"))
+                                    {   var st= $('<style> .custom-tooltip + .tooltip > .tooltip-inner {'+ele.style+'}</style>');
+                                        $(root).append(st);
+                                                }                               
+                                }
+                setTimeout(function(){root.gridObject.$("tr").tooltip({
+                                html: true,
+                                placement: t_conf.placement || "auto",
+                                title: $(toolmainbox).html(),
+                                trigger:"hover",
+                                container: "body",
+                              }).on('shown.bs.tooltip', function() {
+                                var t = $('.tooltip').addClass('animated ' + t_conf.animation);
+                                t.find(".tooltip-inner").css($.extend({}, {
+                                  backgroundColor: t_conf.backgroundColor
+                                }, t_conf.style));
+                                t.find(".tooltip-arrow").css({
+                                  "border-bottom-color": t_conf.backgroundColor,
+                                  "border-top-color": t_conf.backgroundColor
+                                })
+                              });},500)
+                           
+
+                    }
+                if (root.configuration[0].hasOwnProperty("table")) {
+                            if (root.configuration[0].table.hasOwnProperty("showTotalRecords") && root.configuration[0].table.showTotalRecords == "true") {
+                                        $(root.$$("#grid_info")).html("<span style='color:#337ab7'>Total Records </span>: " + root.tr.length)
+                                            }
+                                }
+            },
+
+            rowClicked: function(e) {
+                
+                var self = this;
+                    Polymer.dom.flush();
+                if (this.configuration[0].hasOwnProperty("table")) {
+                    if (this.configuration[0].table.hasOwnProperty("tr")) {
+                        if (this.configuration[0].table.tr.hasOwnProperty("onSelect")) {
+                            var opt = this.configuration[0].table.tr.onSelect;
+                            var highlightClass=$('<style>.highlighted'+self.id+'{'+opt+'}</style>');
+                            $(self).append(highlightClass);
+                            $(e.currentTarget).addClass("highlighted"+self.id);
+                            $(e.currentTarget).siblings().removeClass("highlighted"+self.id);
+                        }
+                        if (this.configuration[0].table.tr.hasOwnProperty("drilldown")) {
+                                                     var list={}
+                            if (this.configuration[0].table.tr.drilldown.hasOwnProperty("params")) {
+                               
+                                $.each(this.configuration[0].table.tr.drilldown.params, function(i, ob) {
+                                    if (ob.hasOwnProperty("key")) {
+                                        if (ob.hasOwnProperty("columnIndex")) {
+                                            list[ob.key] = $(e.currentTarget).find("td:eq(" + ob.columnIndex + ")").text().trim()
+                                        } else if (ob.hasOwnProperty("value")) {
+                                          if(ob.value=="target")
+                                          {
+                                             list[ob.key] = $(e.target).text().trim();
+                                          }
+                                          else{list[ob.key] = ob.value;}
+                                            
+                                        } 
+                                    }
+
+                                })
+                              
+                            }
+
+                             var parent=$(self).parents('multi-grid-element').get(0);
+                    var ft=parent.filter;               
+                    $.each(list,function(i,j){
+                        $.each(ft,function(k,l){
+                            if(l.key == i){
+                                if(typeof j !='undefined')
+                                {
+                                    l.value=[String(j)];
+					l.selected=[String(j)];
+                                }
+                                }
+                                
+                        });
+                   
+                    });
+                    var bo=self.configuration[0].table.tr.drilldown.BO;
+             var dash=$(self).parents('dashboard-element');
+             var d=dash.find("data-element").get(0);
+             var requestData={data:{workboard_id:d.workboardId,params:d.__filterComputed(ft)}}
+             if(bo != null)
+             {
+                requestData.data["businessobject_id"]=bo;
+             }
+
+            self.baseUtil.sendRequest(d.serviceUrl,requestData,function(ee){
+                        if(ee.status.code == 200){
+                            var heirarchy={};
+                            heirarchy["id"]=self.id;
+                            heirarchy["configuration"]=self.configuration;
+                            heirarchy["data"]=self.data;
+                            heirarchy["visualization"]=self.visualization;
+                            self.drilldownHierarchy.push(heirarchy);
+                           
+                            $.each(bo,function(a,b){
+                                if(ee.data.hasOwnProperty(b))
+                                {   
+                                    $.each(dash.get(0).objects,function(i,j){
+                                            if(j.id==bo)
+                                            {
+                                                self.configuration=j.configuration;
+                                            }
+                                    })
+
+                                        self.id=b;
+                                        d.data=ee.data;
+                                        $(self.$.drillupbutton).show()
+                                            }
+                            })
+
+                        }else{
+                            console.error(ee.status.value);
+                        }
+                    },{});
+            
+                     }if (this.configuration[0].table.tr.hasOwnProperty("associativity")) {
+                                                     var list={}
+                            if (this.configuration[0].table.tr.associativity.hasOwnProperty("params")) {
+                               
+                                $.each(this.configuration[0].table.tr.associativity.params, function(i, ob) {
+                                    if (ob.hasOwnProperty("key")) {
+                                        if (ob.hasOwnProperty("columnIndex")) {
+                                            list[ob.key] = $(e.currentTarget).find("td:eq(" + ob.columnIndex + ")").text().trim()
+                                        } else if (ob.hasOwnProperty("value")) {
+                                          if(ob.value=="target")
+                                          {
+                                             list[ob.key] = $(e.target).text().trim();
+                                          }
+                                          else{list[ob.key] = ob.value;}
+                                            
+                                        } 
+                                    }
+
+                                })
+                              
+                            }
+
+                             var parent=$(self).parents('multi-grid-element').get(0);
+                    var ft=parent.filter;               
+                    $.each(list,function(i,j){
+                        $.each(ft,function(k,l){
+                            if(l.key == i){
+                                if(typeof j !='undefined')
+                                {
+                                    l.value=[String(j)];
+					l.selected=[String(j)];
+                                }
+                                }
+                                
+                        });
+                   
+                    });
+                    var bo=self.configuration[0].table.tr.associativity.BO;
+             var dash=$(self).parents('dashboard-element');
+             var d=dash.find("data-element").get(0);
+             var requestData={data:{workboard_id:d.workboardId,params:d.__filterComputed(ft)}}
+             if(bo != null)
+             {
+                requestData.data["businessobject_id"]=bo;
+             }
+
+              self.baseUtil.sendRequest(d.serviceUrl,requestData,function(e){
+                        if(e.status.code == 200){
+                            d.data=e.data;
+                        }else{
+                            console.error(e.status.value);
+                        }
+                    },{})
+                     }
+                 }
+             }
+                      
+                    
+
+                }   ,
+
+                
+                drillup:function(e){
+                if(this.drilldownHierarchy.length)
+                {
+                var heirarchy=this.drilldownHierarchy.slice(-1)[0];
+                this.id=heirarchy.id;
+                this.configuration=heirarchy.configuration;
+                this.visualization=heirarchy.visualization;
+                this.data=heirarchy.data;
+                this.drilldownHierarchy.pop();  
+                if(!this.drilldownHierarchy.length){
+                    $(this.$.drillupbutton).hide()
+                }
+                }
+
+                
+
+            },
+
+            parse_ifelse: function(data, conditions) {
+
+                var regex_ifelse = "if\\s*\\s*?([A-z]*)\\s*([<>=%]*)\\s*(\\d*|[A-z0-9']*)\\s*(([\\&|\\|])\\s*(\\d*|[A-z0-9']*)\\s*([<>=]*)\\s*(\\d*|[A-z0-9']*))*\\s*(then)\\s*([A-z']*)\\s*((else)\\s*([A-z']*?)\\s*(end))?";
+                regex_ifelse = new RegExp(regex_ifelse);
+
+                for (i = 0; i < conditions.length; i++) {
+
+                    condition = conditions[i];
+
+                    if (regex_ifelse.test(condition)) {
+                        var temp = regex_ifelse.exec(condition);
+
+                        var total = "";
+                        var trueVal = "";
+                        var falseVal = "";
+                        while (temp.length > 0) {
+                            var val = temp.shift()
+                            if (val != null && val.indexOf(" ") == -1) {
+                                if (val == "&")
+                                    total += "&&";
+                                else if (val == "then")
+                                    trueVal = temp.shift();
+                                else if (val == "else")
+                                    falseVal = temp.shift();
+                                else if (val != "end")
+                                    total += val;
+                            }
+
+                        }
+
+                        if (total != null) {
+                            if (eval(total))
+                                return trueVal;
+                            else if (falseVal != "")
+                                return falseVal;
+                        }
+                    }
+                }
+            },
+
+            attached: function(e) {
+                var self=this;
+                    $(window).resize(function(){
+                            setTimeout(function(){self.drawTable()},300)
+                    })
+            }
+            
+
+       })
+    </script>
+</dom-module>

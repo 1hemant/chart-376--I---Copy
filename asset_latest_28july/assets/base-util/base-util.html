@@ -1,0 +1,233 @@
+<link href="../bower_components/polymer/polymer.html" rel="import"/>
+<dom-module id="body-element">
+	<template>
+		<style>
+			<!-- page{
+				width: 100%;
+				height: 100%;
+			}			
+			._pageBg{
+				width: 100%;
+				height: 100%;
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				z-index: -1;
+			} -->
+      
+				  .blockPage,
+				  .blockMsg,
+				  .blockUI{
+				  border:none;
+				  background:transparent}
+			/*
+			  Set the color of the icon
+			*/
+			svg path,
+			svg rect{
+			  fill: #00aaf9;
+			}
+			.blockOverlay{
+			  z-index:2009
+			}
+			#blockLoader{
+				background-color: rgba(0,0,0,.5);
+				/*// opacity:.5;*/
+				width:100%;
+				height:100%;
+				position:absolute;
+				left:0;
+				top:0;
+				bottom:0;
+				right:0;
+				display:none;
+				z-index: 20001;
+				text-align:center;
+			}
+
+			#blockLoader-wrap{
+			  position:relative;
+				width:50px;
+				height:50px;
+				top:50%;
+				margin:0 auto;
+				
+			}
+
+			#blockLoader-wrap svg{
+			  
+			}
+		</style>
+		<div class="page _pageBg">
+			<div id="blockLoader">
+				<div id="blockLoader-wrap">
+					Loading
+				</div>
+			</div>
+			<content></content>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is:"body-element"
+		})
+	</script>
+</dom-module>
+<script>
+	Polymer({
+		is: 'base-util',
+		sendRequest: function(url,data,success,configuration) {
+			var self=this,e=configuration || {};;
+			jQuery(function($){
+				$.ajax({
+					url:(location.protocol+'//'+location.host)+'/v2/'+url,
+					async: true,
+					dataType: 'json',
+					headers:{
+						"Accept-Language": window.navigator.userLanguage || window.navigator.language,
+						"Accept":"application/json"
+					},
+					beforeSend:function(){
+						self.blockUI(e);
+					},
+					complete:function(){
+						self.unblockUI(e);
+					},
+					statusCode:{
+						404: function() {
+						  noty({text: '404', type: 'error', layout: 'topRight',timeout:1000});
+						},
+						302: function() {
+						  noty({text: '302', type: 'error', layout: 'topRight',timeout:1000});
+						}
+					},
+					method:"POST",
+					contentType:"application/json",
+					data:JSON.stringify(data),
+					success:success,
+					error:function(){
+						noty({text: 'Unknown Error', type: 'error', layout: 'topRight',timeout:1000});
+						console.error('Ajax Error');
+					}
+				});
+			})
+		},
+		blockUI:function(e){
+			if(typeof e!=='undefined' &&  e.hasOwnProperty("blockUI") && e.blockUI.enabled === true){
+				if(e.blockUI.hasOwnProperty("element")){
+					 e.blockUI.element.block({
+						message: $('')
+					});
+				}else{
+				
+					$.blockUI({
+						message: $('#blockLoader'),
+            css:{background:'transparent',
+            border: 'none'} ,
+            baseZ: '2001'                          
+					});
+				}
+			}
+		},
+		unblockUI:function(e){
+			setTimeout(function(){
+				if(typeof e!=='undefined' && e.hasOwnProperty("blockUI") && e.blockUI.enabled === true){
+					if(e.blockUI.hasOwnProperty("element")){
+						 e.blockUI.element.unblock();
+					}else{
+						$.unblockUI();
+					}
+				}
+			},500);
+		},
+		addTooltip:function(){
+			$('[data-toggle="tooltip"]').tooltip({
+				container:'body',
+				html:true,
+				placement:'auto',
+				trigger:'hover'
+			}); 
+		},
+		uuid:function(){
+			var d=+new Date;
+			var ts = d.toString();
+			var parts = ts.split( "" ).reverse();
+			var id = "";
+			for( var i = 0; i < 15; ++i ) {
+				id += parts[Math.floor( Math.random() * ( (parts.length - 1) + 1 ) )];	 
+			}
+			return id;
+		},
+		formatter:function(d,options){
+			var data = JSON.parse(JSON.stringify(d));
+			var abbr=[{"symbol":"T","value":1000000000000000000},{"symbol":"B","value":1000000000000},{"symbol":"M","value":1000000},{"symbol":"L","value":100000},{"symbol":"K","value":1000},{"symbol":"H","value":100}],symbol=[];
+			for (var i = 0, j = data.length; i < j; i++) {
+				if(options.hasOwnProperty('abbreviation')){
+					if(options.abbreviation.toLowerCase() == 'auto'){
+						for(var k=0;k<=5;k++){
+							if((Number(data[i])/abbr[k].value)>=1){
+								data[i]=Number(data[i])/abbr[k].value;
+								symbol[i]=abbr[k].symbol;
+								break;
+							}
+						}
+					}else{
+						if(options.abbreviation.toLowerCase()=='k'){
+							
+						}else if(options.abbreviation.toLowerCase()=='m'){
+							
+						}else if(options.abbreviation.toLowerCase()=='b'){
+							
+						}else if(options.abbreviation.toLowerCase()=='t'){
+							
+						}else if(options.abbreviation.toLowerCase()=='h'){
+							
+						}
+					}
+				}
+				if(options.hasOwnProperty('decimalPoint')){
+					data[i] = Number(data[i]).toFixed(options.decimalPoint);
+				}
+				if(options.hasOwnProperty('thousandSeperator') && options.thousandSeperator == true){
+					data[i] = data[i].toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+				}
+				if(typeof symbol[i] !== 'undefined'){
+					data[i]+=' '+symbol[i];
+				}
+				if(options.hasOwnProperty('symbol')){
+					if(options.hasOwnProperty('symbolPosition')){
+						if(options.symbolPosition.toLowerCase() == 'left' ){
+							data[i]=options.symbol+data[i];
+						}else{
+							 data[i]+=options.symbol;
+						}
+					}else{
+						data[i]+=options.symbol;
+					}
+				}
+			}
+			return data;
+		},
+		makeColumns: function(d) {
+			var rows={};
+			var data = JSON.parse(JSON.stringify(d));
+			if(data.length){
+				for (var i = 0, j = data[0].length; i < j; i++) {
+					var column = [];
+					for (var k = 0, l = data.length; k < l; k++) {
+						var item=data[k][i];
+						if(isNaN(item)){
+							column.push(item);
+						}else{
+							column.push(Number(item));
+						}
+					}
+					rows[i] = column;
+				}
+			}
+			return rows;
+		}
+	});
+</script>

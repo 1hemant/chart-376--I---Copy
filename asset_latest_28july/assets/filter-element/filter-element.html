@@ -1,0 +1,1110 @@
+<!--<link rel="import" href="bower_components/polymer/polymer.html">-->
+<dom-module id="filter-element">
+   <template>
+      <style>
+	  #fiterboxelement .cui-input,
+			#fiterboxelement button,
+			#fiterboxelement input:not([type="radio"]):not([type="checkbox"]),
+			.cui select,
+			.cui textarea {
+			  font: 400 .875em;
+			  width: 100%;
+			  max-width: 100%;
+			  margin: 5px auto 17px;
+			  padding: 10px 17px;
+			  transition: all .5s linear!important;
+			  color: #6f7889;
+			  border: 1px solid #e5e5e5;
+			  border-radius: 3px;
+			  background: #fff;
+			  -webkit-appearance: none;
+			  line-height:normal
+			}
+
+
+			#fiterboxelement label{
+				line-height:1;
+				display:block
+				
+			}
+			.cui button.sm{
+			  width: auto
+			}
+	  
+      </style>
+       
+    
+       
+       
+       
+       
+      <div class="form-group" id="fiterboxelement">
+         <template is="dom-if" if="{{name}}">
+            <label for$="{{name}}">{{name}}</label>
+         </template>
+         <template is="dom-if" if="{{equals(type,'date')}}">
+		 <div class="pos-relative">
+		 <i class="material-icons icon-right style-scope sharing-element">date_range</i>
+     <!--   hasDatepicker
+      -->      <input type="text" class="cui has-icon i-date" id="date"  value="{{value::change}}" >
+			</div>
+  <!--    -->
+         </template>
+        <template is="dom-if" if="{{equals(type,'time')}}">
+            <div id="time">
+               <input type="text" class="form-control" id="filter"  value="{{value::change}}" >
+            </div>
+         </template>
+        <template is="dom-if" if="{{equals(type,'datetime')}}">
+            <input type="text" class="form-control" id="datetime" value="{{value::change}}" >
+         </template>
+         <template is="dom-if" if="{{equals(type,'daterange')}}">
+            <input type="text" class="form-control" id="filterStart" >
+            <input type="text" class="form-control" id="filterEnd" >
+         </template>
+           <template is="dom-if" if="{{equals(type,'timerange')}}">
+            <input type="text" class="form-control" id="timefilterStart" >
+            <input type="text" class="form-control" id="timefilterEnd"  >
+         </template>
+       <template is="dom-if" if="{{equals(type,'datetimerange')}}">
+            <input type="text" class="form-control" id="datetimefilterStart">
+            <input type="text" class="form-control" id="datetimefilterEnd">
+         </template>
+           <template is="dom-if" if="{{equals(type,'multiselect')}}">
+            <select  class="form-control"  value="" multiple on-change="getSelectedOptions" id="multiselectfilter">
+          
+
+
+		  <template is="dom-repeat" items="{{valuelist}}" index-as="ss" as="list">
+
+<template is="dom-if" if="{{_comparekey(ss)}}">
+    		  <option value$="{{list.value}}" selected>{{list.key}}</option>
+
+</template>
+<template is="dom-if" if="{{!_comparekey(ss)}}">
+
+		  <option value$="{{list.value}}">{{list.key}}</option>
+</template>
+
+
+
+		  </template>
+             </select>
+         </template>
+        <template is="dom-if" if="{{equals(type,'multiselectCheckbox')}}">
+            <select  class="form-control" multiple value=""  id="multiselectCheckboxfilter">
+	             
+                  <template is="dom-repeat" items="{{valuelist}}" index-as="ss" as="list">
+     
+<template is="dom-if" if="{{_comparekey(ss)}}">
+    		  <option value$="{{list.value}}" selected>{{list.key}}</option>
+
+</template>
+<template is="dom-if" if="{{!_comparekey(ss)}}">
+
+		  <option value$="{{list.value}}">{{list.key}}</option>
+</template>
+             </template>
+            </select>
+         </template>
+          
+         <template is="dom-if" if="{{equals(type,'select')}}">
+            
+            <select  class="form-control" value="{{value::change}}" id="selectfilter">
+                  <template is="dom-repeat" items="{{valuelist}}" index-as="ss" as="list">
+
+<template is="dom-if" if="{{_comparekey(ss)}}">
+    		  <option value$="{{list.value}}" selected>{{list.key}}</option>
+
+</template>
+<template is="dom-if" if="{{!_comparekey(ss)}}">
+
+		  <option value$="{{list.value}}">{{list.key}}</option>
+</template>
+                  </template>
+            </select>
+         </template>
+
+             <template is="dom-if" if="{{equals(type,'radio')}}">
+            <input type="radio"  id="radiofilter"  value="{{value::change}}" >
+         </template>
+             
+         <template is="dom-if" if="{{equals(type,'checkbox')}}">
+            <input type="checkbox"  id="checkboxfilter" value="{{value::change}}" >
+         </template>
+     <template is="dom-if" if="{{equals(type,'slider')}}">
+            <input type="text" class="form-control hidden" id="sliderfilter" value="{{value::change}}" >
+         </template>
+    
+             
+          <template is="dom-if" if="{{equals(type,'color')}}">
+            <input type="color" class="form-control" id="colorfilter" value="{{value::change}}" >
+         </template>
+    
+     <template is="dom-if" if="{{equals(type,'number')}}">
+            <input type="number" class="form-control" id="numberfilter" value="{{value::change}}" >
+         </template>
+         <template is="dom-if" if="{{equals(type,'text')}}">
+            <input type="text" class="form-control" id="textfilter" value="{{value::input}}" >
+         </template>
+     </div>
+   </template>
+   <script>
+      Polymer({
+      	is:"filter-element",
+      	properties:{
+      	
+businessobject:{
+      			type:[],
+      			value:function(){
+            return [];
+            },
+      			reflectToAttribute:false
+
+
+},
+      		filter:{
+      			type:[],
+      			value:function(){
+            return [];
+            },
+      			reflectToAttribute:false
+      		},
+         valuelist:{type:Array,
+         value:function(){
+         return[]
+         
+         }
+         },
+                		type:{
+      			type:String,
+      			value:"",
+      			reflectToAttribute:true
+      		},
+     		localData:{
+      			type:Object,
+      			value:function(){
+            return {};
+            },
+      			reflectToAttribute:false
+      		},
+
+ 		key:{
+      			type:String,
+      			value:"",
+      			reflectToAttribute:false
+      		},
+
+ 		local:{
+      			type:Object,
+      			value:function(){
+            return {};
+            },
+      			reflectToAttribute:false
+      		},
+           		keyIndex:{
+      			type:String,
+      			value:"",
+      			reflectToAttribute:false
+      		},
+         min:{
+      			type:Number,
+      			value:0,
+      			reflectToAttribute:false
+      		},
+          max:{
+      			type:Number,
+      			value:0,
+      			reflectToAttribute:false
+      		},
+          		valueIndex:{
+      			type:String,
+      			value:"",
+      			reflectToAttribute:false
+      		},	selectvalue:{
+      			type:Array,
+      			value:function(){ return []; },
+      			reflectToAttribute:true
+      		},
+      		data: {
+                      type: Array,
+                        observer:"__dataChanged",
+                      value: function(){ return {}; },
+                    reflectToAttribute: false
+                                    },
+                    localData:{
+                        type:Object,
+                        value:function(){
+                            return {}
+                        }
+                    },
+                 value:{
+      			type:Array,
+      			value:function(){
+      				return [];
+      			},
+            	reflectToAttribute:true
+      		},
+                    id:{
+                        type:String
+                    },
+                    name:{
+                        type:String,
+                        value:"abc",   	reflectToAttribute:true
+      	
+                    },
+                    configuration:{
+                        type:Object,
+                        value:function(){
+                            return {
+                                type: "double",
+                                min: 0,
+                                max: 100,
+                                from: 50,
+                                to:60
+                            };
+                        },
+                                   observer:"__configurationChanged",
+             
+                        
+                    }
+      	},
+		_comparekey:function(e){
+		var root=this;
+		if(this.selectvalue!==undefined && this.selectvalue.length>0){
+		for(var i=0;i<this.selectvalue.length;i++){
+    if(root.selectvalue[i]==e){
+		return true;}
+    }
+    }
+		return false;
+		
+		
+		},
+    equals:function(e,i){
+      		if((e == i)){
+                       	return true;
+      		}
+                    return false;
+      	},__configurationChanged:function(e){
+       
+       
+       var root=this;
+       
+                                if(e.hasOwnProperty('name')){
+                           
+                          root.name=e.name;
+                    }
+                if(e.hasOwnProperty('businessobject')){
+                           
+                          root.businessobject=e.businessobject;
+                    }
+                                     
+					 if(e.hasOwnProperty('key')){
+                           
+                          root.key=e.key;
+                    }
+             
+                       if(e.hasOwnProperty('css')){
+                           
+                           $(root.$.fiterboxelement).css(e.css)
+                    }
+                                if(e.hasOwnProperty('keyIndex') && e.hasOwnProperty('valueIndex')){
+                           
+                          root.keyIndex=e.keyIndex;
+                    
+                          root.valueIndex=e.valueIndex;
+                 
+                 
+                    }
+                                if(e.hasOwnProperty('selectvalue')){
+                           
+                          root.selectvalue=e.selectvalue;
+                  
+            
+ }
+            		 
+                       
+                     
+                    
+         
+        },
+                attached:function(){
+                },
+                getSelectedOptions:function(e){
+                  var result = [];
+                    var options = e && e.target.options;
+                    var opt;
+                    for (var i=0, iLen=e.target.options.length; i<iLen; i++) {
+                        opt = options[i];
+                            if (opt.selected) {
+                            result.push(opt.value || opt.text);
+                        }
+                    }
+                    this.value=result; 
+                    return result;
+                },
+                getValue:function(e){
+               var root=this;
+         
+          var currentvalue="";
+                    
+                    if(this.type == 'slider'){
+                        
+                        
+                        if(this.configuration.hasOwnProperty('type') && this.configuration.type==="double"){
+                            this.value=[String(e.from),String(e.to)];
+                            currentvalue=""+e.from+" to "+e.to;
+                        }else{
+                            this.value=[String(e.from)];
+                            currentvalue=""+e.from;
+                            
+                        }
+                    }
+                    if(this.type =='date'){ this.value=e;
+                          currentvalue=""+e;
+                    }
+                    if(this.type =='time'){ this.value=e;
+                          currentvalue=""+e;
+                   
+                    }
+                    if(this.type =='datetime'){
+                          this.value=e;
+                         currentvalue=""+e;
+                     }
+                    if(this.type == 'daterange'){var a=this.$$("#filterStart").value,b=this.$$("#filterEnd").value;
+                       this.value=[a,b];
+                           currentvalue=""+a+" to "+b;
+               
+                    }
+                    if(this.type =='datetimerange'){
+                       var a=this.$$("#datetimefilterStart").value,b=this.$$("#datetimefilterEnd").value;
+                       this.value=[a,b];
+                              currentvalue=""+a+" to "+b;
+               
+                    }
+                    if(this.type == 'timerange'){var a=this.$$("#timefilterStart").value,
+                        b=this.$$("#timefilterEnd").value;
+                       this.value=[a,b];
+                               currentvalue=""+a+" to "+b;
+               }
+                 if(this.type =='select'){ this.value=e;
+                          currentvalue=""+e;
+                    }
+                      if(this.type =='text'){ this.value=e;
+                          currentvalue=""+e;
+                    }
+                      if(this.type =='number'){ this.value=e;
+                          currentvalue=""+e;
+                    }
+                      if(this.type =='color'){ this.value=e;
+                          currentvalue=""+e;
+                                             }
+                   if(this.type =='checkbox'){ this.value=e;
+                          currentvalue=""+e;
+                    }
+                   if(this.type =='radio'){ this.value=e;
+                          currentvalue=""+e;
+                    }
+                   if(this.type =='multiselect'){ 
+                       this.value=e;
+                          currentvalue=""+e;
+                    }
+                    if(this.type =='multiselectCheckbox'){ 
+                       this.value=e;
+                          currentvalue=""+e;
+                    }
+                 
+                var currentlist=[];
+                
+                        if(root.value instanceof Array){
+                        $.each(root.valuelist,function(i,ee){
+              $.each(root.value,function(j,ee1){
+
+if(ee.value===ee1){
+if(root.type==="slider")
+{
+currentlist.push(ee.value);
+
+}
+else{
+currentlist.push(ee.key);
+
+}
+}
+
+});
+});
+                  $.each(root.filter,function(i,ee){
+
+                 if(ee.key==root.key){               
+              ee.value=root.value;
+ if(root.type==="slider"){             
+              ee['selected']=root.value;
+ 
+ }
+ 
+ else{
+              ee['selected']=currentlist;
+ 
+ 
+ }
+   if(root.businessobject.length>0){
+ 
+ ee['businessobject']=root.businessobject; 
+ }  
+ 
+               }
+                });
+                
+                             }
+                else{
+                var arr=[];
+                $.each(root.valuelist,function(i,ee){
+             
+if(ee.value===root.value){
+
+if(root.type==="slider")
+{
+currentlist.push(ee.value);
+
+}
+else{
+currentlist.push(ee.key);
+
+}
+             
+}
+
+});
+              
+                arr.push(String(root.value));
+                  $.each(root.filter,function(i,ee){
+
+                 if(ee.key==root.key){               
+              ee.value=arr;
+              
+ if(root.type==="slider"){             
+              ee['selected']=arr;
+ 
+ }
+ 
+ else{
+              ee['selected']=currentlist;
+ 
+ 
+ }
+
+              //ee['selected']=currentlist;
+ if(root.businessobject.length>0){
+ 
+ ee['businessobject']=root.businessobject; 
+ }  
+         
+			  }
+                });
+                
+                }
+ 				
+                $(root).closest('dashboard-element').attr('listeners1',JSON.stringify(root.filter));
+                  
+                
+                },
+                __dataChanged:function(){
+     
+      if(Object.getOwnPropertyNames(this.data).length > 0){
+       var root=this;
+      if(JSON.stringify(root.local) !== JSON.stringify(this.data)){
+          root.local=this.data;   
+          
+      if(JSON.stringify(root.localData) !== JSON.stringify(this.data[this.id])){
+   
+    root.localData=this.data[this.id];     
+       
+    if(root.type==="slider"){
+            var j= root.valueIndex;
+     
+            if(typeof root.localData != 'undefined'){
+                  var local= root.localData.resultSet[j];
+          
+          
+       
+                   $.each(root.selectvalue,function(i,ee1){
+     if(local[ee1]!==undefined){
+     if(i===0){ root.min=local[ee1];
+    }
+    if(i===1){  root.max=local[ee1];
+       }
+       }
+            });
+                
+              }  
+             
+    root.addDateFunctionality()
+    }
+    else
+     { 
+              var i=root.keyIndex;
+             var j= root.valueIndex;
+     
+                   if(typeof root.localData != 'undefined'){
+             var valuelist=[];     
+                   $.each(root.localData.resultSet,function(k,ee){
+
+                valuelist.push({"key":String(ee[i]),"value":String(ee[j])});               
+                });
+             root.valuelist=valuelist;
+                      root.addDateFunctionality();
+                 }
+                }
+                
+                }
+   }
+          }
+               
+               
+                },
+      	addDateFunctionality:function(){
+                    var root=this;
+                    
+      		this.async(function(){
+      			Polymer.dom.flush();
+             var root=this;
+                         if(this.type == 'slider'){  var config=this.configuration,
+                         
+                         
+                         
+                         
+                         obj={keyboard: true,fixMiddle: true
+                                                              ,onStart:function(data){
+                         if(root.configuration.type=="single")
+                                      {
+                         
+                                                    var imgUrl=(location.protocol+'//'+location.host)+'/v2/assets/libraries/ionslider/img/';            
+                                                var irsbar = $(".irs-bar");
+                                                var irslinemid = $(".irs-line-mid");
+                                                var irslineleft = $(".irs-line-left");
+                                                var irslinerigth = $(".irs-line-right");
+                                                var irslineedge = $(".irs-bar-edge");
+                                                var irsslider = $(".irs-slider");
+                                                var irssingle =$(".irs-single");
+                                                var irssingleafter =$(".irs-single:after");                      
+                                                          
+                                                                irsbar.css('background-image','url('+imgUrl+'red.png)');
+                                                         irslinemid.css('background-image','url('+imgUrl+'red.png)');
+                                                         irslineleft.css('background-image','url('+imgUrl+'red.png)');
+                                                         irslinerigth.css('background-image','url('+imgUrl+'red.png)');
+                                                         irslineedge.css('background-image','url('+imgUrl+'red.png)');
+                                                         irsslider.css('background-image','url('+imgUrl+'grey.png)');
+                                                         irssingle.css('background','#ea273c');
+                                                         irssingleafter.css('border-top-color','#ea273c');
+                                                         
+                         }                            
+                                                              
+                                                              
+                                                              },onFinish: function (data) {
+                                                             root.getValue(data);
+       if(root.configuration.type=="single")
+                                      {
+                                          if(root.configuration.useColorSlider=="true")
+                                           {  
+                                                         var limit =(root.configuration.max-root.configuration.min)/3;         
+                                                var imgUrl=(location.protocol+'//'+location.host)+'/v2/assets/libraries/ionslider/img/';            
+                                                var irsbar = $(".irs-bar");
+                                                var irslinemid = $(".irs-line-mid");
+                                                var irslineleft = $(".irs-line-left");
+                                                var irslinerigth = $(".irs-line-right");
+                                                var irslineedge = $(".irs-bar-edge");
+                                                var irsslider = $(".irs-slider");
+                                                var irssingle =$(".irs-single");
+                                                var irssingleafter =$(".irs-single:after");                      
+                                                 if(data.from>=root.configuration.min && data.from<=(root.configuration.min+limit))
+                                                     {
+                                                         irsbar.css('background-image','url('+imgUrl+'red.png)');
+                                                         irslinemid.css('background-image','url('+imgUrl+'red.png)');
+                                                         irslineleft.css('background-image','url('+imgUrl+'red.png)');
+                                                         irslinerigth.css('background-image','url('+imgUrl+'red.png)');
+                                                         irslineedge.css('background-image','url('+imgUrl+'red.png)');
+                                                         irsslider.css('background-image','url('+imgUrl+'grey.png)');
+                                                         irssingle.css('background','#ea273c');
+                                                         irssingleafter.css('border-top-color','#ea273c');
+                                                         
+                                                     }
+                                                 else if(data.from>(root.configuration.min+limit) && data.from<=(root.configuration.min+limit+limit))
+                                                    {
+                                                         irsbar.css('background-image','url('+imgUrl+'yellow.png)');
+                                                         irslinemid.css('background-image','url('+imgUrl+'yellow.png)');
+                                                         irslineleft.css('background-image','url('+imgUrl+'yellow.png)');
+                                                         irslinerigth.css('background-image','url('+imgUrl+'yellow.png)');
+                                                         irslineedge.css('background-image','url('+imgUrl+'yellow.png)');
+                                                         irsslider.css('background-image','url('+imgUrl+'grey.png)');
+                                                         irssingle.css('background','#ffea00');
+                                                         irssingleafter.css('border-top-color','#ea273c'); 
+                                                     }
+                                                else{                                                        
+                                                         irsbar.css('background-image','url('+imgUrl+'green.png)');
+                                                         irslinemid.css('background-image','url('+imgUrl+'green.png)');
+                                                         irslineleft.css('background-image','url('+imgUrl+'green.png)');
+                                                         irslinerigth.css('background-image','url('+imgUrl+'green.png)');
+                                                         irslineedge.css('background-image','url('+imgUrl+'green.png)');
+                                                        irsslider.css('background-image','url('+imgUrl+'grey.png)');
+                                                         irssingle.css('background','#30b519');
+                                                         irssingleafter.css('border-top-color','#ea273c');
+                                                }
+                                                   
+                                           }                                           
+                                      }
+                                    
+                              
+                                                              
+                                                              
+                                                              }};
+                            if(Object.keys(config).length){
+                                if(config.hasOwnProperty("type")){
+                                    obj.type=(config.type)
+                                }
+                                if(config.hasOwnProperty("min")){
+                                    obj.min=(config.min);
+                               if(root.min!==0){ 
+                                    obj.min=root.min;
+                                }
+                                }
+                                if(config.hasOwnProperty("max")){
+                                    obj.max=config.max;
+                              if(root.max!==0){ 
+                                    obj.max=root.max;
+                                }
+                                } 
+                                if(config.hasOwnProperty("from")){
+                                    obj.from=config.from
+                                }
+                                 if(config.hasOwnProperty("to")){
+                                    obj.to=config.to
+                                }
+                                 if(config.hasOwnProperty("step")){
+                                    obj.step=config.step
+                                }
+                                 if(config.hasOwnProperty("grid")){
+                                    obj.grid=config.grid
+                                }
+                                
+                            
+                            }
+                            
+                            
+                            
+                            this.async(function(){
+                                Polymer.dom.flush();
+                                $(this.$$('#sliderfilter')).ionRangeSlider(obj);
+                            });
+                             
+                             
+                             
+                        }
+      			if(this.type == 'date'){
+                    var config=this.configuration,obj={constrainInput:true,autoSize: true,onSelect:this.getValue.bind(this)};
+                            if(Object.keys(config).length){
+                                if(config.hasOwnProperty("minDate")){
+                                    obj.minDate=new Date(config.minDate)
+                                }
+                                if(config.hasOwnProperty("maxDate")){
+                                    obj.maxDate=new Date(config.maxDate)
+                                }
+                                if(config.hasOwnProperty("dateFormat")){
+                                    obj.dateFormat=config.dateFormat
+                                } if(config.hasOwnProperty("showWeek")){
+                                    obj.showWeek=config.showWeek
+                                }
+                                if(config.hasOwnProperty("allowdays")){
+                                    obj.beforeShowDay=function(date){
+                                        var day = date.getDay();
+                                        if(config.allowdays.indexOf(day) !== -1){
+                                            return [true,'Allowed'];    
+                                        }
+                                        return [false,'Disabled'];    
+                                    }
+                                }
+                            }
+                           this.async(function(){
+                                Polymer.dom.flush();
+                          $(this.$$('#date')).datepicker(obj);
+                        });
+                            }
+                
+      			 if(this.type == 'multiselect'){
+                var root=this;
+                    var a=[];
+                     this.async(function(){
+                                Polymer.dom.flush();
+                               $(this.$$("#multiselectfilter")).select2({closeOnSelect: false }).on('select2:select', function(e) {
+                                   if (e.params.data.text.trim().toUpperCase().indexOf('ALL') === 0) {
+                                       $(root.$$("#multiselectfilter")).val([null]).trigger("change");
+                                       
+                                       $(root.$$("#multiselectfilter")).val(["All"]).trigger("change");
+                                       $.each(e.target,function(i,ee){
+                                       if(i!==0){
+                                       ee.disabled=true;
+                                       
+                                       }
+                                       
+                                       
+                                       });
+                                        $.each(e.params.originalEvent.delegateTarget.childNodes,function(i,ee){
+if(i!==0){
+$(ee).css('pointer-events','none');
+$(ee).css('background','#f3f3f3');
+
+
+}
+                     });
+                                
+                                    }
+                                    
+                            
+                                }).on('select2:unselect', function(e) {
+                                  if (e.params.data.text.trim().toUpperCase().indexOf('ALL') === 0) {
+                           $(root.$$("#multiselectfilter")).val([null]).trigger("change");
+ $.each(e.target,function(i,ee){
+                                       if(i!==0){
+                                       ee.disabled=false;
+                                       
+                                       }
+                                       
+                                       
+                                       });
+                                       
+
+                   $.each(e.params.originalEvent.delegateTarget.childNodes,function(i,ee){
+            if(i!==0){
+$(ee).css('pointer-events','auto');
+$(ee).css('background','#ffffff');
+
+
+}
+             
+                                                        });
+                                    }
+                                   
+                                                        }).on("select2:closing",function(e){
+ root.getValue($(root.$$("#multiselectfilter")).val());
+                             
+                               
+                    
+                               });
+             
+    });
+
+                  }
+                  if(this.type == 'select'){
+                var root=this;
+                    var a=[];
+                     this.async(function(){
+                                Polymer.dom.flush();
+                               $(this.$$("#selectfilter")).select2({minimumResultsForSearch: -1}).on("select2:select", function (e) {
+                               
+ 
+ root.getValue($(root.$$("#selectfilter")).val());
+                               //    root.getValue(this);
+    //this returns all the selected item
+    /*root.value= $(this).val();      
+    */                          });
+ });                     
+                  }
+             
+                       if(this.type == 'time'){
+                            var config=this.configuration,obj={constrainInput:true,autoSize: true,onSelect:this.getValue.bind(this)};
+                            if(Object.keys(config).length){
+                                 if(config.hasOwnProperty("minuteMin")){
+                                    obj.minuteMin=config.minuteMin
+                                }
+                                if(config.hasOwnProperty("secondMin")){
+                                    obj.secondMin=config.secondMin
+                                }if(config.hasOwnProperty("minuteMax")){
+                                    obj.minuteMax=config.minuteMax
+                                }if(config.hasOwnProperty("secondMax")){
+                                    obj.secondMax=config.secondMax
+                                }
+                                if(config.hasOwnProperty("timeFormat")){
+                                    obj.timeFormat=new Date(config.timeFormat)
+                                }
+                                if(config.hasOwnProperty("hourMax")){
+                                    obj.hourMax=config.hourMax
+                                }if(config.hasOwnProperty("hourMin")){
+                                    obj.hourMin=config.hourMin
+                                }if(config.hasOwnProperty("maxTime")){
+                                    obj.maxTime=config.maxTime
+                                }
+                                if(config.hasOwnProperty("minTime")){
+                                    obj.minTime=config.minTime
+                                }if(config.hasOwnProperty("minTime")){
+                                    obj.beforeShowDay=function(date){
+                                        var day = date.getDay();
+                                        if(config.allowdays.indexOf(day) !== -1){
+                                            return [true,'Allowed'];    
+                                        }
+                                        return [false,'Disabled'];    
+                                    }
+                                }
+                             } 
+                           this.async(function(){
+                                Polymer.dom.flush();
+                                $(this.$$('#filter')).timepicker(obj);
+                            });
+                        }
+                       if(this.type == 'daterange'){
+                            var config=this.configuration,obj={constrainInput:true,autoSize: true,onClose:this.getValue.bind(this)};
+                            if(Object.keys(config).length){
+                                if(config.hasOwnProperty("minInterval")){
+                                    obj.minInterval=new Date(config.minInterval)
+                                }
+                                if(config.hasOwnProperty("maxInterval")){
+                                    obj.maxInterval=new Date(config.maxInterval)
+                                }
+                                if(config.hasOwnProperty("dateFormat")){
+                                    obj.dateFormat=config.dateFormat
+                                } if(config.hasOwnProperty("showWeek")){
+                                    obj.showWeek=config.showWeek
+                                }
+                                if(config.hasOwnProperty("allowdays")){
+                                    obj.beforeShowDay=function(date){
+                                        var day = date.getDay();
+                                        if(config.allowdays.indexOf(day) !== -1){
+                                            return [true,'Allowed'];    
+                                        }
+                                        return [false,'Disabled'];    
+                                    }
+                                }
+                            }
+                           
+                         this.async(function(){
+                                Polymer.dom.flush();
+                              var start=$(this.$$('#filterStart')),end=$(this.$$('#filterEnd'));
+                                $.timepicker.dateRange(start,end,obj);
+                            });
+                             }
+                        if(this.type == 'datetime'){
+                            var config=this.configuration,obj={constrainInput:true,autoSize: true,onSelect:this.getValue.bind(this)};
+                            if(Object.keys(config).length){
+                                if(config.hasOwnProperty("minDateTime")){
+                                    obj.minDateTime=new Date(config.minDateTime)
+                                }if(config.hasOwnProperty("timeFormat")){
+                                    obj.timeFormat=config.timeFormat;
+                                }
+                                if(config.hasOwnProperty("maxDateTime")){
+                                    obj.maxDateTime=new Date(config.maxDateTime)
+                                }
+                                if(config.hasOwnProperty("dateFormat")){
+                                    obj.dateFormat=config.dateFormat
+                                }
+                                if(config.hasOwnProperty("showWeek")){
+                                    obj.showWeek=config.showWeek
+                                }
+                                if(config.hasOwnProperty("maxTime")){
+                                    obj.maxTime=config.maxTime
+                                }
+                                if(config.hasOwnProperty("minTime")){
+                                    obj.minTime=config.minTime
+                                }
+                                if(config.hasOwnProperty("showHour")){
+                                    obj.showHour=config.showHour
+                                }
+                                if(config.hasOwnProperty("showSecond")){
+                                    obj.showSecond=config.showSecond
+                                }
+                                if(config.hasOwnProperty("showMinute")){
+                                    obj.showMinute=config.showMinute
+                                }
+                                if(config.hasOwnProperty("hourMin")){
+                                    obj.hourMin=config.hourMin
+                                }
+                                if(config.hasOwnProperty("minuteMin")){
+                                    obj.minuteMin=config.minuteMin
+                                }
+                                if(config.hasOwnProperty("secondMin")){
+                                    obj.secondMin=config.secondMin
+                                }
+                                if(config.hasOwnProperty("hourMax")){
+                                    obj.hourMax=config.hourMax
+                                }if(config.hasOwnProperty("minuteMax")){
+                                    obj.minuteMax=config.minuteMax
+                                }if(config.hasOwnProperty("secondMax")){
+                                    obj.secondMax=config.secondMax
+                                }
+                                if(config.hasOwnProperty("allowdays")){
+                                    obj.beforeShowDay=function(date){
+                                        var day = date.getDay();
+                                        if(config.allowdays.indexOf(day) !== -1){
+                                            return [true,'Allowed'];    
+                                        }
+                                        return [false,'Disabled'];    
+                                    }
+                                }
+                            }
+                            this.async(function(){
+                                Polymer.dom.flush();
+                                $(this.$$('#datetime')).datetimepicker(obj);
+                        
+                            });
+                          }
+                      if(this.type == 'datetimerange'){
+                            var config=this.configuration,obj={constrainInput:true,autoSize: true,onClose:this.getValue.bind(this)};
+                            if(Object.keys(config).length){
+                                if(config.hasOwnProperty("dateFormat")){
+                                    obj.minDate=config.minDate;
+                                }
+                                if(config.hasOwnProperty("start")){
+                                    obj.start=config.start;
+                                }
+                                if(config.hasOwnProperty("end")){
+                                    obj.end=config.end
+                                }if(config.hasOwnProperty("showWeek")){
+                                    obj.showWeek=config.showWeek
+                                }
+                                if(config.hasOwnProperty("allowdays")){
+                                    obj.beforeShowDay=function(date){
+                                        var day = date.getDay();
+                                        if(config.allowdays.indexOf(day) !== -1){
+                                            return [true,'Allowed'];    
+                                        }
+                                        return [false,'Disabled'];    
+                                    }
+                                }
+                            }
+                          this.async(function(){
+                                Polymer.dom.flush();
+                              var start=$(this.$$('#datetimefilterStart')),end=$(this.$$('#datetimefilterEnd'))
+                               $.timepicker.datetimeRange(start,end,obj);
+                            });
+                        }
+                if(this.type == 'timerange'){
+                    var config=this.configuration,obj={constrainInput:true,autoSize: true,onClose:this.getValue.bind(this)};
+                            if(Object.keys(config).length){
+                                if(config.hasOwnProperty("dateFormat")){
+                                    obj.minDate=config.minDate;
+                                }
+                                if(config.hasOwnProperty("start")){
+                                    obj.start=config.start;
+                                }
+                                if(config.hasOwnProperty("end")){
+                                    obj.end=config.end
+                                }
+                                if(config.hasOwnProperty("allowdays")){
+                                    obj.beforeShowDay=function(date){
+                                        var day = date.getDay();
+                                        if(config.allowdays.indexOf(day) !== -1){
+                                            return [true,'Allowed'];    
+                                        }
+                                        return [false,'Disabled'];    
+                                    }
+                                }
+                            }
+                            
+                         this.async(function(){
+                              
+                                Polymer.dom.flush();
+                             var start=$(this.$$('#timefilterStart')),end=$(this.$$('#timefilterEnd'))
+                           $.timepicker.timeRange(start,end,obj);
+                            }); 
+                        }
+                if(this.type=='multiselectCheckbox') {
+                        var root=this;
+                        var arra=[];
+                           this.async(function(){
+                                Polymer.dom.flush();
+                                $(this.$$("#multiselectCheckboxfilter")).select2({closeOnSelect: false,templateResult: function(i) {
+                                  var c;
+                                    if(i.selected)
+                                    { 
+                                        c = $('<span class="select-list-user"><i class="material-icons">check_box</i> ' + i.text + '</span>');
+                                     }
+                                    else{
+                                        c = $('<span class="select-list-user"><i class="material-icons">check_box_outline_blank</i> ' + i.text + '</span>')
+                                    }
+                               return c;
+                                    }
+                                    }).on('select2:select', function(e) {
+                                   if (e.params.data.text.trim().toUpperCase().indexOf('ALL') === 0) {
+                                       $(root.$$("#multiselectCheckboxfilter")).val([null]).trigger("change");
+                                       
+                                       $(root.$$("#multiselectCheckboxfilter")).val(["All"]).trigger("change");
+                                       $.each(e.target,function(i,ee){
+                                       if(i!==0){
+                                       ee.disabled=true;
+                                       
+                                       }
+                                       
+                                       
+                                       });
+                                        $.each(e.params.originalEvent.delegateTarget.childNodes,function(i,ee){
+if(i!==0){
+$(ee).css('pointer-events','none');
+$(ee).css('background','#f3f3f3');
+
+
+}
+
+             var aaa= ee.firstChild;
+              aaa.firstChild.textContent="check_box";
+             
+                                                        });
+                                
+                                    }
+                                    else{
+                                    var aaa=e.params.originalEvent.currentTarget.children[0];
+              aaa.firstChild.textContent="check_box";
+                                    
+                                    }
+                                    
+                            
+                                }).on('select2:unselect', function(e) {
+                                  if (e.params.data.text.trim().toUpperCase().indexOf('ALL') === 0) {
+                           $(root.$$("#multiselectCheckboxfilter")).val([null]).trigger("change");
+ $.each(e.target,function(i,ee){
+                                       if(i!==0){
+                                       ee.disabled=false;
+                                       
+                                       }
+                                       
+                                       
+                                       });
+                                       
+
+                   $.each(e.params.originalEvent.delegateTarget.childNodes,function(i,ee){
+            if(i!==0){
+$(ee).css('pointer-events','auto');
+$(ee).css('background','#ffffff');
+
+
+}
+              var aaa= ee.firstChild;
+              if(aaa!==undefined){  aaa.firstChild.textContent="check_box_outline_blank";
+             }
+                                                        });
+                                    }
+                                    else{
+                                    
+                                    
+                                    var aaa=e.params.originalEvent.currentTarget.children[0];
+              if(aaa!==undefined){
+              aaa.firstChild.textContent="check_box_outline_blank";
+                                  }  
+                                    
+                                    
+                                    }
+                                                        }).on("select2:closing",function(e){
+ root.getValue($(root.$$("#multiselectCheckboxfilter")).val());
+                             
+                               
+                    
+                               });
+             
+    });
+             }
+		
+		});
+        }
+        
+        
+      })
+   </script>
+</dom-module>

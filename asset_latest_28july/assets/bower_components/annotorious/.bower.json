@@ -1,0 +1,15 @@
+{
+  "name": "annotorious",
+  "homepage": "https://github.com/annotorious/annotorious",
+  "version": "0.6.4",
+  "_release": "0.6.4",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.6.4",
+    "commit": "0aa5f87f59cfd55cda171a1cbc7e634e202b453f"
+  },
+  "_source": "https://github.com/annotorious/annotorious.git",
+  "_target": "^0.6.4",
+  "_originalSource": "annotorious",
+  "_direct": true
+}

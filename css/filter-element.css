@@ -1,0 +1,28 @@
+#fiterboxelement .cui-input,
+			#fiterboxelement button,
+			#fiterboxelement input:not([type="radio"]):not([type="checkbox"]),
+			.cui select,
+			.cui textarea {
+			  font: 400 .875em;
+			  width: 100%;
+			  max-width: 100%;
+			  margin: 5px auto 17px;
+			  padding: 10px 17px;
+			  transition: all .5s linear!important;
+			  color: #6f7889;
+			  border: 1px solid #e5e5e5;
+			  border-radius: 3px;
+			  background: #fff;
+			  -webkit-appearance: none;
+			  line-height:normal
+			}
+
+
+			#fiterboxelement label{
+				line-height:1;
+				display:block
+				
+			}
+			.cui button.sm{
+			  width: auto
+			}

@@ -1,0 +1,58 @@
+<link href="../bower_components/polymer/polymer.html" rel="import" />
+<dom-module id="visualization-element">
+    <template>
+		<style>	
+			div{
+				background:red;
+				height:inherit;
+				width:inherit;
+			}
+		</style>
+		<div id="container"></div>
+    </template>
+    <script>
+        Polymer({
+            is: "visualization-element",
+			properties:{
+				visualization:{
+					type:Object,
+					value:function(){
+						return {};
+					},
+					notify:true
+				},
+				workboardId:{
+					type:String,
+					value:'',
+					reflectToAttribute:true
+				},
+				baseUtil:{
+					type:Object,
+					value:function(){
+						return {};
+					},
+					notify:true
+				},
+				serviceUrl:{
+					type:String,
+					value:"visualization/getVisualizationData",
+					readonly:true
+				}
+			},
+			attached:function(){
+				this.async(function(){
+					Polymer.dom.flush();
+					this.baseUtil=document.createElement('base-util');
+					var self=this;
+					this.baseUtil.sendRequest(this.serviceUrl,{"data": {"workboard_id":self.workboardId }},function(e){
+						if(e.status.code == 200){
+							self.visualization=e.data;
+						}else{
+							console.error(e.status.value);
+						}
+					},{});
+				})
+			}
+        });
+    </script>
+</dom-module>

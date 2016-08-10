@@ -1,0 +1,526 @@
+<!--<link rel="import" href="bower_components/polymer/polymer.html">-->
+<dom-module id="filter-element">
+   <template>
+      <style>
+      </style>
+      <div class="form-group">
+         <template is="dom-if" if="{{label}}">
+            <label for$="{{label}}">{{label}}</label>
+         </template>
+         <template is="dom-if" if="{{equals(type,'date')}}">
+            <input type="text" class="form-control" id="filter"  value="{{value::change}}" >
+         </template>
+         <template is="dom-if" if="{{equals(type,'time')}}">
+            <div id="time">
+               <input type="text" class="form-control" id="filter"  value="{{value::change}}" >
+            </div>
+         </template>
+         <template is="dom-if" if="{{equals(type,'datetime')}}">
+            <input type="text" class="form-control" id="filter" value="{{value::change}}" >
+         </template>
+         <template is="dom-if" if="{{equals(type,'daterange')}}">
+            <input type="text" class="form-control" id="filterStart" >
+            <input type="text" class="form-control" id="filterEnd" >
+         </template>
+         <template is="dom-if" if="{{equals(type,'timerange')}}">
+            <input type="text" class="form-control" id="filterStart" >
+            <input type="text" class="form-control" id="filterEnd"  >
+         </template>
+         <template is="dom-if" if="{{equals(type,'datetimerange')}}">
+            <input type="text" class="form-control" id="filterStart">
+            <input type="text" class="form-control" id="filterEnd">
+         </template>
+         <template is="dom-if" if="{{equals(type,'multiselect')}}">
+            <select  class="form-control" multiple value="" on-change="getSelectedOptions" id="filter">
+                <template is="dom-repeat" items="{{configuration.additionalData}}">
+                     <option value="{{item}}">{{item}}</option>
+                </template>
+               <template is="dom-repeat" items="{{localData.resultSet}}">
+                  <template is="dom-repeat" items="{{item}}" as ="list">
+                     <option value$="{{list}}">{{list}}</option>
+                  </template>
+               </template>
+            </select>
+         </template>
+         <template is="dom-if" if="{{equals(type,'multiselectCheckbox')}}">
+            <select  class="form-control" multiple value=""  id="filter">
+               <option value="All">All</option> 
+                <template is="dom-repeat" items="{{configuration.additionalData}}">
+                     <option value="{{item}}">{{item}}</option>
+                </template>
+              <template is="dom-repeat" items="{{localData.resultSet}}">
+                  <template is="dom-repeat" items="{{item}}" as ="list">
+                     <option value="{{list}}">{{list}}</option>
+                  </template>
+               </template>
+            </select>
+         </template>
+         <template is="dom-if" if="{{equals(type,'select')}}">
+            
+            <select  class="form-control" value="{{value::change}}" id="filter">
+                <template is="dom-repeat" items="{{configuration.additionalData}}">
+                     <option value="{{item}}">{{item}}</option>
+                </template>
+               <template is="dom-repeat" items="{{localData.resultSet}}">
+                  <template is="dom-repeat" items="{{item}}" as ="list">
+                     <option value$="{{list}}">{{list}}</option>
+                  </template>
+               </template>
+            </select>
+         </template>
+         <template is="dom-if" if="{{equals(type,'radio')}}">
+            <input type="radio"  id="filter"  value="{{value::change}}" >
+         </template>
+         <template is="dom-if" if="{{equals(type,'checkbox')}}">
+            <input type="checkbox"  id="filter" value="{{value::change}}" >
+         </template>
+         <template is="dom-if" if="{{equals(type,'slider')}}">
+            <input type="text" class="form-control hidden" id="filter" value="{{value::change}}" >
+         </template>
+         <template is="dom-if" if="{{equals(type,'color')}}">
+            <input type="color" class="form-control" id="filter" value="{{value::change}}" >
+         </template>
+         <template is="dom-if" if="{{equals(type,'number')}}">
+            <input type="number" class="form-control" id="filter" value="{{value::change}}" >
+         </template>
+         <template is="dom-if" if="{{equals(type,'text')}}">
+            <input type="text" class="form-control" id="filter" value="{{value::input}}" >
+         </template>
+      </div>
+   </template>
+   <script>
+      Polymer({
+      	is:"filter-element",
+      	properties:{
+      		label:{
+      			type:String,
+      			value:"",
+      			reflectToAttribute:true
+      		},
+      		type:{
+      			type:String,
+      			value:"",
+      			reflectToAttribute:true
+      		},
+      		data: {
+                      type: Array,
+                        observer:"__dataChanged",
+                      value: function(){ return {}
+                                  }
+                                },
+                    localData:{
+                        type:Object,
+                        value:function(){
+                            return {}
+                        }
+                    },
+                 value:{
+      			type:Array,
+      			value:function(){
+      				return [];
+      			},
+                     observer:'__valueChanged',
+      			reflectToAttribute:true
+      		},
+                    id:{
+                        type:String
+                    },
+                    name:{
+                        type:String,
+                        value:""
+                    },
+                    affected:{
+                        type:Array,
+                        value:function(){
+                            return [];
+                        }
+                    },
+                    configuration:{
+                        type:Object,
+                        value:function(){
+                            return {}
+                        }
+                    }
+      	},
+                __valueChanged:function(){
+                                    var obj={};
+                                    var params={};
+                                    params[this.name]=this.value;
+                                    obj["info"]={};
+                                    info=obj["info"];
+                                    info["who"]=this.id;
+                                    info["params"]=params;
+                                        if(typeof this.affected !='undefined'){if(this.affected.length)
+                                        {
+                                        info["affected"]=this.affected;
+                                        }}
+                                    var self=this;
+                                    var cont=$(this).closest("content-element")[0]
+                                    var dataLayer=$(cont).find("data-element")[0];  // fetch the data layer
+                            if(typeof dataLayer!='undefined'){dataLayer.filter=obj;}
+                },
+      	equals:function(e,i){
+      		if((e == i)){
+                          this.addDateFunctionality();
+                       	return true;
+      		}
+                    return false;
+      	},
+                attached:function(){
+              
+                },
+                getSelectedOptions:function(e){
+                  var result = [];
+                    var options = e && e.target.options;
+                    var opt;
+                    for (var i=0, iLen=e.target.options.length; i<iLen; i++) {
+                        opt = options[i];
+                            if (opt.selected) {
+                            result.push(opt.value || opt.text);
+                        }
+                    }
+                    this.value=result;    
+                    return result;
+                },
+                getValue:function(e){
+                    if(this.type == 'slider'){
+                        if(this.configuration.hasOwnProperty('type') && this.configuration.type.indexOf('double')){
+                            this.value=[e.from,e.to];
+                        }else{
+                            this.value=[e.from];
+                        }
+                    }
+                    if(this.type =='date'){
+                        this.value=e;
+                    }
+                    if(this.type =='time'){
+                          this.value=e;
+                    }if(this.type =='datetime'){
+                          this.value=e;
+                    }
+                    if(this.type == 'daterange'){
+                       var a=this.$$("#filterStart").value,b=this.$$("#filterEnd").value;
+                       this.value=[a,b];
+                   }
+                    if(this.type =='datetimerange'){
+                       var a=this.$$("#filterStart").value,b=this.$$("#filterEnd").value;
+                       this.value=[a,b];
+                    }
+                    if(this.type == 'timerange'){
+                        var a=this.$$("#filterStart").value,b=this.$$("#filterEnd").value;
+                       this.value=[a,b];
+                     }
+                },
+                   
+                __dataChanged:function(){
+                 //   this.data=this.data[this.id]
+                    this.localData=this.data[this.id];
+                console.log(this.id);
+                },
+      	addDateFunctionality:function(){
+                    var root=this;
+      		this.async(function(){
+      			Polymer.dom.flush();
+                         if(this.type == 'slider'){
+                            var config=this.configuration,obj={keyboard: true,fixMiddle: true,onFinish:this.getValue.bind(this)};
+                            if(Object.keys(config).length){
+                                if(config.hasOwnProperty("type")){
+                                    obj.type=(config.type)
+                                }
+                                if(config.hasOwnProperty("min")){
+                                    obj.min=(config.min)
+                                }
+                                if(config.hasOwnProperty("max")){
+                                    obj.max=config.max
+                                } 
+                                if(config.hasOwnProperty("from")){
+                                    obj.from=config.from
+                                }
+                                 if(config.hasOwnProperty("to")){
+                                    obj.to=config.to
+                                }
+                                 if(config.hasOwnProperty("step")){
+                                    obj.step=config.step
+                                }
+                                 if(config.hasOwnProperty("grid")){
+                                    obj.grid=config.grid
+                                }
+                            }
+                            this.async(function(){
+                                Polymer.dom.flush();
+                                $(this.$$('#filter')).ionRangeSlider(obj);
+                            });
+                        }
+      			if(this.type == 'date'){
+                      
+                            var config=this.configuration,obj={constrainInput:true,autoSize: true,onSelect:this.getValue.bind(this)};
+                            if(Object.keys(config).length){
+                                if(config.hasOwnProperty("minDate")){
+                                    obj.minDate=new Date(config.minDate)
+                                }
+                                if(config.hasOwnProperty("maxDate")){
+                                    obj.maxDate=new Date(config.maxDate)
+                                }
+                                if(config.hasOwnProperty("dateFormat")){
+                                    obj.dateFormat=config.dateFormat
+                                } if(config.hasOwnProperty("showWeek")){
+                                    obj.showWeek=config.showWeek
+                                }
+                                if(config.hasOwnProperty("allowdays")){
+                                    obj.beforeShowDay=function(date){
+                                        var day = date.getDay();
+                                        if(config.allowdays.indexOf(day) !== -1){
+                                            return [true,'Allowed'];    
+                                        }
+                                        return [false,'Disabled'];    
+                                    }
+                                }
+                            }
+                           this.async(function(){
+                                Polymer.dom.flush();
+                          $(this.$$('#filter')).datepicker(obj);
+                        });
+                            }
+                       if(this.type == 'time'){
+                            var config=this.configuration,obj={constrainInput:true,autoSize: true,onSelect:this.getValue.bind(this)};
+                            if(Object.keys(config).length){
+                                 if(config.hasOwnProperty("minuteMin")){
+                                    obj.minuteMin=config.minuteMin
+                                }
+                                if(config.hasOwnProperty("secondMin")){
+                                    obj.secondMin=config.secondMin
+                                }if(config.hasOwnProperty("minuteMax")){
+                                    obj.minuteMax=config.minuteMax
+                                }if(config.hasOwnProperty("secondMax")){
+                                    obj.secondMax=config.secondMax
+                                }
+                                if(config.hasOwnProperty("timeFormat")){
+                                    obj.timeFormat=new Date(config.timeFormat)
+                                }
+                                if(config.hasOwnProperty("hourMax")){
+                                    obj.hourMax=config.hourMax
+                                }if(config.hasOwnProperty("hourMin")){
+                                    obj.hourMin=config.hourMin
+                                }if(config.hasOwnProperty("maxTime")){
+                                    obj.maxTime=config.maxTime
+                                }
+                                if(config.hasOwnProperty("minTime")){
+                                    obj.minTime=config.minTime
+                                }if(config.hasOwnProperty("minTime")){
+                                    obj.beforeShowDay=function(date){
+                                        var day = date.getDay();
+                                        if(config.allowdays.indexOf(day) !== -1){
+                                            return [true,'Allowed'];    
+                                        }
+                                        return [false,'Disabled'];    
+                                    }
+                                }
+                             } 
+                           this.async(function(){
+                                Polymer.dom.flush();
+                                $(this.$$('#filter')).timepicker(obj);
+                            });
+                        }
+                       if(this.type == 'daterange'){
+                            var config=this.configuration,obj={constrainInput:true,autoSize: true,onClose:this.getValue.bind(this)};
+                            if(Object.keys(config).length){
+                                if(config.hasOwnProperty("minInterval")){
+                                    obj.minInterval=new Date(config.minInterval)
+                                }
+                                if(config.hasOwnProperty("maxInterval")){
+                                    obj.maxInterval=new Date(config.maxInterval)
+                                }
+                                if(config.hasOwnProperty("dateFormat")){
+                                    obj.dateFormat=config.dateFormat
+                                } if(config.hasOwnProperty("showWeek")){
+                                    obj.showWeek=config.showWeek
+                                }
+                                if(config.hasOwnProperty("allowdays")){
+                                    obj.beforeShowDay=function(date){
+                                        var day = date.getDay();
+                                        if(config.allowdays.indexOf(day) !== -1){
+                                            return [true,'Allowed'];    
+                                        }
+                                        return [false,'Disabled'];    
+                                    }
+                                }
+                            }
+                           
+                         this.async(function(){
+                                Polymer.dom.flush();
+                              var start=$(this.$$('#filterStart')),end=$(this.$$('#filterEnd'));
+                                $.timepicker.dateRange(start,end,obj);
+                            });
+                             }
+                        if(this.type == 'datetime'){
+                            var config=this.configuration,obj={constrainInput:true,autoSize: true,onSelect:this.getValue.bind(this)};
+                            if(Object.keys(config).length){
+                                if(config.hasOwnProperty("minDateTime")){
+                                    obj.minDateTime=new Date(config.minDateTime)
+                                }if(config.hasOwnProperty("timeFormat")){
+                                    obj.timeFormat=config.timeFormat;
+                                }
+                                if(config.hasOwnProperty("maxDateTime")){
+                                    obj.maxDateTime=new Date(config.maxDateTime)
+                                }
+                                if(config.hasOwnProperty("dateFormat")){
+                                    obj.dateFormat=config.dateFormat
+                                }
+                                if(config.hasOwnProperty("showWeek")){
+                                    obj.showWeek=config.showWeek
+                                }
+                                if(config.hasOwnProperty("maxTime")){
+                                    obj.maxTime=config.maxTime
+                                }
+                                if(config.hasOwnProperty("minTime")){
+                                    obj.minTime=config.minTime
+                                }
+                                if(config.hasOwnProperty("showHour")){
+                                    obj.showHour=config.showHour
+                                }
+                                if(config.hasOwnProperty("showSecond")){
+                                    obj.showSecond=config.showSecond
+                                }
+                                if(config.hasOwnProperty("showMinute")){
+                                    obj.showMinute=config.showMinute
+                                }
+                                if(config.hasOwnProperty("hourMin")){
+                                    obj.hourMin=config.hourMin
+                                }
+                                if(config.hasOwnProperty("minuteMin")){
+                                    obj.minuteMin=config.minuteMin
+                                }
+                                if(config.hasOwnProperty("secondMin")){
+                                    obj.secondMin=config.secondMin
+                                }
+                                if(config.hasOwnProperty("hourMax")){
+                                    obj.hourMax=config.hourMax
+                                }if(config.hasOwnProperty("minuteMax")){
+                                    obj.minuteMax=config.minuteMax
+                                }if(config.hasOwnProperty("secondMax")){
+                                    obj.secondMax=config.secondMax
+                                }
+                                if(config.hasOwnProperty("allowdays")){
+                                    obj.beforeShowDay=function(date){
+                                        var day = date.getDay();
+                                        if(config.allowdays.indexOf(day) !== -1){
+                                            return [true,'Allowed'];    
+                                        }
+                                        return [false,'Disabled'];    
+                                    }
+                                }
+                            }
+                            this.async(function(){
+                                Polymer.dom.flush();
+                                $(this.$$('#filter')).datetimepicker(obj);
+                        
+                            });
+                          }
+                      if(this.type == 'datetimerange'){
+                            var config=this.configuration,obj={constrainInput:true,autoSize: true,onClose:this.getValue.bind(this)};
+                            if(Object.keys(config).length){
+                                if(config.hasOwnProperty("dateFormat")){
+                                    obj.minDate=config.minDate;
+                                }
+                                if(config.hasOwnProperty("start")){
+                                    obj.start=config.start;
+                                }
+                                if(config.hasOwnProperty("end")){
+                                    obj.end=config.end
+                                }if(config.hasOwnProperty("showWeek")){
+                                    obj.showWeek=config.showWeek
+                                }
+                                if(config.hasOwnProperty("allowdays")){
+                                    obj.beforeShowDay=function(date){
+                                        var day = date.getDay();
+                                        if(config.allowdays.indexOf(day) !== -1){
+                                            return [true,'Allowed'];    
+                                        }
+                                        return [false,'Disabled'];    
+                                    }
+                                }
+                            }
+                          this.async(function(){
+                                Polymer.dom.flush();
+                              var start=$(this.$$('#filterStart')),end=$(this.$$('#filterEnd'))
+                               $.timepicker.datetimeRange(start,end,obj);
+                            });
+                        }
+                         if(this.type == 'timerange'){
+                            var config=this.configuration,obj={constrainInput:true,autoSize: true,onClose:this.getValue.bind(this)};
+                            if(Object.keys(config).length){
+                                if(config.hasOwnProperty("dateFormat")){
+                                    obj.minDate=config.minDate;
+                                }
+                                if(config.hasOwnProperty("start")){
+                                    obj.start=config.start;
+                                }
+                                if(config.hasOwnProperty("end")){
+                                    obj.end=config.end
+                                }
+                                if(config.hasOwnProperty("allowdays")){
+                                    obj.beforeShowDay=function(date){
+                                        var day = date.getDay();
+                                        if(config.allowdays.indexOf(day) !== -1){
+                                            return [true,'Allowed'];    
+                                        }
+                                        return [false,'Disabled'];    
+                                    }
+                                }
+                            }
+                         this.async(function(){
+                                Polymer.dom.flush();
+                             var start=$(this.$$('#filterStart')),end=$(this.$$('#filterEnd'))
+                           $.timepicker.timeRange(start,end,obj);
+                            }); 
+                        }
+                       if(this.type=='multiselectCheckbox') {
+                           this.async(function(){
+                                Polymer.dom.flush();
+                                $("#filter").select2({closeOnSelect: false,templateResult: function(i) {
+                                  var c;
+                                    if(i.selected)
+                                    { 
+                                        c = $('<div class="select-list-user"><input class="mycheck" type="checkbox" checked  name="' + i.text + '" id="" /> ' + i.text + '</div>');
+                                     }
+                                    else{
+                                        c = $('<div class="select-list-user"><input class="mycheck" type="checkbox"  name="' + i.text + '" id="" /> ' + i.text + '</div>')
+                                    }
+                               return c;
+                                    }
+                                    }).on('select2:select', function(e) {
+                                   if (e.params.data.text.trim().toUpperCase().indexOf('ALL') === 0) {
+                                    $.each(e.target.selectedOptions,function(i,ee){
+                                        console.log(ee)
+                                        $(ee).attr("selected","false");
+                                    })  
+                                    }
+                                    var obj={};
+                                    var params={};
+                                    params[this.name]=this.value;
+                                    obj["info"]={};
+                                    info=obj["info"];
+                                    info["who"]=this.id;
+                                    info["params"]=params;
+                                        if(typeof this.affected !='undefined'){if(this.affected.length)
+                                        {
+                                        info["affected"]=this.affected;
+                                        }}
+                                    var self=this;
+                                    var cont=$(this).closest("content-element")[0]
+                                    var dataLayer=$(cont).find("data-element")[0];  // fetch the data layer
+                            if(typeof dataLayer!='undefined'){dataLayer.filter=obj;
+                                                             }
+                                }).on('select2:unselect', function(e) {
+                                    if (e.params.data.text.trim().toUpperCase().indexOf('ALL') === 0) {
+                                     $(e.target).find('option:gt(0)').removeAttr('disabled');
+                                    }
+                                      root.value=$(e.target).val();
+                                    });
+                            });
+                      } 
+                     });
+      	}
+      })
+   </script>
+</dom-module>

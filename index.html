@@ -1,464 +1,870 @@
 <html>
-    <head>
-        <script src="./js/jquery.js"></script>
-        <script src="./js/highstock.js"></script>
-        <script src="./js/Visualization.js"></script>
-        <script src="./js/Workboard.js"></script>
-        <script src="./js/Kettle.js"></script>
-    </head>
-    <body>
-		<div id="container" style="width: 550px; height: 400px; margin: 0 auto">
-		    <form>
-				<div class="ui-field-contain">
-					<label for="select-native-4">Optgroup (if supported):</label>
-					<select name="select-native-4" id="select-native-4">
-						<option>Choose...</option>
-						<optgroup label="Group 1" id="addb">
 
-						</optgroup>
-						<optgroup label="Group 2">
-							<option value="5">The 5th Option</option>
-							<option value="6">The 6th Option</option>
-							<option value="7">The 7th Option</option>
-						</optgroup>
-					</select>
-				</div>
-			</form>
-		</div>
-        <script language="JavaScript">
-            var //workboardData = [],
-                //visualData = [],
-                //kettleData = [],
-                visualization,
-                workboardDataConfiguration = [],
-                decryptedData = [],
-                kettleResultset = [],
-                visualisationConfiguration = [],
-                chartObj,
-                dataId,
-                option = [];
-			$(document).ready(function() {
-                console.log("1");
+<head>
+    <link rel="stylesheet" href="css/tooltip.css">
+    <link rel="stylesheet" href="css/widget.css">
+    <link rel="stylesheet" href="css/material-icons.css">
+    <link rel="stylesheet" href="https://paulkinzett.github.io/toolbar/css/documentation.css"/>
+	<link rel="stylesheet" href="https://paulkinzett.github.io/toolbar/css/jquery.toolbar.css"/>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600">
+    <link rel="stylesheet" href="css/jquery.mobile.actionsheet.css" />
+    <link rel="stylesheet" href="css/swiper.min.css">
+    <link rel="stylesheet" href="css/custom.css">
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="https://paulkinzett.github.io/toolbar/js/jquery.toolbar.min.js"></script>
+    
+    <script src="js/swiper.min.js"></script>
+    <script src="js/jquery.toolbar.min.js"></script>
+    <script src="./js/highcharts.js"></script>
+    <script src="./js/Kettle.json"></script>
+    <script src="./js/Visualization.json"></script>
+    <script src="./js/Workboard.json"></script>
+    
+    <style type='text/css' rel='stylesheet'>
+
+      .swiper-container {
+            width: 100%;
+            height: 300px;
+            margin: 20px auto;
+        }
+        .swiper-slide {
+            text-align: center;
+            font-size: 18px;
+            background: #eaeaea;
+            width: 60%;
+            /* Center slide text vertically */
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            -webkit-justify-content: center;
+            justify-content: center;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+
+        }
+        .swiper-slide:nth-child(2n) {
+            width: 40%;
+        }
+        .swiper-slide:nth-child(3n) {
+            width: 20%;
+        }
+
+
+	</style>
+</head>
+
+<body>
+    <div role="main" class="ui-content bg2 txt__center" id="">
+        <div class="ui-grid-solo" style="margin:0">
+            <div class="widget-slider--wrapper">
+                <div class="swiper-container">
+                   <div class="swiper-wrapper" id="swiper-wrapper">
+
+   
+                   </div>
+                   <!-- Add Scrollbar -->
+                     <div class="swiper-scrollbar"></div>
+                </div>
+            </div>
+      </div><!-- ui-solo -->
+
+  </div><!--main-->
+
+    <div id="container" style="width: 550px; height: 400px; margin: 0 auto">
+    </div>
+        <div id="toolbar-options" class="hidden">
+        <a href="#"><i class="fa fa-plane"></i></a>
+        <a href="#"><i class="fa fa-car"></i></a>
+        <a href="#"><i class="fa fa-bicycle"></i></a>
+    </div>
+    
+    <script language="JavaScript">
+
+        $(document).ready(function () {
+              var swiper = new Swiper('.swiper-container', {
+                scrollbar: '.swiper-scrollbar',
+                    scrollbarHide: true,
+                    slidesPerView: 'auto',
+                    centeredSlides: true,
+                    spaceBetween: 30,
+                    grabCursor: true
+              });
+            console.log(visualData);
+            
+            
+                //console.log("1");
                 createDashboard1();
-			})//document.ready end
-            
-            function createDashboard1(){
-                console.log("2");
-                var self=this;
-                $.each(workboardData.data,function(index,value)
-                {
-                    console.log("2.1");
-                    configuration=workboardData.data;
-                    dataId = index;
-                    //console.log(dataId);
-                    draw(index);
-                })
-            }
-            function resize(){
-                console.log("6");
-                if(typeof this.chartObj !== 'undefined' && Object.keys(this.chartObj).length){
-                    var chart= $(this.$.container);
-                    this.chartObj.setSize(chart.width()-50,chart.height()-50);
-                    this.chartObj.reflow();
+            }) //document.ready end
+        
+        function createDashboard1() {
+            //console.log("2");
+            $.each(workboardData.data.objects, function (index, value) {
+                if (workboardData.data.objects[index].type == "chart-element") {
+                    draw(value.id, value.configuration, value.name);
                 }
+                
+                else if (workboardData.data.objects[index].type == "widget-element") {
+                    createWidget(value.id, value.configuration, value.name)
+                }
+                
+            })
+        }
+
+        function resize() {
+            //console.log("6");
+            if (typeof chartObj !== 'undefined' && Object.keys(chartObj).length) {
+                var chart = $($.container);
+                chartObj.setSize(chart.width() - 50, chart.height() - 50);
+                chartObj.reflow();
             }
+        }
+
+        function draw(id, configuration, title) {
+            //console.log("3");
+            var objects = [];
+            if (kettleData.data.hasOwnProperty(id) && visualData.data.hasOwnProperty(id)) {
+                //console.log("3.1");
+                var normzalize = normalize(id, configuration, visualData.data[id], title)
+                    , makedata = makeColumns(kettleData.data[id].resultSet);
+                options = processor(configuration, makedata, normzalize);
+                objects.push(new Highcharts.Chart(options));
+                options = {};
+            }
+        }
+
+        function normalize(id, configuration, currentVisualization, name) {
+            //console.log("4");
             
-            function draw(index){
-                console.log("3");
-                var self=this;
-                //this.loadingStart();
-                //console.log(index);
-                //if (workboardData.data[index].hasOwnProperty("configuration") && typeof workboardData.data[index].configuration.data === 'object' && workboardData.data[index].configuration.data.length){
-                if(workboardData.data[index].hasOwnProperty("configuration")){
-                    if(workboardData.data[index].configuration.type === 'chart-type-1' || workboardData.data[index].configuration.type === 'multi-chart-element' || workboardData.data[index].configuration.type === 'chart'){
-                        try{
-                            var configuration = workboardData.data[index].configuration,
-                                name = workboardData.data[index].configuration.name,
-                                visualization=visualData.data[index],
-                                data=kettleData.data[index];    
-                            
-                            if (typeof configuration === 'object'){
-                                var normalized = normalize(visualization.configuration.result,name,index);
-                            partedData=makeColumns(data.resultSet);
-                            var options = processor(configuration.configuration, partedData, normalized);
-                            }
+             var divTool =$('<div class="btn-toolbar" style="margin:5px;"><i class="fa fa-cog"></i></div>');
+            
+            var div = document.createElement('div')
+                , toolbarDiv = document.createElement('div')
+                , toolId = "toolId" + id
+                , id = "id" + id
+                //, title = document.createElement("h3")
+                , container = document.getElementById("container");
+            toolbarDiv.setAttribute("id", toolId);
+            div.setAttribute("id", id);
+            container.appendChild(toolbarDiv);
+            toolbarDiv.appendChild(div);
+            //title.innerHTML = name;
+            //$.parseHTML('<div id=id'+id+'<h3>'+name+'</h3></div');
+            //var div1 = document.getElementById(id);
+            //debugger;
+            //$('#'+id).append(divTool);
+            $('#'+toolId).append(divTool);
+            //div.appendChild(title);
+            
+            $(divTool).toolbar({
+                content: '#toolbar-options',
+                position: 'bottom',
+                event: 'click',
+                hideOnClick: true
+              });
+            
+            
+            //console.log(document.getElementById(id));
+            var visualization = JSON.parse(JSON.stringify(currentVisualization));
+            (visualization.hasOwnProperty("chart") ? ("") : (visualization.chart = {}));
+            $.each(configuration, function (i, j) {
+                if (i.toLowerCase().indexOf('series') === -1) {
+                    visualization[i] = j;
+                }
+            });
+            visualization.chart.animation = true;
+            visualization.chart.selectionMarkerFill = 'rgba(69,114,167,0.25)';
+            visualization.chart.backgroundColor = 'transparent';
+            visualization.chart.borderColor = 'transparent';
+            visualization.chart.borderRadius = 0;
+            visualization.chart.borderWidth = 0;
+            visualization.chart.ignoreHiddenSeries = true;
+            visualization.chart.zoomType = 'xy';
+            visualization.chart.panning = true;
+            visualization.chart.panKey = 'shift';
+            visualization.chart.plotBackgroundColor = 'transparent';
+            visualization.chart.plotBackgroundImage = '';
+            visualization.chart.plotBorderColor = 'transparent';
+            visualization.chart.plotBorderWidth = 0;
+            visualization.chart.plotShadow = false;
+            visualization.chart.reflow = true;
+            visualization.chart.shadow = false;
+            visualization.chart.showAxes = true;
+            visualization.chart.renderTo = $.container;
+            visualization.chart.events = {};
+            visualization.chart.events["drilldown"] = drilldown.bind(this);
+            visualization.chart.events["drillup"] = drillup.bind(this);
+            visualization.lang = {
+                    drillUpText: '<< Back to {series.name}'
+                }
+                , visualization.exporting = {
+                    enabled: false
+                };
+            (visualization.hasOwnProperty('tooltip') ? (visualization.tooltip.useHTML = true) : (visualization.tooltip = {
+                useHTML: true
+            }));
+            visualization.tooltip.borderWidth = 0;
+            visualization.tooltip.shadow = false;
+            visualization.tooltip.style = {
+                padding: 0
+                , margin: 0
+            };
+            visualization.tooltip.hideDelay = 1000;
+            visualization.tooltip.followPointer = false;
+            visualization.tooltip.followTouchMove = false;
+            visualization.tooltip.backgroundColor = "rgba(255,255,255,1)";
+            visualization.tooltip.borderColor = "rgba(0,0,0,0.3)";
+            visualization.tooltip.borderRadius = 10;
+            visualization.tooltip.headerFormat = '<div class="tool--box tool--pop-width pop-top" id="share_pop"><div class="tool--body">';
+            visualization.title = {
+                align: "left"
+                , text: name
+                , style: {
+                    "color": "#333333"
+                    , "fontSize": "18px"
+                    , "font-weight": "bold"
+                }
+            };
+            if (configuration.hasOwnProperty('title')) {
+                visualization.title = configuration.title
+            }
+            visualization.series = [];
+            if (!visualization.hasOwnProperty('credits')) {
+                visualization.credits = {
+                    href: "https://netlink.com"
+                    , text: "Netlink Business Analytics"
+                };
+            }
+            visualization.chart.renderTo = id;
+            return visualization;
+        }
 
-                            //console.log(option);
-                            //console.log("option");
-                            if (typeof chartObject !== 'undefined' && Object.keys(chartObject).length) {
-                               // chartObject.destroy();
-                            }
-                            //console.log(options)
-                            chartObject = new Highcharts[visualization.configuration.chartType](options);
-
+        function makeColumns(coldata) {
+            //console.log("5");
+            var rows = {};
+            if (coldata.length) {
+                for (var i = 0, j = coldata[0].length; i < j; i++) {
+                    var column = [];
+                    for (var k = 0, l = coldata.length; k < l; k++) {
+                        var item = coldata[k][i];
+                        if (isNaN(item)) {
+                            column.push(item);
                         }
+                        else {
+                            column.push(Number(item));
+                        }
+                    }
+                    rows[i] = column;
+                }
+                return rows;
+            }
+        }
 
-                        catch(e){
-                            console.error(e)
+        function processor(config, data, visualization) {
+            //console.log("6");
+            if (config.hasOwnProperty('xAxis')) {
+                if (config.xAxis.hasOwnProperty('category')) {
+                    var d = [];
+                    if (config.xAxis.category.hasOwnProperty('columnMapping')) {
+                        if (config.xAxis.category.hasOwnProperty("formatter")) {
+                            d = formatter(data[Number(config.xAxis.category.columnMapping)], config.xAxis.category.formatter);
+                        }
+                        else {
+                            d = data[Number(config.xAxis.category.columnMapping)];
+                        }
+                    }
+                    else if (config.xAxis.category.hasOwnProperty('data')) {
+                        if (config.xAxis.category.hasOwnProperty("formatter")) {
+                            d = formatter(config.xAxis.category.data, config.xAxis.category.formatter);
+                        }
+                        else {
+                            d = config.xAxis.category.data;
+                        }
+                    }
+                    if (visualization.hasOwnProperty('xAxis')) {
+                        visualization.xAxis.category = d;
+                    }
+                    else {
+                        visualization.xAxis = {
+                            category: d
                         }
                     }
                 }
             }
-            
-            function makeColumns(data) {
-				var partedData={};
-				for (var i = 0, j = data[0].length; i < j; i++) {
-					var column = [];
-					for (var k = 0, l = data.length; k < l; k++) {
-						column.push(data[k][i]);
-					}
-					partedData[i] = column;
-				}
-				return partedData;
-			}
-            function processor(configuration, data, visualization) {
-				console.log("4");
-				var self = this,
-				isTooltip = false;
-                visualization.series = [];
-                for (var i = 0, j = configuration.length; i < j; i++) {
-					var config = configuration[i];
-					if (config.hasOwnProperty("categories") && typeof config.categories === 'object') {
-						var categories = config.categories;
-						(visualization.hasOwnProperty("xAxis") ? ("") : (visualization.xAxis = {}));
-						if (categories.hasOwnProperty("data") && typeof categories.data === 'object' && categories.data.length) {
-							visualization.xAxis.categories = categories.data;
-						} else if (categories.hasOwnProperty("columnMapping") && !isNaN(categories.columnMapping)) {
-							visualization.xAxis.categories = data[Number(categories.columnMapping)];
-						} else {
-							visualization.xAxis.categories = data[i];
-						}
-					} else {
-						if (config.hasOwnProperty("series") && typeof config.series === 'object') {
-							var seriesConfig = config.series,
-								tooltipData = {},
-								seriesData = [],
-								series = {
-									data: []
-								},
-                                
-								drilldown = false,
-								tooltipTemplate = "";
-                                series.allowPointSelect = true;
-                                series.point = {
-								    events: {
-									//click: self.clickPoint.bind(self)
-								}
-							};
-							if (seriesConfig.hasOwnProperty("color") && (temp = String(seriesConfig.color).trim()).length) {
-								series["color"] = temp;
-							}
-							if (seriesConfig.hasOwnProperty("type") && (temp = String(seriesConfig.type).trim()).length) {
-								series["type"] = temp;
-							}
-							if (seriesConfig.hasOwnProperty("name") && (temp = String(seriesConfig.name).trim()).length) {
-								series["name"] = temp;
-							}
-							if (seriesConfig.hasOwnProperty("connectEnds") && typeof seriesConfig.connectEnds === 'boolean') {
-								series.connectEnds = seriesConfig.connectEnds;
-							}
-							if (seriesConfig.hasOwnProperty("connectNulls") && typeof seriesConfig.connectNulls === 'boolean') {
-								series.connectNulls = seriesConfig.connectNulls;
-							}
-							if (seriesConfig.hasOwnProperty("enableMouseTracking") && typeof seriesConfig.enableMouseTracking === 'boolean') {
-								series.enableMouseTracking = seriesConfig.enableMouseTracking;
-							}
-							if (seriesConfig.hasOwnProperty("showInLegend") && typeof seriesConfig.showInLegend === 'boolean') {
-								series.showInLegend = seriesConfig.showInLegend;
-							}
-							if (seriesConfig.hasOwnProperty("cropThreshold") && !isNaN(seriesConfig.cropThreshold)) {
-								series.cropThreshold = Number(seriesConfig.cropThreshold);
-							}
-							if (seriesConfig.hasOwnProperty("lineWidth") && !isNaN(seriesConfig.lineWidth)) {
-								series.lineWidth = Number(seriesConfig.lineWidth);
-							}
-							if (seriesConfig.hasOwnProperty("cursor") && (temp = String(seriesConfig.cursor).trim()).length) {
-								series.cursor = temp;
-							}
-							if (seriesConfig.hasOwnProperty("dashStyle") && (temp = String(seriesConfig.dashStyle).trim()).length) {
-								series.dashStyle = temp;
-							}
-							if (seriesConfig.hasOwnProperty("id") && (temp = String(seriesConfig.id).trim()).length) {
-								series.id = temp;
-							}
-							if (seriesConfig.hasOwnProperty("linecap") && (temp = String(seriesConfig.linecap).trim()).length) {
-								series.linecap = temp;
-							}
-							if (seriesConfig.hasOwnProperty("linkedTo") && (temp = String(seriesConfig.linkedTo).trim()).length) {
-								series.linkedTo = temp;
-							}
-							if (seriesConfig.hasOwnProperty("stack") && (temp = String(seriesConfig.stack).trim()).length) {
-								series.stack = temp;
-							}
-							if (seriesConfig.hasOwnProperty("negativeColor") && (temp = String(seriesConfig.negativeColor).trim()).length) {
-								series.negativeColor = temp;
-							}
-							if (seriesConfig.hasOwnProperty("negativeFillColor") && (temp = String(seriesConfig.negativeFillColor).trim()).length) {
-								series.negativeFillColor = temp;
-							}
-							if (seriesConfig.hasOwnProperty("pointIntervalUnit") && (temp = String(seriesConfig.pointIntervalUnit).trim()).length) {
-								series.pointIntervalUnit = temp;
-							}
-							if (seriesConfig.hasOwnProperty("fillOpacity") && !isNaN(seriesConfig.fillOpacity)) {
-								series.fillOpacity = seriesConfig.fillOpacity;
-							}
-							if (seriesConfig.hasOwnProperty("pointInterval") && !isNaN(seriesConfig.pointInterval)) {
-								series.pointInterval = seriesConfig.pointInterval;
-							}
-							if (seriesConfig.hasOwnProperty("zIndex") && !isNaN(seriesConfig.zIndex)) {
-								series.zIndex = seriesConfig.zIndex;
-							}
-							if (seriesConfig.hasOwnProperty("lineColor") && (temp = String(seriesConfig.lineColor).trim()).length) {
-								series.lineColor = seriesConfig.lineColor;
-							}
-							if (seriesConfig.hasOwnProperty("innerSize") && (temp = String(seriesConfig.innerSize).trim()).length) {
-								series.innerSize = seriesConfig.innerSize;
-							}
-							if (seriesConfig.hasOwnProperty("fillColor") && (typeof seriesConfig.fillColor === 'object' || typeof seriesConfig.fillColor === 'string')) {
-								series.fillColor = seriesConfig.fillColor;
-							}
-							if (seriesConfig.hasOwnProperty("marker") && typeof seriesConfig.marker === 'object') {
-								series.marker = seriesConfig.marker;
-							}
-							if (seriesConfig.hasOwnProperty("yAxis") && (!isNaN(seriesConfig.yAxis) || typeof seriesConfig.yAxis === 'string')) {
-								series.yAxis = seriesConfig.yAxis;
-							}
-							if (seriesConfig.hasOwnProperty("xAxis") && (!isNaN(seriesConfig.xAxis) || typeof seriesConfig.xAxis === 'string')) {
-								series.xAxis = seriesConfig.xAxis;
-							}
-							if (seriesConfig.hasOwnProperty("data") && typeof seriesConfig.data === 'object' && seriesConfig.data.length) {
-								seriesData = seriesConfig.data;
-							} else if (seriesConfig.hasOwnProperty("columnMapping") && !isNaN(seriesConfig.columnMapping)) {
-								seriesData = data[Number(seriesConfig.columnMapping)];
-							} else {
-								seriesData = data[i];
-							}
-							if (config.hasOwnProperty("zones") && typeof config.zones === 'object') {
-								var zones = config.zones;
-								series["zoneAxis"] = zones.zoneAxis;
-								if (zones.hasOwnProperty("data") && typeof zones.data === 'object') {
-									series["zones"] = zones.data;
-								} else if (zones.hasOwnProperty("columnMapping") && !isNaN(zones.columnMapping)) {
-									series["zones"] = data[Number(categories.columnMapping)];
-								}
-							}
-							if (config.hasOwnProperty("drilldown") && config.drilldown.hasOwnProperty('enabled') && config.drilldown.enabled === true) {
-								drilldown = true;
-								series.drilldownParams = {
-									params: []
-								}
-								if (config.drilldown.hasOwnProperty("params")) {
-									series.drilldownParams.params = config.drilldown.params;
-								}
-								if (config.drilldown.hasOwnProperty("reference") && !isNaN(config.drilldown.reference)) {
-									series.drilldownReference = Number(config.drilldown.reference);
-								}
-								if (config.drilldown.hasOwnProperty("assosciative") && typeof config.drilldown.assosciative === 'object' && config.drilldown.assosciative.length > 0) {
-									series.drilldownAssosciative = config.drilldown.assosciative;
-								}
-							} else {
-								drilldown = false;
-							}
-							if (config.hasOwnProperty("tooltip") && typeof config.tooltip === 'object') {
-								isTooltip = true, series.tooltip = {};
-								var tooltip = config.tooltip,
-									isFormatter = (tooltip.hasOwnProperty("formatter") ? true : false);
-								if (tooltip.hasOwnProperty("template") && typeof tooltip.template === "object" && tooltip.template.length) {
-									if (tooltip.template[0].hasOwnProperty("pointFormat")) {
-										series.tooltip["pointFormat"] = tooltip.template[0].pointFormat;
-									}
-									if (tooltip.template[0].hasOwnProperty("headerFormat")) {
-										series.tooltip["headerFormat"] = tooltip.template[0].headerFormat;
-									}
-									if (tooltip.template[0].hasOwnProperty("footerFormat")) {
-										series.tooltip["footerFormat"] = tooltip.template[0].footerFormat;
-									}
-								}
-								if (tooltip.hasOwnProperty("data") && typeof tooltip.data === 'object' && tooltip.data.length) {
-									if (tooltip.hasOwnProperty("formatter") && typeof tooltip.formatter === 'object') {
-										tooltipData[0] = this.formatter(JSON.stringify(tooltip.data), tooltip.formatter);
-									} else {
-										tooltipData[0] = tooltip.data;
-									}
-								} else if (tooltip.hasOwnProperty("columnMapping") && ((typeof tooltip.columnMapping === 'object' && tooltip.columnMapping.length) || !isNaN(tooltip.columnMapping))) {
-									for (var k = 0, l = tooltip.columnMapping.length; k < l; k++) {
-										if (tooltip.columnMapping[k].hasOwnProperty("formatter") && typeof tooltip.columnMapping[k].formatter === 'object') {
-											tooltipData[k] = this.formatter(JSON.stringify(data[Number(tooltip.columnMapping[k].column)]), tooltip.columnMapping[k].formatter);
-										} else {
-											tooltipData[k] = data[Number(tooltip.columnMapping[k].column)];
-										}
-									}
-								}
-							}
-							if (config.hasOwnProperty("assosciativity") && typeof config.assosciativity === 'object' && config.assosciativity.hasOwnProperty("enabled") && config.assosciativity.enabled === true) {
-								series.assosciativity = {
-									params: []
-								}
-								if (config.assosciativity.hasOwnProperty("params")) {
-									series.assosciativity.params = config.assosciativity.params;
-								}
-							}
-							if (config.hasOwnProperty("export") && typeof config.assosciativity === 'object' && config.export.hasOwnProperty("enabled") && config.export.enabled === true) {
-								if (config.assosciativity.hasOwnProperty("params")) {
-									series.assosciativity.params = config.assosciativity.params;
-								}
-							}
-							if (seriesData.length) {
-								var namesExist = false,
-									colorExist = false,
-									colorData = [];
-								if (seriesConfig.hasOwnProperty("names") && typeof seriesConfig.names === 'object' && seriesConfig.names.length) {
-									namesExist = true;
-								}
-								if (seriesConfig.hasOwnProperty("pointsColor") && typeof seriesConfig.pointsColor === 'object') {
-									if (seriesConfig.pointsColor.hasOwnProperty("columnMapping")) {
-										colorExist = true;
-										colorData = data[Number(seriesConfig.pointsColor.columnMapping)];
-									} else if (seriesConfig.pointsColor.hasOwnProperty("data")) {
-										colorExist = true;
-										colorData = seriesConfig.pointsColor.data;
-									}
-								}
-								for (var k = 0, l = seriesData.length; k < l; k++) {
-									series.data[k] = {};
-									if (namesExist) {
-										series.data[k]["name"] = seriesConfig.names[k];
-									}
-									if (colorExist) {
-										series.data[k]["color"] = colorData[k]
-									}
-									if (isTooltip) {
-										for (var t in tooltipData) {
-											series.data[k]['tooltip-' + t] = tooltipData[t][k];
-										}
-									}
-									series.data[k]["y"] = Number(seriesData[k]);
-									series.data[k]["drilldown"] = drilldown;
-								}
-							}
-						}
-                        //console.log("series");
-                        //console.log(series);
-						visualization["series"].push(series);
-					}
-				}
-				return visualization;
-			}
-            
-        function normalize(visualization,name,dataId){
-            console.log("5");
-				var c = JSON.parse(JSON.stringify(visualization)),
-                    self = this;
-            
-                var div=document.createElement('div');
-                var id ="id"+dataId;
-                div.setAttribute("id",id);
-			     var title = document.createElement("h3");
-              //  window.alert(id);
-                title.innerHTML=name;
-            
-			     div.appendChild(title);
-                var container=document.getElementById("container");
-			     container.appendChild(div);
-            
-				c.hasOwnProperty("chart") ? ("") : (c.chart = {});
-				c.chart.animation = true;
-				c.chart.selectionMarkerFill = 'rgba(69,114,167,0.25)';
-				c.chart.backgroundColor = 'transparent';
-				c.chart.borderColor = 'transparent';
-				c.chart.borderRadius = 0;
-				c.chart.borderWidth = 0;
-				c.chart.ignoreHiddenSeries = true;
-				c.chart.zoomType = 'xy';
-				c.chart.panning = true;
-				c.chart.panKey = 'shift';
-				c.chart.plotBackgroundColor = 'transparent';
-				c.chart.plotBackgroundImage = '';
-				c.chart.plotBorderColor = 'transparent';
-				c.chart.plotBorderWidth = 0;
-				c.chart.plotShadow = false;
-				c.chart.reflow = true;
-				c.chart.shadow = false;
-				c.chart.showAxes = true;
-				c.chart.renderTo = id;
-				c.chart.events = {};
-				c.exporting = {
-					enabled: false
-				};
-				//.chart.events["drilldown"] = self.drilldown.bind(self);
-				//c.chart.events["drillup"] = self.drillup.bind(self);
-				//c.lang = {
-						//drillUpText: '<< Back to {series.name}'
-					//},
-					//c.chart.events["click"] = self.clickEvent.bind(self);
-				c.title = "";
-				(c.hasOwnProperty('tooltip') ? (c.tooltip.useHTML = true) : (c.tooltip = {
-					useHTML: true
-				}));
-            /*
-				(c.tooltip.hasOwnProperty('formatter') ? (delete(c.tooltip.formatter)) : (""));
-				(this.tooltip.hasOwnProperty('pointFormat') ? (c.tooltip.pointFormat = this.tooltip.pointFormat) : (""));
-				(this.tooltip.hasOwnProperty('headerFormat') ? (c.tooltip.headerFormat = this.tooltip.headerFormat) : (""));
-				(this.tooltip.hasOwnProperty('footerFormat') ? (c.tooltip.footerFormat = this.tooltip.footerFormat) : (""));
-            */
-				c.series = [];
-				c.credits = {
-					href: "https://netlink.com",
-					text: "Netlink Business Analytics"
-				};/*
-				var chart = $(this);
-				c.chart.width = (chart.width() - 5);
-				c.chart.height = (chart.height() - 5);*/
-            //console.log(c);
-				return c;
-            /*
-			console.log("5");
-			var result=visualization.configuration.result;
-			result['title']={text:""};
-			var div=document.createElement('div');
-            var id ="id"+dataId;
-            div.setAttribute("id",id);
-			var title = document.createElement("h3");
-			div.appendChild(title);
-			var container=document.getElementById("container");
-			container.appendChild(div);
-			if(result.hasOwnProperty('chart')){
-			  delete result.chart['renderTo'];
-					result.chart.renderTo=id;
-					
-				}else{
-				 result.chart={
-				  renderTo: id,
-				}
-			  }
-				result['credits']={"enabled": false};
-				result["exporting"]={enabled:false};
-            
-				result['series']=data.series;
-				if(data.hasOwnProperty('xAxisCategories') && data['xAxisCategories'].length){
-					if(result.hasOwnProperty('xAxis')){
-						result['xAxis'].categories=data['xAxisCategories'];
-					}else{
-						result['xAxis']={categories:data['xAxisCategories']};
-					}
-				}
-				
-				if(data.hasOwnProperty('subtitleText') && data['subtitleText'].length){
-					if(result.hasOwnProperty('subtitle')){
-						result['subtitle'].text=data['subtitleText'];
-					}else{
-						result['subtitle']={text:data['subtitleText']};
-					}
-				}
-					//result.chart.height=400;
-					//result.chart.width=350;
-            	return result;
-                */
-		}
-            
-            
+            if (config.hasOwnProperty('series')) {
+                $.each(config.series, function (i, j) {
+                    var series = {
+                        data: []
+                    };
+                    //var series = {data};
+                    $.each(j, function (k, l) {
+                        if (k.toLowerCase().indexOf('data') !== -1) {
+                            $.each(l, function (m, n) {
+                                var seriesData = [];
+                                if (n.hasOwnProperty("data")) {
+                                    if (n.hasOwnProperty("formatter")) {
+                                        seriesData = formatter(n.data, n.formatter);
+                                    }
+                                    else {
+                                        seriesData = n.data;
+                                    }
+                                }
+                                else if (n.hasOwnProperty('columnMapping')) {
+                                    if (n.hasOwnProperty("formatter")) {
+                                        seriesData = formatter(data[Number(n.columnMapping)], n.formatter);
+                                    }
+                                    else {
+                                        console.log(data,Number,n)
+                                        seriesData = data[Number(n.columnMapping)];
+                                    }
+                                }
+                                if (seriesData.length) {
+                                    for (var o = 0, p = seriesData.length; o < p; o++) {
+                                        if (typeof series.data[o] !== 'object') {
+                                            series.data[o] = {};
+                                        }
+                                        series.data[o][m] = seriesData[o];
+                                    }
+                                }
+                            });
+                            
+                        }else {
+                            series[k] = l;
+                        }
+                    });
+                    visualization.series.push(series);
+                });
+            }
+            else {
+                throw "No Series"
+            }
+            //console.log("6.3");
+            //window.alert(visualization);
+            return visualization;
+        }
+
+        function formatter(d, options) {
+            var formatterdata = JSON.parse(JSON.stringify(d));
+            var abbr = [{
+                    "symbol": "T"
+                    , "value": 1000000000000000000
+                }, {
+                    "symbol": "B"
+                    , "value": 1000000000000
+                }, {
+                    "symbol": "M"
+                    , "value": 1000000
+                }, {
+                    "symbol": "L"
+                    , "value": 100000
+                }, {
+                    "symbol": "K"
+                    , "value": 1000
+                }, {
+                    "symbol": "H"
+                    , "value": 100
+                }]
+                , symbol = [];
+            for (var i = 0, j = formatterdata.length; i < j; i++) {
+                if (options.hasOwnProperty('abbreviation')) {
+                    if (options.abbreviation.toLowerCase() == 'auto') {
+                        for (var k = 0; k <= 5; k++) {
+                            if ((Number(formatterdata[i]) / abbr[k].value) >= 1) {
+                                formatterdata[i] = Number(formatterdata[i]) / abbr[k].value;
+                                symbol[i] = abbr[k].symbol;
+                                break;
+                            }
+                        }
+                    }
+                    else {
+                        if (options.abbreviation.toLowerCase() == 'k') {}
+                        else if (options.abbreviation.toLowerCase() == 'm') {}
+                        else if (options.abbreviation.toLowerCase() == 'b') {}
+                        else if (options.abbreviation.toLowerCase() == 't') {}
+                        else if (options.abbreviation.toLowerCase() == 'h') {}
+                    }
+                }
+                if (options.hasOwnProperty('decimalPoint')) {
+                    formatterdata[i] = Number(formatterdata[i]).toFixed(options.decimalPoint);
+                }
+                if (options.hasOwnProperty('thousandSeperator') && options.thousandSeperator == true) {
+                    formatterdata[i] = formatterdata[i].toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+                }
+                if (typeof symbol[i] !== 'undefined') {
+                    formatterdata[i] += ' ' + symbol[i];
+                }
+                if (options.hasOwnProperty('symbol')) {
+                    if (options.hasOwnProperty('symbolPosition')) {
+                        if (options.symbolPosition.toLowerCase() == 'left') {
+                            formatterdata[i] = options.symbol + formatterdata[i];
+                        }
+                        else {
+                            formatterdata[i] += options.symbol;
+                        }
+                    }
+                    else {
+                        formatterdata[i] += options.symbol;
+                    }
+                }
+            }
+            return formatterdata;
+        }
+
+function createWidget(wid, configuration, name) {
+    var id = wid,
+    visualization = visualData.data[id].configuration,
+    data = kettleData.data[id];
+    if(configuration.length && kettleData.data.hasOwnProperty(id))
+        var localData=kettleData.data[id];
+		{   var outerdiv=document.createElement("div");
+         outerdiv.setAttribute("class","swiper-slide");
+         //$(outerdiv).css({"height":"50px","width":"50px"})
+            $.each(configuration,function(i,ele)
+                {
+                    //var div=document.createElement("div");
+                    var div = document.createElement('div')
+                    , id = "id" + wid
+                    //, container = document.getElementById("container1")
+                    ;
+                    div.setAttribute("id", id);
+                    //console.log(div);
+                    //container.appendChild(div);
                 
-            
-        </script>
-    </body>
+					if(ele.hasOwnProperty("css")){
+						$(div).css(ele.css);
+						if(ele.hasOwnProperty("name"))
+						{
+							if(ele.name=="widget-label")
+							{
+								if(ele.hasOwnProperty("text"))
+								{
+									$.each(ele.text,function(i,ee)
+									{
+										var odiv=document.createElement("span");
+										$(odiv).css(ee.css);
+										$(odiv).text(ee.value.trim())
+										$(div).append(odiv);
+										
+									})
+									
+								}
+								if(ele.hasOwnProperty("data"))
+								{	
+									$.each(ele.data,function(i,ee){
+
+										var odiv=document.createElement("span");
+										$(odiv).css(ee.css);
+										if(typeof localData!= 'undefined')
+											{
+												if(ee.hasOwnProperty("formatter"))
+												{
+													var fd=formatter([localData.resultSet[ee.rowIndex][ee.columnIndex]],ee.formatter);
+													$(odiv).text(fd);
+												}
+												else{
+													$(odiv).text(localData.resultSet[ee.rowIndex][ee.columnIndex]);
+													}
+												}	
+										$(div).append(odiv);
+									})
+								}
+								if(ele.hasOwnProperty("columnName"))
+
+								{
+									$.each(ele.columnName,function(i,ee){
+
+										var odiv=document.createElement("span");
+										$(odiv).css(ee.css);
+										if(typeof localData!= 'undefined')
+											{
+												if(ee.hasOwnProperty("columnIndex"))
+													{
+													$(odiv).text(localData.metaData[ee.columnIndex]["colName"]);
+														}
+
+												}	
+										$(div).append(odiv);
+									})
+
+								}
+								if(ele.hasOwnProperty("click"))
+								{
+									if(ele.click.hasOwnProperty("download"))
+									{
+										if(ele.click.download.hasOwnProperty("businessLogic")&&ele.click.download.hasOwnProperty("configuration"))
+										{
+											$(this).on("click",function(e){
+												var ex=document.createElement("excel-export");
+												ex.setAttribute("configuration",JSON.stringify(ele.click.download.configuration))
+												ex.setAttribute("data",JSON.stringify(data[ele.click.download.businessLogic]["resultSet"]))
+											})
+
+										}
+									}
+								}
+							}
+							else if(ele.name=="icon")
+							{
+
+								var ic=document.createElement("i");
+								$(ic).addClass("material-icons").text(ele.class);
+								if(ele.hasOwnProperty("iconCss"))
+								{
+									$(ic).css(ele.iconCss)
+								}
+								$(div).css(ele.css);									
+
+								$(div).append(ic);
+
+							}
+							else if(ele.name=="progressBar")
+							{
+								$(div).addClass("progress progress-xs margin-bottom-5 style-scope ")
+								var idiv=document.createElement("div");
+								$(idiv).addClass("progress-bar progress-bar-info");
+								if(ele.hasOwnProperty("barCss"))
+								{
+									$(idiv).css(ele.barCss)
+								}
+								$(div).append(idiv)
+							}
+							else if(ele.name=="chart")
+							{
+                                
+								var c=document.createElement("chart-element");
+								
+								{   
+                                    console.log(div,ele);
+                                    c.setAttribute("no-grid-stack","");
+									$(div).css(ele.css);
+									if(ele.hasOwnProperty("chartCss"))
+									{
+								//	$(c).find("parentContainer").css(ele.chartCss)
+
+									}
+									$(c).attr({
+										id:id,
+										configuration:JSON.stringify(ele.configuration),
+
+									});
+									c.setAttribute('visualization',JSON.stringify(visualization));
+									c.setAttribute('data',JSON.stringify(data))
+
+								}
+                                $(div).append(c);
+                                var title="new";
+                                console.log(c);
+								c.draw(id, configuration,  title);
+								setTimeout(function(){c.resize();},100)
+							}
+							outerdiv.appendChild(div);
+							if(ele.name=="animation")
+							{
+								if(ele.hasOwnProperty("animation") && ele.hasOwnProperty("event"))
+								{
+									$(this).on(ele.event,function(){
+									//	$(this).animateCss(ele.animation)
+									})
+								}
+							}
+							if(ele.name=="tooltip")
+							{
+								var toolmainbox=$('<div/>').attr('id',"tipx");
+								var conf={};
+								if(ele.hasOwnProperty("configuration"))
+								{
+									conf=ele.configuration;
+								}
+								$("#container1").tooltip({
+								html: true,
+								placement: conf.placement || "auto",
+								title: conf.data,
+								trigger:"hover",
+								container: "body",
+							  }).on('shown.bs.tooltip', function() {
+								var t = $('.tooltip').addClass('animated ' + conf.animation);
+								t.find(".tooltip-inner").css($.extend({}, {
+								  backgroundColor: conf.backgroundColor
+								}, conf.style));
+								t.find(".tooltip-arrow").css({
+								  "border-bottom-color": conf.backgroundColor,
+								  "border-top-color": conf.backgroundColor
+								})
+							  });
+								if(ele.hasOwnProperty("tooltips"))
+								{
+
+									if(ele.tooltips.hasOwnProperty("text"))
+									{
+										$.each(ele.tooltips.text,function(i,ee){
+											var toolbox=$('<div/>').attr('id',"tooltipx");
+											$(toolbox).css(ee.css).text(ee.value);
+											$(toolmainbox).append(toolbox);
+										})
+									}
+									 if(ele.tooltips.hasOwnProperty("data"))
+									{
+										$.each(ele.tooltips.data,function(i,ee){
+											var toolbox=$('<div/>').attr('id',"tooltipx");
+											if(typeof localData != 'undefined')
+											{
+											if(ee.hasOwnProperty("formatter"))
+											{
+													$(toolbox).css(ee.css).text(formatter([localData.resultSet[ee.rowIndex][ee.columnIndex]],ee.formatter));
+
+											}
+											else{
+													$(toolbox).css(ee.css).text(localData.resultSet[ee.rowIndex][ee.columnIndex]);
+
+											}
+											}
+											$(toolmainbox).append(toolbox);
+										})
+									}
+									if(ele.hasOwnProperty("style"))
+									{	var st= $('<style> .custom-tooltip + .tooltip > .tooltip-inner {'+ele.style+'}</style>');
+										$(this).append(st);
+												}								
+								}
+							$(this).find('[data-toggle="tooltip"]').attr('data-original-title',$(toolmainbox).html());
+
+							}
+						}
+						
+                    }
+					
+				})
+
+            $('#swiper-wrapper').append(outerdiv)
+		}
+}
+
+        function drilldown(e) {
+            var root = this;
+            if (e.point.series.options.hasOwnProperty('drilldown') && e.point.series.options.drilldown.enabled) {
+                var params = e.point.series.options.drilldown.params
+                    , list = {};
+                for (var i = 0, j = params.length; i < j; i++) {
+                    if (params[i].hasOwnProperty('value')) {
+                        if (typeof params[i].key !== 'undefined' && typeof list[params[i].key] !== 'object') {
+                            list[params[i].key] = [];
+                        }
+                        if (params[i].value.toLowerCase() === 'series.name' && typeof e.point.series.name !== 'undefined') {
+                            if (typeof params[i].columnMapping !== 'undefined') {
+                                list[params[i].key].push(root.data[root.id].resultSet[e.point.index][params[i].columnMapping]);
+                            }
+                            else {
+                                list[params[i].key].push(e.point.series.name);
+                            }
+                        }
+                        else if (params[i].value.toLowerCase() === 'category' && typeof e.point.category !== 'undefined') {
+                            if (typeof params[i].columnMapping !== 'undefined') {
+                                list[params[i].key].push(root.data[root.id].resultSet[e.point.index][params[i].columnMapping]);
+                            }
+                            else {
+                                list[params[i].key].push(e.point.category);
+                            }
+                        }
+                        else
+                        if (params[i].value !== 'undefined') {
+                            var ppt = params[i].value;
+                            if (typeof params[i].columnMapping !== 'undefined') {
+                                list[params[i].key].push(root.data[root.id].resultSet[e.point.index][params[i].columnMapping]);
+                            }
+                            else {
+                                if (typeof e.point[ppt] !== 'undefined') {
+                                    list[params[i].key].push(e.point[ppt]);
+                                }
+                            }
+                        }
+                        else {
+                            list[params[i].key].push(params[i].value);
+                        }
+                        /*		
+                        		else if(params[i].value.toLowerCase() === 'point.name' && typeof e.point.name !== 'undefined'){
+                        			list[params[i].key].push(e.point.name);
+                        		}
+                        		else if(params[i].value.toLowerCase() === 'y' && typeof e.point.y !== 'undefined'){
+                        			list[params[i].key].push(e.point.y);
+                        		}
+                        		else if(params[i].value.toLowerCase() === 'color' && typeof e.point.color !== 'undefined'){
+                        			list[params[i].key].push(e.point.color);
+                        		}
+                        		else if(params[i].value.toLowerCase() === 'x' && typeof e.point.x !== 'undefined'){
+                        			list[params[i].key].push(e.point.x);
+                        		}else{
+                        			list[params[i].key]=params[i].value;
+                        		}
+                        	*/
+                    }
+                }
+                var parent = $(root).parents('multi-grid-element').get(0);
+                var ft = parent.filter;
+                $.each(list, function (i, j) {
+                    $.each(ft, function (k, l) {
+                        if (l.key == i) {
+                            if (typeof j != 'undefined') {
+                                l.value = [String(j)];
+                                l.selected = [String(j)]
+                            }
+                        }
+                    });
+                });
+                var bo = e.point.series.options.drilldown.BO;
+                var dash = $(root).parents('dashboard-element');
+                var d = dash.find("data-element").get(0);
+                var requestData = {
+                    data: {
+                        workboard_id: d.workboardId
+                        , params: d.__filterComputed(ft)
+                    }
+                }
+                if (bo != null) {
+                    requestData["businessobject_id"] = bo;
+                }
+                root.baseUtil.sendRequest(d.serviceUrl, requestData, function (ee) {
+                    if (ee.status.code == 200) {
+                        var heirarchy = {};
+                        heirarchy["id"] = root.id;
+                        heirarchy["configuration"] = root.configuration;
+                        heirarchy["data"] = root.data;
+                        heirarchy["visualization"] = root.visualization;
+                        root.drilldownHierarchy.push(heirarchy);
+                        d.data = ee.data;
+                        $.each(bo, function (a, b) {
+                            if (ee.data.hasOwnProperty(b)) {
+                                $.each(dash.get(0).objects, function (i, j) {
+                                    if (j.id == bo) {
+                                        root.configuration = j.configuration;
+                                    }
+                                })
+                                root.id = b;
+                                root.draw();
+                                $(root.$.drillupbutton).show()
+                            }
+                        })
+                    }
+                    else {
+                        console.error(ee.status.value);
+                    }
+                }, {});
+            }
+        }
+
+        function drillup(e) {
+            if (drilldownHierarchy.length) {
+                var heirarchy = drilldownHierarchy.slice(-1)[0];
+                id = heirarchy.id;
+                configuration = heirarchy.configuration;
+                visualization = heirarchy.visualization;
+                data = heirarchy.data;
+                drilldownHierarchy.pop();
+                if (!drilldownHierarchy.length) {
+                    $($.drillupbutton).hide()
+                }
+            }
+        }
+
+        function point(e) {
+            var root = this;
+            if (e.point.series.options.hasOwnProperty('assosciativity') && e.point.series.options.assosciativity.enabled) {
+                var params = e.point.series.options.assosciativity.params
+                    , list = {};
+                for (var i = 0, j = params.length; i < j; i++) {
+                    if (params[i].hasOwnProperty('value')) {
+                        if (typeof params[i].key !== 'undefined' && typeof list[params[i].key] !== 'object') {
+                            list[params[i].key] = [];
+                        }
+                        if (params[i].value.toLowerCase() === 'series.name' && typeof e.point.series.name !== 'undefined') {
+                            if (typeof params[i].columnMapping !== 'undefined') {
+                                list[params[i].key].push(root.data[root.id].resultSet[e.point.index][params[i].columnMapping]);
+                            }
+                            else {
+                                list[params[i].key].push(e.point.series.name);
+                            }
+                        }
+                        else if (params[i].value.toLowerCase() === 'category' && typeof e.point.category !== 'undefined') {
+                            if (typeof params[i].columnMapping !== 'undefined') {
+                                list[params[i].key].push(root.data[root.id].resultSet[e.point.index][params[i].columnMapping]);
+                            }
+                            else {
+                                list[params[i].key].push(e.point.category);
+                            }
+                        }
+                        else
+                        if (params[i].value !== 'undefined') {
+                            var ppt = params[i].value;
+                            if (typeof params[i].columnMapping !== 'undefined') {
+                                list[params[i].key].push(root.data[root.id].resultSet[e.point.index][params[i].columnMapping]);
+                            }
+                            else {
+                                if (typeof e.point[ppt] !== 'undefined') {
+                                    list[params[i].key].push(e.point[ppt]);
+                                }
+                            }
+                        }
+                        else {
+                            list[params[i].key].push(params[i].value);
+                        }
+                        /*		
+                        		else if(params[i].value.toLowerCase() === 'point.name' && typeof e.point.name !== 'undefined'){
+                        			list[params[i].key].push(e.point.name);
+                        		}
+                        		else if(params[i].value.toLowerCase() === 'y' && typeof e.point.y !== 'undefined'){
+                        			list[params[i].key].push(e.point.y);
+                        		}
+                        		else if(params[i].value.toLowerCase() === 'color' && typeof e.point.color !== 'undefined'){
+                        			list[params[i].key].push(e.point.color);
+                        		}
+                        		else if(params[i].value.toLowerCase() === 'x' && typeof e.point.x !== 'undefined'){
+                        			list[params[i].key].push(e.point.x);
+                        		}else{
+                        			list[params[i].key]=params[i].value;
+                        		}
+                        	*/
+                    }
+                }
+                var parent = $(root).parents('multi-grid-element').get(0);
+                var ft = parent.filter;
+                $.each(list, function (i, j) {
+                    $.each(ft, function (k, l) {
+                        if (l.key == i) {
+                            if (typeof j != 'undefined') {
+                                l.value = [String(j)];
+                                l.selected = [String(j)];
+                            }
+                        }
+                    });
+                });
+                var d = $(root).parents('dashboard-element').find("data-element").get(0)
+                var bo = e.point.series.options.assosciativity.BO;
+                var requestData = {
+                    data: {
+                        workboard_id: d.workboardId
+                        , params: d.__filterComputed(ft)
+                    }
+                }
+                if (bo != null) {
+                    requestData["businessobject_id"] = bo;
+                }
+                root.baseUtil.sendRequest(d.serviceUrl, requestData, function (e) {
+                    if (e.status.code == 200) {
+                        d.data = e.data;
+                    }
+                    else {
+                        console.error(e.status.value);
+                    }
+                }, {})
+            }
+        }
+    </script>
+</body>
+
 </html>

@@ -1,0 +1,41 @@
+<dom-module id="pivot-element"><template>
+<style>
+#iframe{
+height:100%;
+width:100%;
+border:0;
+
+}
+</style>
+
+<div id="pivotContainer" style="height:100%">
+<iframe id="iframe" class="" src="{{viewId}}"></iframe></div>
+
+
+</template>
+<script >
+	Polymer({
+		is:"pivot-element",
+		properties:{
+			viewId:{
+				type:String,
+				value:''
+			},
+			configuration:{
+				type:Object,
+				value:function(){
+				return {}
+				}
+			}
+
+		},
+		attached:function(){
+				Polymer.dom.flush()
+				this.viewId='https://rsh-analytics.thecarecloud.com/pivot4j/view.xhtml?viewId=fcdc4b2e-8b8e-401a-9c49-147213bb3687';
+}
+	})
+
+</script>
+
+
+</dom-module>

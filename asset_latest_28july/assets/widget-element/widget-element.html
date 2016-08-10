@@ -1,0 +1,410 @@
+<dom-module id="widget-element">
+	<template>
+	   <style include="shared-styles">
+			:host{
+				height:inherit;
+			}
+		  .panel-heading :hover{
+			  cursor: move; /* fallback if grab cursor is unsupported */
+			  cursor: grab;
+			  cursor: -moz-grab;
+			  cursor: -webkit-grab;
+		  }
+		  .panel-heading :active{
+			  cursor: move; /* fallback if grab cursor is unsupported */
+			  cursor: grabbing;
+			  cursor: -moz-grabbing;
+			  cursor: -webkit-grabbing;
+		  }
+		  .panel-heading{
+			background:"#F3F4F5";
+		  }
+		  .panel-actions.show{
+			right: 0 !important;
+		  }
+		  .ui-icon-gripsmall-diagonal-se{background-position:-64px -250px !important;}
+	   </style>
+	   <div class="grid-stack-item-content" style="overflow-y:hidden" >
+		  <div class="panel common-drop-shadow bc-panel" id="panelChart" style="height:100% !important">
+			
+			<div id="content" class="custom-tooltip" data-toggle="tooltip" title="" style="height:inherit">
+
+			</div> 
+			<div class="panel-loading">
+				<div class="loader-wrapper active">
+				   <div class="loader-layer loader-blue-only">
+					  <div class="loader-circle-left">
+						 <div class="circle"></div>
+					  </div>
+					  <div class="loader-circle-gap"></div>
+					  <div class="loader-circle-right">
+						 <div class="circle"></div>
+					  </div>
+				   </div>
+				</div>
+			 </div>
+		  </div>
+	   </div>
+	</template>
+	<script>
+		Polymer({
+			is:"widget-element",
+			properties:{
+				name:{
+					type:String,
+					value:'',
+				},
+				data:{
+					type:Object,
+					value:function(){
+						return {};
+					},
+					observer:'__dataChanged'
+				},
+				localData:{
+					type:Object,
+					value:function(){
+						return {}
+					},
+					observer:'__localDataChanged'
+				},
+				filter:{
+					type:Object,
+					value:function(){
+						return {};
+					},
+					notify: true,
+					observer:'__filter'
+				},
+				id:{
+					type:String
+
+				},
+				visualization:{
+					type:Object,
+					value:function(){
+						return {}
+					},
+					observer:'__visualizationChanged'
+				},
+				elements:{
+					type:Array,
+					value:function(){
+					return [] 
+				}
+			}
+				,
+				configuration:{
+					type:Array,
+					value:function(){
+						return [];
+					},
+					observer:'__configuration'
+				},
+                baseUtil:{
+                    type:Object,
+                    value:function(){
+                        return document.createElement('base-util');
+                    },
+                    readonly:true
+                }
+			},
+			__visualizationChanged:function(e){
+				if(this.data.hasOwnProperty(this.id)){
+				this.localData=this.data[this.id];
+				}
+				
+			},
+			__configuration:function(e){
+				if(typeof e !== 'undefined' && Object.keys(e).length > 0){
+					$.each($(this.$.multiItem).children(),function(i,ee){
+						if(typeof e[$(ee).attr('id')] !== 'undefined'){
+							$(ee).attr('configuration',JSON.stringify(e[$(ee).attr('id')].configuration.configuration));
+						}
+						else if(typeof e[ee.drilldownId] !== 'undefined'){
+							$(ee).attr('drill-configuration',JSON.stringify(e[ee.drilldownId].configuration.configuration));
+						}
+					});
+				}
+			},
+			__filter:function(e){
+				if(e.hasOwnProperty('info')){
+					var dataLayer=$(this).prevAll('data-element#parentLayer')[0];
+					dataLayer.filter=e;
+					dataLayer.fireChange();
+					var conifgLayer=$(this).prevAll('configuration-element')[0];
+					if(typeof e.info.hasOwnProperty("affected")){
+						conifgLayer.businessObjectId=e.info.affected;
+					}
+					conifgLayer.request();
+				}
+			},
+			__dataChanged:function(e){
+				
+				if(this.data.hasOwnProperty(this.id)){
+				this.localData=this.data[this.id];
+				}
+				},
+			__localDataChanged:function(){
+				var root=this;
+				this.async(function(){
+						Polymer.dom.flush();
+						setTimeout(function(){root.createWidget();},500)
+				})
+			},
+			export:function(e){
+				$.each($(this.$.multiItem).children(),function(i,ee){
+					ee.export($(e.target).data('export'));
+				});
+			},
+			drillup:function(e){
+				var dataLayer=$(this).prevAll('data-element#parentLayer')[0];
+				dataLayer.drillup(e);
+			},
+			changeType:function(e){
+				$(this.$.multiItem).children().attr('type',$(e.target).data('type'));
+			},
+			loadingStart:function(){
+				$(this.$.panelChart).addClass('is-loading');
+			},
+			loadingStop:function(){
+				$(this.$.panelChart).removeClass('is-loading');
+			},
+			attached:function(){
+				var root = this;
+				this.async(function(){
+				Polymer.dom.flush();
+				setTimeout(function(){root.createWidget();},500)
+				});
+					
+				},
+			createWidget:function(){
+					var root=this;
+              $(root.$.content).empty();
+					if(root.configuration.length && root.data.hasOwnProperty(root.id))
+					{
+						$.each(root.configuration,function(i,ele)
+						{	
+							var div=document.createElement("div");
+							if(ele.hasOwnProperty("css")){
+							$(div).css(ele.css);
+							}
+							if(ele.hasOwnProperty("name"))
+							{
+								if(ele.name=="widget-label")
+								{
+								
+								if(ele.hasOwnProperty("text"))
+								{  $.each(ele.text,function(i,ee){
+									 var odiv=document.createElement("span");
+									$(odiv).css(ee.css);
+									$(odiv).text(ee.value.trim())
+									$(div).append(odiv);
+								
+
+									})
+									
+								}
+								if(ele.hasOwnProperty("data"))
+								{	
+									$.each(ele.data,function(i,ee){
+
+										var odiv=document.createElement("span");
+										$(odiv).css(ee.css);
+										if(typeof root.localData!= 'undefined')
+											{
+												if(ee.hasOwnProperty("formatter"))
+												{
+													var fd=root.baseUtil.formatter([root.localData.resultSet[ee.rowIndex][ee.columnIndex]],ee.formatter);
+													$(odiv).text(fd);
+												}
+												else{
+													$(odiv).text(root.localData.resultSet[ee.rowIndex][ee.columnIndex]);
+													}
+												}	
+										$(div).append(odiv);
+									})
+								}
+								if(ele.hasOwnProperty("columnName"))
+
+								{
+									$.each(ele.columnName,function(i,ee){
+
+										var odiv=document.createElement("span");
+										$(odiv).css(ee.css);
+										if(typeof root.localData!= 'undefined')
+											{
+												if(ee.hasOwnProperty("columnIndex"))
+													{
+													$(odiv).text(root.localData.metaData[ee.columnIndex]["colName"]);
+														}
+																
+												}	
+										$(div).append(odiv);
+									})
+
+								}
+								if(ele.hasOwnProperty("click"))
+								{
+									if(ele.click.hasOwnProperty("download"))
+									{
+										if(ele.click.download.hasOwnProperty("businessLogic")&&ele.click.download.hasOwnProperty("configuration"))
+										{
+											$(root).on("click",function(e){
+												var ex=document.createElement("excel-export");
+												ex.setAttribute("configuration",JSON.stringify(ele.click.download.configuration))
+												ex.setAttribute("data",JSON.stringify(root.data[ele.click.download.businessLogic]["resultSet"]))
+											})
+
+										}
+									}
+								}
+								}
+								else if(ele.name=="icon")
+								{
+			
+								var ic=document.createElement("i");
+								$(ic).addClass("material-icons").text(ele.class);
+								if(ele.hasOwnProperty("iconCss"))
+								{
+									$(ic).css(ele.iconCss)
+								}
+								$(div).css(ele.css);									
+								
+								$(div).append(ic);
+
+								}
+								else if(ele.name=="progressBar")
+								{
+									$(div).addClass("progress progress-xs margin-bottom-5 style-scope ")
+									var idiv=document.createElement("div");
+									$(idiv).addClass("progress-bar progress-bar-info");
+									if(ele.hasOwnProperty("barCss"))
+									{
+										$(idiv).css(ele.barCss)
+									}
+									$(div).append(idiv)
+								}
+								else if(ele.name=="chart")
+								{
+									var c=document.createElement("chart-element");
+									$(div).append(c);
+									{   $(div).css(ele.css);
+										if(ele.hasOwnProperty("chartCss"))
+										{
+										$(c).css(ele.chartCss)
+											
+										}
+										$(c).attr({
+											id:root.id,
+											configuration:JSON.stringify(ele.configuration),
+											
+										});
+										c.setAttribute('visualization',JSON.stringify(root.visualization));
+										c.setAttribute('data',JSON.stringify(root.data))
+
+									}
+									
+									c.draw();
+									setTimeout(function(){c.resize();},100)
+								}
+								$(root.$.content).append(div);
+							if(ele.name=="animation")
+							{
+								if(ele.hasOwnProperty("animation") && ele.hasOwnProperty("event"))
+								{
+									$(root).on(ele.event,function(){
+									//	$(root).animateCss(ele.animation)
+									})
+								}
+							}
+
+							if(ele.name=="tooltip")
+							{
+								var toolmainbox=$('<div/>').attr('id',"tipx");
+								var conf={};
+								if(ele.hasOwnProperty("configuration"))
+								{
+									conf=ele.configuration;
+								}
+								$(root.$.content).tooltip({
+							    html: true,
+							    placement: conf.placement || "auto",
+							    title: conf.data,
+							    trigger:"hover",
+							    container: "body",
+							  }).on('shown.bs.tooltip', function() {
+							    var t = $('.tooltip').addClass('animated ' + conf.animation);
+							    t.find(".tooltip-inner").css($.extend({}, {
+							      backgroundColor: conf.backgroundColor
+							    }, conf.style));
+							    t.find(".tooltip-arrow").css({
+							      "border-bottom-color": conf.backgroundColor,
+							      "border-top-color": conf.backgroundColor
+							    })
+							  });
+								if(ele.hasOwnProperty("tooltips"))
+								{
+
+									if(ele.tooltips.hasOwnProperty("text"))
+									{
+										$.each(ele.tooltips.text,function(i,ee){
+											var toolbox=$('<div/>').attr('id',"tooltipx");
+											$(toolbox).css(ee.css).text(ee.value);
+											$(toolmainbox).append(toolbox);
+										})
+									}
+									 if(ele.tooltips.hasOwnProperty("data"))
+									{
+										$.each(ele.tooltips.data,function(i,ee){
+											var toolbox=$('<div/>').attr('id',"tooltipx");
+											if(typeof root.localData != 'undefined')
+											{
+											if(ee.hasOwnProperty("formatter"))
+											{
+													$(toolbox).css(ee.css).text(root.baseUtil.formatter([root.localData.resultSet[ee.rowIndex][ee.columnIndex]],ee.formatter));
+											
+											}
+											else{
+													$(toolbox).css(ee.css).text(root.localData.resultSet[ee.rowIndex][ee.columnIndex]);
+											
+											}
+											}
+											$(toolmainbox).append(toolbox);
+										})
+									}
+									if(ele.hasOwnProperty("style"))
+									{	var st= $('<style> .custom-tooltip + .tooltip > .tooltip-inner {'+ele.style+'}</style>');
+										$(root).append(st);
+												}								
+								}
+							$(root).find('[data-toggle="tooltip"]').attr('data-original-title',$(toolmainbox).html());
+                   
+							}
+
+							}
+
+						})
+
+					}
+			},
+						
+			ready:function(){
+				
+				 },
+
+			bcToggle: function(){
+				$(this.$.pActions).toggleClass("show");
+				$(this.$.toggleIcon).toggleClass("fa-close fa-bars");
+		   },
+		   paneRefresh:function(){
+			$.each($(this.$.multiItem).children(),function(i,ee){
+				ee.reset();
+			});
+		   },
+		   panelFullscreen:function(){
+			($(this).is('.fullScreenElement')?$(this).removeClass('fullScreenElement'):$(this).addClass('fullScreenElement'));
+		   }
+		})
+	</script>
+</dom-module>

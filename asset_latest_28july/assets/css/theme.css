@@ -1,0 +1,240 @@
+
+/* //////////////////////////////////////////////////////// */
+/* 
+ * 	NAME: THEME-1
+ * 		CLIENT: THK
+ * 		 */
+ /* //////////////////////////////////////////////////////// */
+
+
+body.theme-1{
+	background:rgba(245,245,245,1)
+}
+
+body.theme-1 .logo_wrapper .logo__left{
+	background:#fff
+}
+
+body.theme-1 ._topbarBg{
+	background:#b70025
+}
+
+
+
+body.theme-1 .navbar .dropdown-submenu > a:after {
+    content: "";
+    width: 4px;
+    height: 100%;
+    background: #b70025;
+}
+
+body.theme-1 .tools-type-btn li.tool-type-btn a.btn{
+	color:#b70025
+}
+
+body.theme-1 .tools-type-btn li.tool-type-btn .btn:hover {
+    color: #333;
+}
+
+body.theme-1 .badge__notify {
+   
+    background: #333;
+    color: rgba(255, 255, 255, 1);
+}
+
+body.theme-1 .navbar .dropdown-submenu > a:after,
+body.theme-1 .nav li.dropdown >a:after {
+        
+		background:#b70025;
+    }
+body.theme-1 ul#quick__nav-context li .close-tab{
+ 
+  background: #b70025 !important;
+}
+@media (max-width:992px){
+	body.theme-1 .tools-type-btn li.tool-type-btn a.btn{
+	color:#fff
+	}
+	
+}
+	
+	
+/* //////////////////////////////////////////////////////// */
+/* 
+ * 	NAME: THEME-1
+ * 		CLIENT: DISH
+ * 		 */
+ /* //////////////////////////////////////////////////////// */
+
+body.theme-2{
+	background:rgba(245,245,245,1)
+}
+
+body.theme-2 .logo_wrapper .logo__left{
+	background:#fff
+}
+
+body.theme-2 ._topbarBg{
+	background:#ff1230
+}
+
+
+
+body.theme-2 .navbar .dropdown-submenu > a:after {
+    content: "";
+    width: 4px;
+    height: 100%;
+    background: #ff1230;
+}
+
+body.theme-2 .tools-type-btn li.tool-type-btn a.btn{
+	color:#ff1230
+}
+
+body.theme-2 .tools-type-btn li.tool-type-btn .btn:hover {
+    color: #333;
+}
+
+body.theme-2 .badge__notify {
+   
+    background: #333;
+    color: rgba(255, 255, 255, 1);
+}
+
+body.theme-2 .navbar .dropdown-submenu > a:after,
+body.theme-2 .nav li.dropdown >a:after {
+        
+		background:#ff1230;
+    }
+body.theme-2 ul#quick__nav-context li .close-tab{
+ 
+  background: #ff1230 !important;
+}
+@media (max-width:992px){
+	body.theme-2 .tools-type-btn li.tool-type-btn a.btn{
+	color:#fff
+	}
+	
+}
+
+
+/* //////////////////////////////////////////////////////// */
+/* 
+ * 	NAME: THEME-1
+ * 		CLIENT: XEEVA
+ * 			Primary Color: #5285b0
+ * 			 */
+ /* //////////////////////////////////////////////////////// */
+body.theme-3{
+	background:rgba(245,245,245,1)
+}
+
+body.theme-3 .logo_wrapper .logo__left{
+	background:#fff
+}
+
+body.theme-3 ._topbarBg{
+	background:#5285b0
+}
+
+
+
+body.theme-3 .navbar .dropdown-submenu > a:after {
+    content: "";
+    width: 4px;
+    height: 100%;
+    background: #5285b0;
+}
+
+body.theme-3 .tools-type-btn li.tool-type-btn a.btn{
+	color:#5285b0
+}
+
+body.theme-3 .tools-type-btn li.tool-type-btn .btn:hover {
+    color: #fb5e00;
+}
+
+body.theme-3 .badge__notify {
+   
+    background: #fb5e00;
+    color: rgba(255, 255, 255, 1);
+}
+
+body.theme-3 .navbar .dropdown-submenu > a:after,
+body.theme-3 .nav li.dropdown >a:after {
+        
+		background:#5285b0;
+    }
+body.theme-3 ul#quick__nav-context li .close-tab{
+ 
+  background: #075d94 !important;
+}
+@media (max-width:992px){
+	body.theme-3 .tools-type-btn li.tool-type-btn a.btn{
+	color:#fff
+	}
+	
+}
+
+
+/* //////////////////////////////////////////////////////// */
+/* 
+ * 	NAME: THEME-1
+ * 		CLIENT: CARE CLOUD
+ * 		 */
+ /* //////////////////////////////////////////////////////// */
+body.theme-4{
+	background:rgba(245,245,245,1)
+}
+
+body.theme-4 .logo_wrapper .logo__left{
+	background:#fff
+}
+
+body.theme-4 ._topbarBg{
+	background:#075d94
+}
+
+
+body.theme-4 .navbar .dropdown-submenu > a:after {
+    content: "";
+    width: 4px;
+    height: 100%;
+    background: #075d94;
+}
+
+body.theme-4 .tools-type-btn li.tool-type-btn a.btn{
+	color:#075d94
+}
+
+body.theme-4 .tools-type-btn li.tool-type-btn .btn:hover {
+    color: #fb5e00;
+}
+
+body.theme-4 .badge__notify {
+   
+    background: #fb5e00;
+    color: rgba(255, 255, 255, 1);
+}
+
+body.theme-4 .navbar .dropdown-submenu > a:after,
+body.theme-4 .nav li.dropdown >a:after {
+        
+		background:#075d94;
+    }
+body.theme-4 ul#quick__nav-context li .close-tab{
+ 
+  background: #075d94 !important;
+}
+	
+@media (max-width:992px){
+	body.theme-4 .tools-type-btn li.tool-type-btn a.btn{
+	color:#fff
+	}
+	
+}
+
+
+
+
+

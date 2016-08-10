@@ -1,0 +1,11 @@
+.fullScreenElement {
+		position: fixed !important;
+		left: 2.5% !important;
+		top: 10% !important;
+		z-index: 99999999999 !important;
+		height: 90% !important;
+		width: 95% !important;
+	}
+	.active.fullScreenElement .md-fullscreen:before {
+		content: '\f16c' !important;
+	}

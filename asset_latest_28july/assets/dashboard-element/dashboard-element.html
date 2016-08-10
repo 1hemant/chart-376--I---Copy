@@ -1,0 +1,834 @@
+<link href="../bower_components/polymer/polymer.html" rel="import"/>
+<link href="../data-element/data-element.html" rel="import"/>
+<link href="../css/tooltip.css" rel="stylesheet"/>
+<link href="../visualization-element/visualization-element.html" rel="import"/>
+<link href="../multi-grid-element/multi-grid-element.html" rel="import"/>
+<link href="../chart-element/chart-element.html" rel="import"/>
+<link href="../grid-element/grid-type-1.html" rel="import"/>
+<link href="../grid-element/grid-element.html" rel="import"/>
+<link href="../map-element/map-element.html" rel="import"/>
+<link href="../stock-chart-element/stock-chart-element.html" rel="import"/>
+<link href="../export-element/export-element.html" rel="import"/>
+<dom-module id="dashboard-element">
+	<template>
+		<style>
+			div.current-selectionBox{
+			  background: rgba(0,0,0,.05);
+			  border-radius:3px;
+			  line-height: 1;
+			  padding: 10px;
+			  border: 1px solid rgba(0,0,0,0.2);
+			  margin-top:5px;
+			  width:100%;
+			  float:left;
+			}
+			
+			ul.currentSelection--list {
+				margin:0 !important;
+				padding:0 !important;
+			}
+			
+			ul.currentSelection--list li{
+				list-style:none;
+				float:left;
+				width:50%;
+				padding:10px;
+				border:1px solid rgba(0,0,0,0.07);
+				margin-left:-1px
+			}
+			
+			
+			
+			#refreshBox {
+			  color: #333;
+			  border-radius: 3px;
+			  border:1px solid #eaeaea;
+			  background: #fff;
+			  width: 272px;
+			  position: fixed;
+			  right: -272px;
+			  top: 60px;
+			  z-index: 502;
+			  line-height: 21px;
+			  font-size: 12px;
+			  text-transform: uppercase;
+			  border-top-left-radius: 0;
+			  border-bottom-left-radius: 0;
+			  
+			}
+
+			#refreshBox form {
+			  margin-bottom: 0;
+			  text-align: center;
+			}
+
+			#refreshBox select {
+			  background: 0 0;
+			  box-shadow: 0 0 0;
+			  margin-bottom: 10px;
+			  padding: 3px;
+			  color: #213442;
+			}
+
+			#refreshBox .control {
+			  display: block;
+			  width: 42px;
+			  height: 53px;
+			  line-height: 51px;
+			  text-align: center;
+			  position: absolute;
+			  top: 0;
+			  left: -42px;
+			  background: transparent;
+			}
+			#refreshBox a.control{
+				color:#b70025
+			}
+
+			#refreshBox .control i{
+				vertical-align: middle;
+			}
+			#refreshBox a.control i:hover:before{
+				
+	-webkit-animation: spinAround 2s linear infinite;
+	-moz-animation: spinAround 2s linear infinite;
+	animation: spinAround 2s linear infinite;
+			}
+			
+			#refreshBox .inside {
+			  padding: 10px;
+			}
+
+			#refreshBox .header {
+			  text-align: center;
+			  padding-bottom: 5px;
+			  margin-bottom: 5px;
+			  border-bottom: 1px solid #eee;
+			  font-size: 18px;
+			  font-weight: 300;
+			}
+			/* Move it (define the animation) */
+			@-moz-keyframes scroll {
+			 0%   { -moz-transform: translateX(100%); }
+			 100% { -moz-transform: translateX(-100%); }
+			}
+			@-webkit-keyframes scroll {
+			 0%   { -webkit-transform: translateX(100%); }
+			 100% { -webkit-transform: translateX(-100%); }
+			}
+			@keyframes scroll {
+			 0%   { 
+			 -moz-transform: translateX(100%); /* Firefox bug fix */
+			 -webkit-transform: translateX(100%); /* Firefox bug fix */
+			 transform: translateX(100%); 		
+			 }
+			 100% { 
+			 -moz-transform: translateX(-100%); /* Firefox bug fix */
+			 -webkit-transform: translateX(-100%); /* Firefox bug fix */
+			 transform: translateX(-100%); 
+			 }
+			}
+			.ticker{
+				/* Starting position */
+				 -moz-transform:translateX(100%);
+				 -webkit-transform:translateX(100%);	
+				 transform:translateX(100%);
+				 /* Apply animation to this element */	
+				 -moz-animation: scroll 15s linear infinite;
+				 -webkit-animation: scroll 15s linear infinite;
+				 animation: scroll 15s linear infinite;
+			}
+			:host{
+				display:none;
+			}
+			:host.active{
+				display:inherit;
+			}
+			/*PAGE CONTENT STYLES*/
+			
+			.content{
+			  position: relative;
+			  padding-top:60px;
+			}
+
+			.content--inner{
+				padding:0 0 20px 0;
+				overflow-y: auto;
+				width: 100%;
+				<!-- height: calc(100vh - 170px); -->
+			}
+			.content__wrapper{
+
+			}
+
+			.master__head{
+			  
+			  height: 54px;
+			  position: relative;
+			  <!-- border-bottom: 1px solid #d0d4d9; -->
+			  
+			}
+
+			.master--title{
+			  display: inline-block;
+			  float: left;
+			  position: relative;
+			  padding-right: 14px;
+			}
+			
+			.master--title:after{
+            content: '';
+            width: 0px;
+            height: 30px;
+            background: rgba(0,0,0,.1);
+            position: absolute;
+            right: 0;
+            top: 12px
+            }
+			.master--title h1{
+			  font-size: 21px;
+			  margin: 0;
+			  /*margin-left: 10px;*/
+			  line-height: 54px;
+			  font-weight: 700;
+			  <!-- opacity: .8; -->
+			}
+
+
+			.master__head .toolbar--head {
+				display: inline-block;
+				float: right;
+			}
+			.tools-type-btn {
+				margin: 0 !important;
+				padding: 0 !important;
+			}
+			.tools-type-btn li.tool-type-btn {
+				list-style: none;
+				margin: 0;
+				line-height: 54px;
+				height: 54px;
+				position: relative;
+				float: left;
+				width: 54px;
+				text-align: center;
+			}
+			/*.tools-type-btn li.tool-type-btn:before {
+				content: '';
+				width: 0px;
+				height: 54px;
+				background: rgba(0, 0, 0, .1);
+				position: absolute;
+				left: 0;
+				top: 0px
+			}*/
+			.tools-type-btn li.tool-type-btn .btn {
+				opacity: .7;
+				padding: 0;
+			}
+			.tools-type-btn li.tool-type-btn .btn i {
+				font-size: 24px;
+				vertical-align: middle;
+			}
+			.tools-type-btn li.tool-type-btn .btn:hover {
+				color: #00aaf9;
+				opacity: 1
+			}
+			.tools-type-btn li.tool-type-btn .btn {} .filter__drop .header {
+				min-height: 40px;
+				width: 100%;
+				border-bottom: 1px solid rgba(0, 0, 0, .1);
+				background: rgba(0, 0, 0, .05);
+				padding: 0 8px;
+			}
+
+			.tools-type-btn li.tool-type-btn:before {
+			    content: '';
+			    width: 0px;
+			    height: 54px;
+			    background: rgba(0, 0, 0, .1);
+			    position: absolute;
+			    left: 0;
+			    top: 0px
+			}
+
+			.tools-type-btn a.btn{
+				color: rgba(0,0,0,.7)
+			}
+
+			/*dark tools*/
+
+			.tools-type-btn.dark li.tool-type-btn .btn{
+			  color: #fff
+			}
+
+			.tools-type-btn.dark li.tool-type-btn .btn:hover{
+			  color: #00aaf9
+			}
+
+			.tools-type-btn.dark li.tool-type-btn:before{
+			  background: rgba(255,255,255,.1)
+			}
+				.no-width{
+					width:0 !important
+				}
+
+			.filter__drop .header h3 {
+				margin: 0;
+				font-size: 13px;
+				text-transform: uppercase;
+				line-height: 40px;
+			}
+			.filter__drop {
+				min-width: 600px;
+				margin-top: -1px;
+				border: 1px solid rgba(0, 0, 0, .1);
+				border-radius: 2px;
+			}
+			
+			.filter__drop > li{
+				line-height:normal
+			}
+				
+			
+			@media (max-width: 767px) {
+				/* 767px */
+
+				.filter__drop {
+					left: 20px;
+					right: 20px;
+					min-width: 300px;
+				}
+			}
+			.drop--body {
+				padding: 10px;
+			}
+			
+			.drop--body {
+				font-family:'Open Sans', sans-serif;
+				font-size:13px;
+			}
+			/*
+			//
+			  ARROW PSEUDO CLASS
+			//*/
+			/*
+			.dropdown-menu:before,
+			.dropdown > .dropdown-menu:before,
+			.dropdown-toggle > .dropdown-menu:before,
+			.btn-group > .dropdown-menu:before {
+				position: absolute;
+				top: -8px;
+				right: 19px;
+				left: auto;
+				display: inline-block !important;
+				border-right: 8px solid transparent;
+				border-bottom: 8px solid rgba(0, 0, 0, .1);
+				border-left: 8px solid transparent;
+				content: '';
+			}
+			.dropdown-menu:after,
+			.dropdown > .dropdown-menu:after,
+			.dropdown-toggle > .dropdown-menu:after,
+			.btn-group > .dropdown-menu:after {
+				position: absolute;
+				top: -7px;
+				right: 20px;
+				left: auto;
+				display: inline-block !important;
+				border-right: 7px solid transparent;
+				border-bottom: 7px solid rgba(0, 0, 0, .05);
+				border-left: 7px solid transparent;
+				content: '';
+			}
+			.dropdown > .dropdown-menu:before,
+			.dropdown-toggle > .dropdown-menu:before,
+			.btn-group > .dropdown-menu:before {
+				left: auto;
+				right: 9px;
+			}*/
+			.cui-input,
+			.input-group .cui-input,
+			.cui-btn-ss,
+			 {
+				font-size: 13px;
+				width: 100%;
+				max-width: 100%;
+				margin: 10px auto 17px;
+				padding: 10px 17px;
+				transition: all .5s linear!important;
+				color: #6f7889;
+				border: 1px solid #e5e5e5;
+				border-radius: 3px;
+				background: #fff;
+				-webkit-appearance: none
+			}
+			.cui-input:focus,
+			.cui-btn-ss:focus{
+				border: 1px solid #2386db;
+				outline: 0;
+				box-shadow: 0 0 5px rgba(37, 43, 51, .3)
+			}
+			select.cui-input {
+				position: relative;
+				z-index: 1;
+				color: #c6ccd7;
+				background: 0 0;
+				-moz-appearance: none
+			}
+			.form-control.cui-input::-webkit-input-placeholder{
+				font-size: 12px
+			}
+
+			.secondary--search{
+			     float: left;
+			     margin-left: 10px;
+			     margin-top: 10px;
+			     max-width: 200px
+			      }
+			.secondary--search .btn {
+				padding: 5px;
+			}
+			.secondary--search .btn i {
+				vertical-align: middle;
+				font-size: 21px;
+			}
+			.meta-data {
+				position: relative;
+				float: right;
+				margin-right: 10px;
+				line-height: 54px;
+			}
+			.meta-data span {
+				font-size: 11px;
+				<!-- color: rgba(0, 0, 0, .5); -->
+				/*text-transform: uppercase;  */
+			}
+
+			.content--title{
+			  position: relative;
+			  margin: 10px 0 20px 0;
+			  padding-bottom: 10px;
+			}
+			.content--title h1{
+			  margin: 0;
+			  font-size: 20px;
+			  position: relative;
+			  opacity: .8;
+			}
+			.content--title:after{
+			  content: '';
+			  width: 40px;
+			  height: 3px;
+			  background: #00aaf9;
+			  position: absolute;
+			  left: 0;
+			  bottom: 0;
+			}
+			.container-fluid-padding{
+				/*padding:40px;*/
+			}
+			div.current-selectionBox.dashboard-element{
+max-height:150px;
+overflow-y:auto}
+
+.drop--body.dashboard-element{
+max-height:170px;
+overflow-y:auto}
+			
+		</style>
+		<div class="content">
+			<div class="content__wrapper">
+				<div class="master__head">
+					<div class="container-fluid">
+						<div class="master--title">
+							<h1>{{dashboardTitle}}</h1>
+						</div>
+						<!-- <div class="secondary--search">
+							<div class="input-group">
+								<input type="text" class="form-control cui-input" placeholder="Search Dashboard">
+								<span class="input-group-btn">
+									<button class="btn btn-default cui-btn-ss" type="button"><i class="material-icons">search</i></button>
+								</span>
+							</div>
+						</div> -->
+						<!-- MASTER TITLE -->
+						<div class="toolbar--head">
+							<!-- BEGIN THEME PANEL -->.
+							<ul class="btn-group tools-type-btn">
+
+								<li class="tool-type-btn no-width">
+									<div id="filterDropdown" class="dropdown-menu filter__drop pull-right  hold-on-click">
+									<div class="row">
+											<div class="col-md-12 col-sm-12 col-xs-12">
+												<div class="header">
+													<h3>Filters</h3>
+												</div>
+											</div>
+										</div>
+										<template is="dom-if" if="{{configuration.currentSelection}}">
+											<div class="row-fluid">
+												<div class="col-md-12 col-sm-12 col-xs-12 ">
+													<div class="current-selectionBox">
+														<label>Current Selection:</label><br/>
+														<ul class="currentSelection--list">
+														<template is="dom-repeat" items="{{listeners}}">
+														<li>
+															{{item.name}} : {{__compute(item.selected)}}
+															</li>
+														</template>
+														</ul>
+													</div>
+												</div>
+											</div>
+										</template>
+										<div class="row">
+											<div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
+												<div class="drop--body">
+													<content select="filter-element"></content>
+												</div>
+											</div>
+										</div>
+									</div>
+								</li>
+								
+							</ul>
+							
+						</div>
+						<!-- END PAGE TOOLBAR -->
+
+						<div class="meta-data">
+							<span>[[metaData.text]]</span>
+						</div>
+					</div>
+
+				</div>
+			</div>
+			<div class="content--inner">
+				<div class="container-fluid">
+						<div id="refreshBox">
+							<a class="control" href="#" on-tap="setting"><i class="material-icons">settings</i></a>
+							<div class="inside" style="min-height:150px;">
+								<label class="radio-inline">
+									<input type="checkbox" id="autoReferesh"> Auto Referesh
+								</label>
+							</div>
+						</div>
+					<div class="grid-stack" id="objectHolder">
+						<content></content>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+	</template>
+	<script>
+        var aaa;
+		Polymer({
+			is:"dashboard-element",
+			properties:{
+				dashboardTitle:{
+					type:String,
+					value:"",
+					notify:true,
+					reflectToAttribute:false
+				},
+				sharing:{
+					type:Boolean,
+					value:false
+				},
+				objects:{
+					type:Array,
+					notify:true,
+					reflectToAttribute:false,
+					value:function(){
+						return []
+					},
+					readonly:true,
+					observer:"__objectChanged"
+				},
+				listeners:{
+					type:[],
+					reflectToAttribute:false,
+					value:function(){
+						return []
+					}
+				,		observer:"__listenersChanged"
+			
+        },
+	listeners1:{
+					type:[],
+					reflectToAttribute:false,
+					value:function(){
+						return []
+					}
+				,		observer:"__listeners1Changed"
+			
+        },				configuration:{
+					type:Object,
+					reflectToAttribute:false,
+					value:function(){
+						return {}
+					},
+					readonly:true,
+				},
+				workboardService:{
+					type:String,
+					value:"workboard/get-workboard",
+					reflectToAttribute:false,
+					readonly:true
+				},
+				options:{
+					type:Object,
+					value:function(){
+						return {
+							alwaysShowResizeHandle: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
+							resizable: {
+								handles: 'e, se, s, sw, w'
+							},
+							removable:false,
+							 draggable: {
+								handle: '.widget--header',
+							},
+							width:12,
+							disableDrag:true,
+							disableResize:true,
+						}
+						
+					},
+					reflectToAttribute:false,
+					notify:true
+				},
+				metaData:{
+					type:Object,
+					value:function(){
+						return {}
+					},
+					notify:true,
+					reflectToAttribute:false,
+					readonly:true
+				}
+			},
+		__tabLessThen:function(e){
+			return (e.length>5?(e.slice(0,5)):e);
+		},
+		__tabGreaterThen:function(e){
+			return (e.length>5?(e.splice(5)):[]);
+		},
+		onTabClose:function(e){
+			/*uuid
+			if in top 5,
+				remove this and click on next or prev.
+				else	
+				Remove Directly,
+			*/
+			},
+			onTabCreate:function(e){
+			/*uuid
+				Insert ReCORD at nth position if less then 5 else 5th position.
+				*/
+			},
+			onTabTap:function(e){
+			/*UUID
+				if lies in first five quad, no issues.
+				if not ,
+				 shifts array from 5th position; Move current (this) to 5th position\
+			*/
+			},
+			toggleFilter:function(){
+				$(this.$.filterDropdown).toggle();
+			},
+			share:function(e){
+				var description="",data=$(this).data();
+				if(this.configuration.hasOwnProperty("description")){
+					description=this.configuration.description.text;
+				}
+				document.querySelector('sharing-element').init(description,data.title,$(e.target).data('type'),data.id,0,this);
+			},
+		  __listenersChanged:function(e){
+				$(this).find('data-element').attr('filter',JSON.stringify(e));
+		  },
+			__listeners1Changed:function(e){
+			  if(e.length!=0){
+						this.listeners=JSON.parse(e);
+			  }
+			},
+		
+      close:function(){
+				var self=this;
+				/*Add Close Code Here 
+					Check for every possible issue
+				*/
+				var arr=[];
+				if(typeof $(this).siblings("dashboard-element")[0] !== 'undefined')
+				{
+				$(this).siblings("dashboard-element")[0].classList="active";
+				}	
+					var header=document.querySelector("header-element");
+						var body=Polymer.dom(document.querySelector('body-element'));
+					$.each(body.children,function(i,e){
+					if($(e).data('uuid')==$(self).data("uuid")){
+                                                                                 
+          body.removeChild(e);}
+          });
+          $.each(header.recentList,function(i,e){
+						
+						if(e.hasOwnProperty("uuid")&&(e.uuid==$(self).data("uuid")))
+						{
+							header.recentList.splice(i,1);
+						}
+						else{
+							arr.push(e)
+						}
+					});
+					header.recentList=arr;
+					self.remove();
+			},
+			__compute:function(e){
+				return e.join();
+			},
+			refresh:function(){
+				$(this).find('data-element').get(0).__run({});
+			},
+			setting:function(){
+				var e=$(this.$.refreshBox)
+				if(e.hasClass('active')){
+					e.removeClass('active').animate({'right' : -272}, 500);
+				}else{
+					e.addClass('active').animate({'right' : -1}, 500);
+				}
+			},
+			__objectChanged:function(data){
+				if(data.length){
+					this.base.blockUI()
+					$(this.$.objectHolder).empty();
+					var id=$(this).data('id');
+					var sharing=this.sharing;
+					var domBind = document.createElement('template', 'dom-bind');
+					domBind.filter=this.listeners;
+					var doc = domBind.content.ownerDocument;
+					var dataElement=doc.createElement('data-element');
+						dataElement.setAttribute('data', '{{data}}');
+						dataElement.setAttribute('workboard-id', id);
+						dataElement.setAttribute('filter', '{{filter}}');
+						domBind.content.appendChild(dataElement);
+					var visualElement=doc.createElement('visualization-element');
+						visualElement.setAttribute('visualization', '{{visualization}}');
+						visualElement.setAttribute('workboard-id', id);
+						domBind.content.appendChild(visualElement);
+					$.each(data,function(i,e){
+						try{
+							if(e.hasOwnProperty('type') && e.hasOwnProperty('configuration') && e.hasOwnProperty('id') && e.hasOwnProperty('x') && e.hasOwnProperty('y') && e.hasOwnProperty('height') &&  e.hasOwnProperty('width')){
+								var ele=doc.createElement(e.type);
+									ele.setAttribute('data', '{{data}}');
+									ele.setAttribute('id', e.id);
+									ele.setAttribute('filter', '{{filter}}');
+									if(sharing){
+										ele.setAttribute('sharing',sharing);	
+									}
+									ele.setAttribute('visualization', '{{visualization}}');
+									$(ele).addClass('grid-stack-item').attr({
+										"data-gs-max-width":"12",
+										"data-gs-min-width":"1",
+										"data-gs-max-height":"12",
+										"data-gs-min-height":"1",
+										"data-gs-x":e.x,
+										"data-gs-y":e.y,
+										"data-gs-width":e.width,
+										"data-gs-height":e.height
+									});
+									if(e.hasOwnProperty("style")){
+										ele.setAttribute('style', e.style);
+									}
+									if(e.hasOwnProperty("class") && e.class.trim().length){
+										ele.classList.add(e.class);
+									}
+									ele.setAttribute('configuration',JSON.stringify(e.configuration))
+									if(e.hasOwnProperty("children") && e.type.trim().indexOf('filter-element') === -1){
+										var list=$.grep(data,function(c){
+											return e.children.indexOf(Number(c.id)) !== -1;
+										});
+										ele.setAttribute('element-children',JSON.stringify(list));
+										domBind.content.appendChild(ele);
+									}else if(e.type.trim().indexOf('filter-element') !== -1){
+										ele.setAttribute('type', e.filterType);
+										domBind.content.appendChild(ele);
+									}else if(e.type.trim().indexOf('widget-element') !== -1){
+										domBind.content.appendChild(ele);
+									}
+							}else{
+								throw "Properties Missing In Element";
+							}
+						}catch(e){
+							console.error(e);
+						}
+					});
+					Polymer.dom(this).appendChild(domBind);
+					Polymer.dom.flush();
+					$(this).find('.grid-stack').gridstack(this.options).on('change', function(event, items) {
+						$(window).trigger('resize');
+					});
+					this.base.unblockUI();
+				}
+			},
+      autoRefresh:function(){
+      
+        if($(this.$$('.icheckbox_square-blue')).hasClass('checked')){
+       aaa=setInterval(function(){ console.log("Hello"); }, 2000); 
+        
+        }
+        else{
+        if(aaa!==undefined){
+        clearInterval(aaa);
+        }
+        }
+        
+      
+      }
+      ,
+			attached:function(){
+      var root=this;
+			var data=$(this).data();
+				this.dashboardTitle=data.title;
+				this.base=document.createElement('base-util');
+				var root=this;
+				$(this.$.filterListClick).on('click',function(e){
+					$(root.$.filterDropdown).toggle();
+			    });
+				$(this.$.filterDropdown).on('click',function(e){
+					e.stopPropagation();
+				});
+				/*$(this).find('ins').get(0).on('click',function(e){
+					root.autoRefresh();
+				});
+				*/
+        
+        this.base.sendRequest(this.workboardService,{"data":{workboard_id:data.id}},function(e){
+					if(e.status.code == 200){
+                        root.metaData=e.data.configuration.meta;
+						if(e.data.configuration.hasOwnProperty('listeners')){
+							root.listeners=e.data.configuration.listeners;
+						}
+						if(e.data.configuration.hasOwnProperty('allowDrag')){
+							root.options.disableDrag=!e.data.configuration.allowDrag;
+						}
+						if(e.data.configuration.hasOwnProperty('allowResize')){
+							root.options.disableResize=!e.data.configuration.allowResize;
+						}
+						if(e.data.configuration.hasOwnProperty('autoReferesh') && e.data.configuration.autoReferesh.hasOwnProperty('enabled') && e.data.configuration.autoReferesh.enabled){
+							$(root.$.autoReferesh).iCheck({
+								checkboxClass: 'icheckbox_square-blue'
+							});
+						}else{
+							$(root.$.autoReferesh).attr('disabled','disabled').iCheck({
+								checkboxClass: 'icheckbox_square-blue'
+							});
+						}
+						root.configuration=e.data.configuration;
+						root.objects=e.data.objects;
+					}
+				},{"blockUI": {"enabled": true,"page": true}});
+			}
+		});
+	</script>
+</dom-module>

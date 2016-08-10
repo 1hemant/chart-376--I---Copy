@@ -1,0 +1,121 @@
+<link href="../bower_components/polymer/polymer.html" rel="import" />
+<dom-module id="excel-export">
+	<script>
+		Polymer({
+			is:"excel-export",
+			properties:{
+				data:{
+					type:Object,
+					value:function(){
+						return {};
+					},
+					observer:'__dataChanged'
+				},
+				configuration:{
+					type:Array,
+					value:function(){
+						return []
+					}
+				},
+				counter:{
+					type:Number,
+					value:0,
+					readonly:true
+				}
+			},
+			__dataChanged:function(){
+				if(this.data.hasOwnProperty(this.id) && this.configuration){
+					var configuration=this.configuration,originalData=this.data[this.id].resultSet,zip = new JSZip();this.counter=0;
+						for(var i=0,j=configuration.length;i<j;i++){
+							var currentWorkbook=configuration[i],workbook =  ExcelBuilder.Builder.createWorkbook();/*Create Workbook*/
+							/*Create Design*/
+								if(currentWorkbook.hasOwnProperty('design')){
+								var stylesheet = workbook.getStyleSheet();
+								for(var k in currentWorkbook.design){
+									if(currentWorkbook.design.hasOwnProperty(k)){
+										currentWorkbook.design[k]=stylesheet.createFormat(currentWorkbook.design[k])
+									}
+								}
+							}
+							/*Create Design Ends*/
+							if(currentWorkbook.hasOwnProperty('worksheet') && typeof currentWorkbook.worksheet == 'object' && currentWorkbook.worksheet.length>0){
+								for(var k=0,l=currentWorkbook.worksheet.length;k<l;k++){
+									var currentWorksheet=currentWorkbook.worksheet[k];
+									/*Create SHEET*/
+										var worksheet = workbook.createWorksheet({ name: currentWorksheet.name });
+									/*Create SHEET ENDS*/
+									/*Get Column Options and index*/
+										var columnConfig=[],columnIndexes=[],metadata={};
+										for(var m=0,n=currentWorksheet.column.length;m<n;m++){
+											var col=currentWorksheet.column[m],config={};
+											try{
+												if(col.hasOwnProperty('width') && !isNaN(col.width)){
+													config.width=Number(col.width);
+												}
+												if(col.hasOwnProperty('hidden') && col.hidden === true){
+													config.hidden=col.hidden;
+												}
+												if(col.hasOwnProperty('index')){
+													columnIndexes.push(col.index);
+												}else{
+													throw 'Column index is missing';
+												}
+												if(col.hasOwnProperty("metadata") && typeof col.metadata === 'object'){
+													var meta={}
+													if(col.metadata.hasOwnProperty("style")){
+														meta.style=currentWorkbook.design[col.metadata.style].id;
+													}
+													if(col.metadata.hasOwnProperty("type")){
+														meta.type=col.metadata.type
+													}
+													metadata[col.index]=meta;
+												}
+												columnConfig.push(config);
+											}catch(e){
+												console.error(e);
+											}
+										}
+									/*Get Column Options and index ends*/
+										var data=[];
+										for(var m=0,n=originalData.length;m<n;m++){
+											data[m]=[]
+											for(var o=0,p=columnIndexes.length;o<p;o++){
+												var index=columnIndexes[o];
+												if(metadata.hasOwnProperty(index)){
+													data[m].push({value:originalData[m][index],metadata:metadata[index]});
+												}else{
+													data[m].push({value:originalData[m][index]});
+												}
+											}
+										}
+										worksheet.setData(data);
+									/*Set Data ENDS*/
+									/*Set Columns Property*/
+										worksheet.setColumns(columnConfig);
+									/*Set Columns Property*/
+									/*Sheet Print Header Footer*/
+										if(currentWorkbook.hasOwnProperty('printFooter')){
+											worksheet.setFooter(currentWorkbook.printFooter);
+										}
+										if(currentWorkbook.hasOwnProperty('printHeader')){
+											worksheet.setHeader(currentWorkbook.printHeader);
+										}
+									/*Sheet Print Header Footer ENDS*/
+									/*Add Sheet to workbook*/
+										workbook.addWorksheet(worksheet);
+									/*Add Sheet to workbook ENDS*/
+								}
+								var self=this;
+								ExcelBuilder.Builder.createFile(workbook).then(function (data) {
+									zip.file(self.configuration[self.counter].name+'.xlsx', data, {base64: true});
+									if(++self.counter == configuration.length){
+										saveAs(zip.generate({type:"blob",compression:"DEFLATE",comment:"This is Netlink generated file"}), "Export.zip");
+									}
+								});
+							}
+						}
+				}
+			}
+		})
+	</script>
+</dom-module>

@@ -1,0 +1,1538 @@
+var kettleData = {
+  "version": {
+    "pointer": "10.0.1",
+    "name": "vanilla"
+  },
+  "status": {
+    "code": "200",
+    "value": "success"
+  },
+  "data": {
+    "69": {
+      "queryInfo": {
+        "totalRows": 1,
+        "type": "selected"
+      },
+      "resultSet": [
+        [
+          null
+        ]
+      ],
+      "metaData": [
+        {
+          "colIndex": 0,
+          "colType": "BigNumber",
+          "colName": "sum(total_price_usd_po_line_recvd)"
+        }
+      ]
+    },
+    "72": {
+      "queryInfo": {
+        "totalRows": 105,
+        "type": "selected"
+      },
+      "resultSet": [
+        [
+          "All"
+        ],
+        [
+          "CAPITAL PURCHASES"
+        ],
+        [
+          "NOT DEFINED"
+        ],
+        [
+          "HARDWARE"
+        ],
+        [
+          "SERVICES"
+        ],
+        [
+          "SOFTWARE"
+        ],
+        [
+          "FACILITIES AND MAINTENANCE"
+        ],
+        [
+          "ABRASIVES"
+        ],
+        [
+          "ADHESIVES, SEALANTS, TAPE AND PAINTING"
+        ],
+        [
+          "CAFETERIA SUPPLIES"
+        ],
+        [
+          "CHEMICALS"
+        ],
+        [
+          "PACKAGING"
+        ],
+        [
+          "CUTTING TOOLS"
+        ],
+        [
+          "PROTECTIVE FILM"
+        ],
+        [
+          "PTC HEATER"
+        ],
+        [
+          "PURCHASED SERVICE"
+        ],
+        [
+          "PWB"
+        ],
+        [
+          "ACCUMULATORS"
+        ],
+        [
+          "SENSORS"
+        ],
+        [
+          "SKIN"
+        ],
+        [
+          "ELECTRICAL"
+        ],
+        [
+          "SPEAKERS"
+        ],
+        [
+          "STAMPINGS"
+        ],
+        [
+          "STANDARD ELECTRONIC COMPONENTS"
+        ],
+        [
+          "STEEL"
+        ],
+        [
+          "SWITCHES"
+        ],
+        [
+          "TAPES AND LABELS"
+        ],
+        [
+          "FASTENERS"
+        ],
+        [
+          "TRANSMISSION OIL COOLER (TOC)"
+        ],
+        [
+          "TXV"
+        ],
+        [
+          "WIRE HARNESSES"
+        ],
+        [
+          "ALLOCATION OF SOCIAL FUND"
+        ],
+        [
+          "NON PRODUCTION TOOLING"
+        ],
+        [
+          "OUTSIDE ENGINEERIN SERVICE"
+        ],
+        [
+          "PRODUCTION SUPPORT MATERIAL"
+        ],
+        [
+          "FILTRATION"
+        ],
+        [
+          "PROTOTYPE"
+        ],
+        [
+          "FLEET MAINTENANCE"
+        ],
+        [
+          "FUELS, OILS AND LUBRICANTS"
+        ],
+        [
+          "LAB SUPPLIES AND EQUIPMENT"
+        ],
+        [
+          "METALS AND RAW MATERIALS"
+        ],
+        [
+          "WELDING"
+        ],
+        [
+          "JANITORIAL"
+        ],
+        [
+          "SAFETY"
+        ],
+        [
+          "UNIFORMS"
+        ],
+        [
+          "HAND TOOLS"
+        ],
+        [
+          "HVAC"
+        ],
+        [
+          "HYDRAULICS"
+        ],
+        [
+          "LIGHTING"
+        ],
+        [
+          "MACHINERY AND EQUIPMENT"
+        ],
+        [
+          "MATERIAL HANDLING"
+        ],
+        [
+          "MOTORS"
+        ],
+        [
+          "OFFICE FURNITURE AND SUPPLIES"
+        ],
+        [
+          "OUTDOOR AND LAWN EQUIPMENT"
+        ],
+        [
+          "PIPE, VALVES AND FITTINGS"
+        ],
+        [
+          "PNEUMATICS"
+        ],
+        [
+          "POWER TOOLS"
+        ],
+        [
+          "POWER TRANSMISSION"
+        ],
+        [
+          "PRODUCTION TOOLING"
+        ],
+        [
+          "PUMPS"
+        ],
+        [
+          "RESEARCH AND DEVELOPMENT"
+        ],
+        [
+          "SAW BLADES"
+        ],
+        [
+          "STORAGE"
+        ],
+        [
+          "TEST AND MEASURE EQUIPMENT"
+        ],
+        [
+          "WAREHOUSING EQUIPMENT AND STORAGE"
+        ],
+        [
+          "WORKHOLDING"
+        ],
+        [
+          "EMPLOYEE BENEFITS"
+        ],
+        [
+          "FREIGHT"
+        ],
+        [
+          "GENERAL"
+        ],
+        [
+          "MARKETING"
+        ],
+        [
+          "MEDICAL"
+        ],
+        [
+          "PROFESSIONAL SERVICES"
+        ],
+        [
+          "RENTAL / LEASE"
+        ],
+        [
+          "TRANSPORTATION"
+        ],
+        [
+          "TRAVEL SERVICES"
+        ],
+        [
+          "UTILITIES"
+        ],
+        [
+          "WASTE DISPOSAL AND TREATMENT"
+        ],
+        [
+          "PLANT TOOLING"
+        ],
+        [
+          "BLOWER MOTORS"
+        ],
+        [
+          "INJECTION MOLDING"
+        ],
+        [
+          "SEALS AND GASKETS"
+        ],
+        [
+          "ADJUSTERS"
+        ],
+        [
+          "ALUMINUM"
+        ],
+        [
+          "ALUMINUM TUBES"
+        ],
+        [
+          "APPLIQUES"
+        ],
+        [
+          "ASSEMBLY"
+        ],
+        [
+          "BAR TURNED"
+        ],
+        [
+          "BLOW MOLDING"
+        ],
+        [
+          "AC HOSES"
+        ],
+        [
+          "CASTINGS"
+        ],
+        [
+          "CLUSTER PLASTICS AND POINTERS"
+        ],
+        [
+          "CLUTCH MODULES"
+        ],
+        [
+          "COATINGS"
+        ],
+        [
+          "CONDENSER MANIFOLD/IRD"
+        ],
+        [
+          "CONNECTORS"
+        ],
+        [
+          "CUT AND SEW"
+        ],
+        [
+          "DECORATIVE PLASTICS"
+        ],
+        [
+          "DISPLAYS"
+        ],
+        [
+          "FILTERS"
+        ],
+        [
+          "FLUX"
+        ],
+        [
+          "FORGINGS"
+        ],
+        [
+          "FUNCTIONAL (EPP)"
+        ],
+        [
+          "METAL PARTS"
+        ],
+        [
+          "MODULES"
+        ],
+        [
+          "MUFFLERS"
+        ]
+      ],
+      "metaData": [
+        {
+          "colIndex": 0,
+          "colType": "String",
+          "colName": "Category"
+        }
+      ]
+    },
+    "74": {
+      "queryInfo": {
+        "totalRows": 2,
+        "type": "selected"
+      },
+      "resultSet": [
+        [
+          "All"
+        ],
+        [
+          "System Spend"
+        ]
+      ],
+      "metaData": [
+        {
+          "colIndex": 0,
+          "colType": "String",
+          "colName": "Data Source"
+        }
+      ]
+    },
+    "76": {
+      "queryInfo": {
+        "totalRows": 0,
+        "type": "selected"
+      },
+      "resultSet": [],
+      "metaData": []
+    },
+    "82": {
+      "queryInfo": {
+        "totalRows": 12,
+        "type": "selected"
+      },
+      "resultSet": [
+        [
+          "June,2015",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "July,2015",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "August,2015",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "September,2015",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "October,2015",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "November,2015",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "December,2015",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "January,2016",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "February,2016",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "March,2016",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "April,2016",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "May,2016",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "metaData": [
+        {
+          "colIndex": 0,
+          "colType": "String",
+          "colName": "date_monthyyyy"
+        },
+        {
+          "colIndex": 1,
+          "colType": "BigNumber",
+          "colName": "NORTH AMERICA"
+        },
+        {
+          "colIndex": 2,
+          "colType": "BigNumber",
+          "colName": "SOUTH AMERICA"
+        },
+        {
+          "colIndex": 3,
+          "colType": "BigNumber",
+          "colName": "ASIA"
+        },
+        {
+          "colIndex": 4,
+          "colType": "BigNumber",
+          "colName": "EUROPE"
+        }
+      ]
+    },
+    "83": {
+      "queryInfo": {
+        "totalRows": 12,
+        "type": "selected"
+      },
+      "resultSet": [
+        [
+          "June,2015",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "July,2015",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "August,2015",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "September,2015",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "October,2015",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "November,2015",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "December,2015",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "January,2016",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "February,2016",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "March,2016",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "April,2016",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "May,2016",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "metaData": [
+        {
+          "colIndex": 0,
+          "colType": "String",
+          "colName": "date_monthyyyy"
+        },
+        {
+          "colIndex": 1,
+          "colType": "BigNumber",
+          "colName": "NORTH AMERICA"
+        },
+        {
+          "colIndex": 2,
+          "colType": "BigNumber",
+          "colName": "SOUTH AMERICA"
+        },
+        {
+          "colIndex": 3,
+          "colType": "BigNumber",
+          "colName": "ASIA"
+        },
+        {
+          "colIndex": 4,
+          "colType": "BigNumber",
+          "colName": "EUROPE"
+        }
+      ]
+    },
+    "84": {
+      "queryInfo": {
+        "totalRows": 0,
+        "type": "selected"
+      },
+      "resultSet": [],
+      "metaData": []
+    },
+    "85": {
+      "queryInfo": {
+        "totalRows": 0,
+        "type": "selected"
+      },
+      "resultSet": [],
+      "metaData": []
+    },
+    "98": {
+      "queryInfo": {
+        "totalRows": 0,
+        "type": "selected"
+      },
+      "resultSet": [],
+      "metaData": []
+    },
+    "116": {
+      "queryInfo": {
+        "totalRows": 1,
+        "type": "selected"
+      },
+      "resultSet": [
+        [
+          "0"
+        ]
+      ],
+      "metaData": [
+        {
+          "colIndex": 0,
+          "colType": "Integer",
+          "colName": "count(distinct supplier_family)"
+        }
+      ]
+    },
+    "118": {
+      "queryInfo": {
+        "totalRows": 1,
+        "type": "selected"
+      },
+      "resultSet": [
+        [
+          "0"
+        ]
+      ],
+      "metaData": [
+        {
+          "colIndex": 0,
+          "colType": "Integer",
+          "colName": "count(distinct category)"
+        }
+      ]
+    },
+    "122": {
+      "queryInfo": {
+        "totalRows": 1,
+        "type": "selected"
+      },
+      "resultSet": [
+        [
+          "0"
+        ]
+      ],
+      "metaData": [
+        {
+          "colIndex": 0,
+          "colType": "Integer",
+          "colName": "count(distinct npmcode)"
+        }
+      ]
+    },
+    "124": {
+      "queryInfo": {
+        "totalRows": 1,
+        "type": "selected"
+      },
+      "resultSet": [
+        [
+          "0"
+        ]
+      ],
+      "metaData": [
+        {
+          "colIndex": 0,
+          "colType": "Integer",
+          "colName": "count(distinct pocode)"
+        }
+      ]
+    },
+    "126": {
+      "queryInfo": {
+        "totalRows": 1,
+        "type": "selected"
+      },
+      "resultSet": [
+        [
+          "55.3"
+        ]
+      ],
+      "metaData": [
+        {
+          "colIndex": 0,
+          "colType": "Number",
+          "colName": "avg(AverageDayToPay)"
+        }
+      ]
+    },
+    "131": {
+      "queryInfo": {
+        "totalRows": 0,
+        "type": "selected"
+      },
+      "resultSet": [],
+      "metaData": []
+    },
+    "619": {
+      "queryInfo": {
+        "totalRows": 0,
+        "type": "selected"
+      },
+      "resultSet": [],
+      "metaData": []
+    },
+    "735": {
+      "queryInfo": {
+        "totalRows": 41,
+        "type": "selected"
+      },
+      "resultSet": [
+        [
+          "All"
+        ],
+        [
+          "VEM - Carolinas Plant"
+        ],
+        [
+          "Visteon Portuguesa, Ltd"
+        ],
+        [
+          "Visteon Technical Center Mexico"
+        ],
+        [
+          "Visteon Engineering Services Ltd"
+        ],
+        [
+          "Visteon Corporation-Electronics"
+        ],
+        [
+          "Visteon Corporation Staff Admin"
+        ],
+        [
+          "VEM - Carolinas Plant - USA"
+        ],
+        [
+          "VEM - Saucito Plant - USA"
+        ],
+        [
+          "VEM - Saucito Plant"
+        ],
+        [
+          "APCB Automotive Plastic Components Berlin GmbH & Co. KG"
+        ],
+        [
+          "Visteon Innovation and Technology GmbH"
+        ],
+        [
+          "Reynosa Electronics"
+        ],
+        [
+          "Visteon Electronics Tunisia"
+        ],
+        [
+          "Visteon Electronics Slovakia s.r.o"
+        ],
+        [
+          "Visteon de Mexico S. de R.L."
+        ],
+        [
+          "Visteon Electronics France (LFB)"
+        ],
+        [
+          "Visteon Electronics Macedonia DOOEL Skopje"
+        ],
+        [
+          "Reynosa Electronics US"
+        ],
+        [
+          "Visteon Automotive Electronics (Thailand) Ltd."
+        ],
+        [
+          "Visteon Japan Ltd"
+        ],
+        [
+          "Autronic SA"
+        ],
+        [
+          "Chennai VASI"
+        ],
+        [
+          "Visteon Corp. Staff Admin-Electronics"
+        ],
+        [
+          "Visteon Electronics Germany GmbH (Karlsruhe Engineering)"
+        ],
+        [
+          "Visteon Electronics Bulgaria EOOD"
+        ],
+        [
+          "Visteon Electronics France (Cergy Eng)"
+        ],
+        [
+          "VTSC (Pune)"
+        ],
+        [
+          "Visteon Asia Pacific Inc"
+        ],
+        [
+          "VTSC (Chennai)"
+        ],
+        [
+          "Carplastics Service "
+        ],
+        [
+          "Visteon Electronics Germany GmbH (Karlsruhe HO)"
+        ],
+        [
+          "Visteon Electronics France (Cergy)"
+        ],
+        [
+          "Visteon Electronics Germany GmbH (Kerpen Engineering)"
+        ],
+        [
+          "Hatfield Manaus"
+        ],
+        [
+          "Visteon Electronics France (GeCOE)"
+        ],
+        [
+          "Visteon-VDSO"
+        ],
+        [
+          "Visteon Electronics Germany GmbH (Kerpen HO)"
+        ],
+        [
+          "Visteon Corporation-Corporate"
+        ],
+        [
+          "Hatfield Arbor"
+        ],
+        [
+          "VISTEON GMSS "
+        ]
+      ],
+      "metaData": [
+        {
+          "colIndex": 0,
+          "colType": "String",
+          "colName": "Location"
+        }
+      ]
+    },
+    "736": {
+      "queryInfo": {
+        "totalRows": 4,
+        "type": "selected"
+      },
+      "resultSet": [
+        [
+          "All"
+        ],
+        [
+          "NORTH AMERICA"
+        ],
+        [
+          "EUROPE"
+        ],
+        [
+          "ASIA"
+        ]
+      ],
+      "metaData": [
+        {
+          "colIndex": 0,
+          "colType": "String",
+          "colName": "Region"
+        }
+      ]
+    },
+    "738": {
+      "queryInfo": {
+        "totalRows": 9,
+        "type": "selected"
+      },
+      "resultSet": [
+        [
+          "All"
+        ],
+        [
+          "NOT DEFINED"
+        ],
+        [
+          "CAPITAL SPEND"
+        ],
+        [
+          "INFORMATION TECHNOLOGY"
+        ],
+        [
+          "NON-PRODUCTION / INDIRECT MATERIALS"
+        ],
+        [
+          "VENDOR TOOLING"
+        ],
+        [
+          "NON-PRODUCTION / INDIRECT SERVICES"
+        ],
+        [
+          "PLANT PURCHASE"
+        ],
+        [
+          "CAPEX AND PLANT TOOLING"
+        ]
+      ],
+      "metaData": [
+        {
+          "colIndex": 0,
+          "colType": "String",
+          "colName": "Type"
+        }
+      ]
+    },
+    "739": {
+      "queryInfo": {
+        "totalRows": 42,
+        "type": "selected"
+      },
+      "resultSet": [
+        [
+          null,
+          "May,2013"
+        ],
+        [
+          null,
+          "September,2013"
+        ],
+        [
+          null,
+          "February,2014"
+        ],
+        [
+          null,
+          "August,2014"
+        ],
+        [
+          null,
+          "September,2014"
+        ],
+        [
+          null,
+          "October,2014"
+        ],
+        [
+          null,
+          "February,2016"
+        ],
+        [
+          null,
+          "August,2015"
+        ],
+        [
+          null,
+          "October,2015"
+        ],
+        [
+          null,
+          "May,2016"
+        ],
+        [
+          null,
+          "June,2013"
+        ],
+        [
+          null,
+          "December,2013"
+        ],
+        [
+          null,
+          "March,2014"
+        ],
+        [
+          null,
+          "July,2014"
+        ],
+        [
+          null,
+          "February,2015"
+        ],
+        [
+          null,
+          "November,2014"
+        ],
+        [
+          null,
+          "January,2016"
+        ],
+        [
+          null,
+          "July,2015"
+        ],
+        [
+          null,
+          "September,2015"
+        ],
+        [
+          null,
+          "February,2013"
+        ],
+        [
+          null,
+          "July,2013"
+        ],
+        [
+          null,
+          "August,2013"
+        ],
+        [
+          null,
+          "November,2013"
+        ],
+        [
+          null,
+          "April,2014"
+        ],
+        [
+          null,
+          "May,2014"
+        ],
+        [
+          null,
+          "March,2015"
+        ],
+        [
+          null,
+          "December,2015"
+        ],
+        [
+          null,
+          "March,2016"
+        ],
+        [
+          null,
+          "June,2015"
+        ],
+        [
+          null,
+          "November,2015"
+        ],
+        [
+          null,
+          "January,2013"
+        ],
+        [
+          null,
+          "April,2013"
+        ],
+        [
+          null,
+          "January,2014"
+        ],
+        [
+          null,
+          "October,2013"
+        ],
+        [
+          null,
+          "March,2013"
+        ],
+        [
+          null,
+          "June,2014"
+        ],
+        [
+          null,
+          "January,2015"
+        ],
+        [
+          null,
+          "December,2014"
+        ],
+        [
+          null,
+          "April,2015"
+        ],
+        [
+          null,
+          "May,2015"
+        ],
+        [
+          null,
+          "April,2016"
+        ],
+        [
+          null,
+          "December,2012"
+        ]
+      ],
+      "metaData": [
+        {
+          "colIndex": 0,
+          "colType": "Integer",
+          "colName": "Date End"
+        },
+        {
+          "colIndex": 1,
+          "colType": "String",
+          "colName": "date_format"
+        }
+      ]
+    },
+    "740": {
+      "queryInfo": {
+        "totalRows": 30,
+        "type": "selected"
+      },
+      "resultSet": [
+        [
+          "persec",
+          "285807541.76",
+          "82078938.48",
+          "988335.86",
+          "526.857899",
+          "700141",
+          "77.480904",
+          "22.251164",
+          "0.267933"
+        ],
+        [
+          "GJgen",
+          "48631823.63",
+          "3597597.95",
+          "133617.66",
+          "522.303741",
+          "100254",
+          "92.874333",
+          "6.870491",
+          "0.255176"
+        ],
+        [
+          "gen1s",
+          "35264605.37",
+          "12010926.63",
+          "138928.49",
+          "698.390958",
+          "67891",
+          "74.375212",
+          "25.33178",
+          "0.293009"
+        ],
+        [
+          "newanant",
+          "5759272.92",
+          "1096264.42",
+          "44764.83",
+          "332.945822",
+          "20725",
+          "83.464068",
+          "15.887194",
+          "0.648737"
+        ],
+        [
+          "pyarijodinew",
+          "5080181.48",
+          "722322.23",
+          "22546.33",
+          "336.86387",
+          "17292",
+          "87.212667",
+          "12.400275",
+          "0.387058"
+        ],
+        [
+          "permin",
+          "6487109.5",
+          "5142233.72",
+          "27644.08",
+          "697.89782",
+          "16703",
+          "55.649966",
+          "44.112888",
+          "0.237146"
+        ],
+        [
+          "GJgold",
+          "3757421.23",
+          "274365.7",
+          "7442.17",
+          "457.651155",
+          "8826",
+          "93.023226",
+          "6.792526",
+          "0.184247"
+        ],
+        [
+          "dataspl",
+          "3786615.29",
+          "1104441.87",
+          "49984.92",
+          "605.816831",
+          "8156",
+          "76.635965",
+          "22.352408",
+          "1.011627"
+        ],
+        [
+          "bsnltmrm",
+          "1997117.3",
+          "766.73",
+          "74.5",
+          "319.673366",
+          "6250",
+          "99.957895",
+          "0.038376",
+          "0.003729"
+        ],
+        [
+          "gen49",
+          "2351971.73",
+          "3069513.25",
+          "17918.25",
+          "916.341515",
+          "5936",
+          "43.239518",
+          "56.431066",
+          "0.329416"
+        ],
+        [
+          "data3g",
+          "1519695.11",
+          "1422518.28",
+          "32021.83",
+          "702.630574",
+          "4233",
+          "51.095324",
+          "47.828036",
+          "1.076641"
+        ],
+        [
+          "ctopup",
+          "1293435.27",
+          "125849.88",
+          "1738.17",
+          "376.729405",
+          "3772",
+          "91.021396",
+          "8.856286",
+          "0.122318"
+        ],
+        [
+          "roamfree",
+          "1797064.5",
+          "1515051.92",
+          "6571.08",
+          "899.617105",
+          "3689",
+          "54.149856",
+          "45.652142",
+          "0.198002"
+        ],
+        [
+          "general",
+          "1434779.03",
+          "423958.87",
+          "4069.08",
+          "607.37104",
+          "3067",
+          "77.022421",
+          "22.759141",
+          "0.218438"
+        ],
+        [
+          "rtp",
+          "1190968.15",
+          "695337.23",
+          "6343.67",
+          "629.833293",
+          "3005",
+          "62.92599",
+          "36.738836",
+          "0.335174"
+        ],
+        [
+          "pyarijodi",
+          "1169724.48",
+          "463535.72",
+          "6532.33",
+          "581.280583",
+          "2821",
+          "71.333688",
+          "28.267949",
+          "0.398363"
+        ],
+        [
+          "rtpnew",
+          "605422.37",
+          "701743.4",
+          "4530.92",
+          "731.157573",
+          "1794",
+          "46.155668",
+          "53.498908",
+          "0.345424"
+        ],
+        [
+          "militarynew",
+          "170392.41",
+          "1176598.28",
+          "247.42",
+          "960.940163",
+          "1402",
+          "12.647535",
+          "87.3341",
+          "0.018365"
+        ],
+        [
+          "gujspt",
+          "661773.91",
+          "157097.45",
+          "1818.08",
+          "740.02655",
+          "1109",
+          "80.636338",
+          "19.142131",
+          "0.221531"
+        ],
+        [
+          "anant",
+          "306384.21",
+          "64293.68",
+          "1768.67",
+          "365.861065",
+          "1018",
+          "82.262596",
+          "17.262526",
+          "0.474878"
+        ],
+        [
+          "generalnew",
+          "441619.68",
+          "114415.05",
+          "1148.92",
+          "654.739889",
+          "851",
+          "79.259268",
+          "20.534531",
+          "0.206201"
+        ],
+        [
+          "anant1s",
+          "375702.63",
+          "159818.43",
+          "1584.92",
+          "825.047585",
+          "651",
+          "69.949441",
+          "29.755475",
+          "0.295085"
+        ],
+        [
+          "autopv",
+          "88666.21",
+          "77296.88",
+          "311.92",
+          "370.322967",
+          "449",
+          "53.325037",
+          "46.487372",
+          "0.187591"
+        ],
+        [
+          "GJgold1",
+          "185432.08",
+          "12117.7",
+          "664.08",
+          "544.543571",
+          "364",
+          "93.551519",
+          "6.113447",
+          "0.335034"
+        ],
+        [
+          "gen3g",
+          "161941.68",
+          "88704.85",
+          "834.08",
+          "744.025473",
+          "338",
+          "64.395293",
+          "35.273038",
+          "0.331669"
+        ],
+        [
+          "GJspecial",
+          "96976.2",
+          "3446.12",
+          "250.08",
+          "585.304649",
+          "172",
+          "96.328487",
+          "3.4231",
+          "0.248413"
+        ],
+        [
+          "anant49",
+          "33099.78",
+          "65619.35",
+          "15.17",
+          "1518.98923",
+          "65",
+          "33.524098",
+          "66.460541",
+          "0.015361"
+        ],
+        [
+          "GJgen1",
+          "13855.2",
+          "893.27",
+          "5.92",
+          "567.476292",
+          "26",
+          "93.905653",
+          "6.054246",
+          "0.040101"
+        ],
+        [
+          "bsnl2ggj",
+          "4204.88",
+          "598.1",
+          "0",
+          "686.140489",
+          "7",
+          "87.547323",
+          "12.452677",
+          "0"
+        ],
+        [
+          "generalfwp",
+          "680.98",
+          "2.65",
+          "0",
+          "683.63332",
+          "1",
+          "99.612365",
+          "0.387635",
+          "0"
+        ]
+      ],
+      "metaData": [
+        {
+          "colIndex": 0,
+          "colType": "String",
+          "colName": "customer_plan"
+        },
+        {
+          "colIndex": 1,
+          "colType": "BigNumber",
+          "colName": "Local_Revenue"
+        },
+        {
+          "colIndex": 2,
+          "colType": "BigNumber",
+          "colName": "STD_Revenue"
+        },
+        {
+          "colIndex": 3,
+          "colType": "BigNumber",
+          "colName": "ISD_Revenue"
+        },
+        {
+          "colIndex": 4,
+          "colType": "BigNumber",
+          "colName": "Avg_Duration"
+        },
+        {
+          "colIndex": 5,
+          "colType": "BigNumber",
+          "colName": "Count of Customer"
+        },
+        {
+          "colIndex": 6,
+          "colType": "BigNumber",
+          "colName": "Per_Local"
+        },
+        {
+          "colIndex": 7,
+          "colType": "BigNumber",
+          "colName": "Per_STD"
+        },
+        {
+          "colIndex": 8,
+          "colType": "BigNumber",
+          "colName": "Per_ISD"
+        }
+      ]
+    }
+  },
+  "error": false
+};

@@ -1,0 +1,185 @@
+<link href="../bower_components/polymer/polymer.html" rel="import"/>
+<dom-module id="profile-element">
+  <template>
+    <style>
+    :host{
+        display:none;
+      }
+      :host.active{
+        display:inherit;
+      }
+      /*PAGE CONTENT STYLES*/
+     .widget__left-nav{
+  position:relative;
+  padding:10px;
+  padding-left:34px;
+  font-size:14px;
+}
+
+.widget__left-nav ul{
+  margin:0;
+  padding:0;
+  list-style:none;
+}
+
+.widget__left-nav ul li{
+  list-style:none;
+  display:block;
+  margin:0;
+  padding:0;
+  counter-reset: my-badass-counter
+}
+
+.widget__left-nav ul li:before {
+      content: counter(my-badass-counter);
+      counter-increment: my-badass-counter;
+      position: absolute;
+      left: 0;
+      top: 10px;
+      font: bold 24px/1 Sans-Serif;
+      color:rgba(0,0,0,.2);
+      padding:2px 6px;
+      border-radius:3px;
+      border:1px solid rgba(0,0,0,.2);
+    }
+
+.widget__left-nav ul li a{
+  display:block;
+  padding:6px 0;
+}
+/*
+.widget__left-nav:after{
+  content:'';
+  position:absolute;
+  right:0;
+  top:0px;
+  bottom:-20px;
+  width:1px;
+  height:100%;
+  background:#f00
+}
+*/
+
+.widget-body{
+    padding:15px !important;
+  }
+  
+  .cui .cui-input, .cui button, .cui input:not([type="radio"]):not([type="checkbox"]), .cui select, .cui textarea{
+    height:auto;
+  }
+  
+  .cui input:not([type="radio"]):not([type="checkbox"]):focus{
+    box-shadow:none
+  }
+     </style>
+    
+
+<div class="content">
+
+  <div class="content__wrapper">
+    <div class="master__head">
+      <div class="container-fluid">
+        <div class="master--title">
+          <h1>Profile</h1>
+        </div>
+                    </div>
+
+      </div>
+    </div>
+
+    <div class="content--inner">
+      <div class="container-fluid">
+        <div class="row">
+
+          <div class="col-md-2 col-md-offset-1">
+            <div class="widget__left-nav">
+        <ul>
+          <li><a href="#">Change Password</a></li>
+        </ul>
+      </div>
+          </div>
+          <div class="col-md-6">
+           
+       <div class="widget">
+      <div class="widget__wrapper">
+        <div class="widget--header">
+          <h2>Change Password</h2>
+        </div>
+        <div class="widget-body cui">
+          <!--<p>Passwords are case sensitive and must be at least 6 characters</p>-->
+          
+          
+            <div class="form-group">
+            <label for="exampleInputEmail1">Current Password</label>
+            <input type="password" class="form-control" id="currentPassword" placeholder="Current Password">
+            </div>
+            <div class="form-group">
+            <label for="exampleInputPassword1">New Password</label>
+            <input type="password" class="form-control" id="newPassword" placeholder="New Password">
+            </div>
+            <div class="form-group">
+            <label for="exampleInputPassword1">Confirm Password</label>
+            <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password">
+            </div>
+            <div class="checkbox">
+            <label>
+              <input type="checkbox"> Check me out
+            </label>
+            </div>
+            <button type="submit" class="btn btn-theme" on-tap="changePassword">Submit</button>
+
+        </div>
+      </div>
+       
+       </div>
+
+
+        </div>
+
+<div class="spacer-20"></div>
+
+
+
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+ 
+  </template>
+  <script>
+    Polymer({
+      is:"profile-element",
+      properties:{
+        changePasswordUrl:{
+          type:String,
+          value:'login/change_password'
+        }
+      },
+      changePassword:function(e){
+
+          var requestData={"data":{}};
+          requestData.data["email"]=document.querySelector("header-element").email;
+          requestData.data["password"]=this.$.currentPassword.value;
+          requestData.data["new-password"]=this.$.confirmPassword.value;
+         var base=document.createElement("base-util");
+
+         base.sendRequest(this.changePasswordUrl,requestData,function(e){ 
+          if(e.data.status=="wrong-password"){
+
+          noty({text: 'Wrong Password , Try Again', type: 'error', layout: 'topRight',timeout:1000});
+          
+          }
+          else if(e.data.status=="password-changed"){
+
+          noty({text: 'Password Changed Successfully', type: 'success', layout: 'topRight',timeout:1000});
+          
+          }
+},{})
+
+      }
+    });
+  </script>
+</dom-module>

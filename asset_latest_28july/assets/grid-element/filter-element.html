@@ -1,0 +1,34 @@
+<link href="../../../bower_components/polymer/polymer.html" rel="import" />
+<dom-module id="chart-element">
+    <template>
+		<style>	
+			div{
+				background:red;
+				height:inherit;
+				width:inherit;
+			}
+		</style>
+		<div id="container"></div>
+    </template>
+    <script>
+        Polymer({
+            is: "chart-element",
+			properties:{
+				data:{
+					type:Object,
+					value:function(){
+						return {};
+					},
+					notify:true,
+					observer:'__dataChanged'
+				}
+			},
+			ready:function(){
+				
+			},
+			__dataChanged:function(e){
+				console.log('dataChanged',e)
+			}
+        });
+    </script>
+</dom-module>
